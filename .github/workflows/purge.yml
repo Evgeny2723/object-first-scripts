@@ -1,0 +1,13 @@
+name: Purge jsDelivr cache
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  purge-jsdelivr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Purge jsDelivr CDN cache
+        run: |
+          curl -X GET "https://purge.jsdelivr.net/gh/Evgeny2723/webflow-scripts@main/script.js"
