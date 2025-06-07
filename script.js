@@ -690,14 +690,14 @@ onclick: function(element) {
   $(element).data("interacted", true);
 },
 rules: {
-  code: {
+  p-code: {
     required: true,
     noSpacesOnly: true,
     minlength: 6
   }
 },
 messages: {
-  code: {
+  p-code: {
     required: "This field is required",
     minlength: "Code must be 6 characters"
   }
