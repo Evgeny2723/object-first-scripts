@@ -823,7 +823,7 @@ const dropdownState2 = document.querySelector('.dropdown-state-2');
 const stateSelect2 = document.getElementById('state-2');
 const checkboxField = document.querySelector('.checkbox-field');
 const checkbox = document.querySelector('.checkbox-field input[type="checkbox"]');
-const submitButton2 = document.getElementById('submit');
+const submitButton2 = document.getElementById('submit-2');
 const submit2Button = document.getElementById('submit2');
 const form2 = document.getElementById('main-form-2');
 const phoneInput = document.getElementById('phone');
@@ -1118,7 +1118,7 @@ function updateSubmitButtonState() {
     }
   }
 
-  toggleSubmitButton('#submit', isFormValid && isCheckboxRequirementMet);
+  toggleSubmitButton('#submit-2', isFormValid && isCheckboxRequirementMet);
   toggleSubmitButton('#submit2', isFormCodeValid);
 }
 
@@ -1154,7 +1154,7 @@ $('#main-form-2, #code-form').on('input change', function(event) {
   updateSubmitButtonState();
 });
 
-$('#submit').attr('disabled', 'disabled');
+$('#submit-2').attr('disabled', 'disabled');
 $('#submit2').attr('disabled', 'disabled');
 });
 
