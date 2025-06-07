@@ -674,6 +674,8 @@ try {
   $('#p-submit').removeAttr('disabled');
 }
 });
+  
+  $('#p-code').mask('000000');
 
 // Валидация формы ввода кода попапа
 const validatorCodePopup = $('#p-code-form').validate({
