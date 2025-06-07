@@ -728,15 +728,6 @@ event.preventDefault();
 if (isCodeSubmitting) return;
 if (!$(pCodeForm).valid()) return;
 
-    // Проверяем валидность формы перед отправкой
-  if (!$(pCodeForm).valid()) {
-    pSubmitCodeButton.setAttribute('disabled', 'disabled');
-    return;
-  }
-
-  isCodeSubmitting = true;
-  pSubmitCodeButton.setAttribute('disabled', 'disabled');
-
 isCodeSubmitting = true;
 pSubmitCodeButton.setAttribute('disabled', 'disabled');
 
