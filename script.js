@@ -773,7 +773,7 @@ event.preventDefault();
 
 const email = pEmailDisplay.textContent.trim();
 if (!email) {
-  alert('Email не найден. Пожалуйста, заполните форму заново.');
+  alert('Email was not found. Please fill out the form again.');
   return;
 }
 
@@ -782,15 +782,15 @@ pResendCodeButton.textContent = 'Please wait...';
 
 setTimeout(() => {
   pResendCodeButton.disabled = false;
-  pResendCodeButton.textContent = 'Отправить код заново';
+  pResendCodeButton.textContent = 'Resend code';
 }, 30000);
 
 try {
   await submitFormToVerifiedWebflow({ email }, 'popup');
-  alert('Новый код подтверждения отправлен на ваш email.');
+  alert('A new confirmation code has been sent to your email.');
 } catch (error) {
   console.error('Ошибка при повторной отправке кода:', error);
-  alert('Не удалось отправить код. Попробуйте позже.');
+  alert("Couldn't send the code. Try again later.");
 }
 });
 }
