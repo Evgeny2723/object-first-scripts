@@ -2,7 +2,10 @@ name: Purge jsDelivr cache
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
+    paths:
+      - 'script.js'
 
 jobs:
   purge-jsdelivr:
