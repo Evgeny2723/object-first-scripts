@@ -334,7 +334,7 @@ const pMainFormContainer = document.getElementById('p-main-form-container');
 const pCodeFormContainer = document.getElementById('p-code-form-container');
 const pCodeForm = document.getElementById('p-code-form');
 const pCodeInput = document.getElementById('p-code');
-const pSubmitCodeButton = document.getElementById('p-submit-code');
+const pSubmitCodeButton = document.getElementById('p-submit2');
 const pResendCodeButton = document.getElementById('p-resend-code');
 const pEmailDisplay = document.getElementById('p-email-display');
 let isPopupSubmitting = false;
@@ -357,7 +357,7 @@ const dropdownMexico = document.querySelector('.p-states-mexico');
 const dropdownState2 = document.querySelector('.p-dropdown-state');
 const checkboxField = document.querySelector('.p-checkbox-field');
 const checkbox = document.querySelector('.p-checkbox-field input[type="checkbox"]');
-const submitButton2 = document.getElementById('p-submit2');
+const submitButton2 = document.getElementById('p-submit');
 const form2 = document.getElementById('p-main-form');
   pCodeFormContainer.style.display = 'none';
 
