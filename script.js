@@ -412,6 +412,34 @@ const selectpicker = $(this).data('selectpicker');
 selectpicker.$menuInner[0].scrollTop = 0;
 });
 
+      // Функция для определения страны по IP
+    function detectCountryForFirstForm() {
+      return fetch('https://faas-nyc1-2ef2e6cc.doserverless.co/api/v1/web/fn-3627560b-2163-4a62-81db-3a3b5da17d5a/ip/info')
+        .then(response => response.json())
+        .then(data => {
+        if (data && data.country) {
+          return data.country;
+        }
+        return null;
+      })
+        .catch(error => {
+        console.error('Ошибка при определении страны:', error);
+        return null;
+      });
+    }
+
+    detectCountryForFirstForm().then(country => {
+      if (country) {
+        // Находим соответствующую опцию в выпадающем списке
+        const option = [...countrySelect2.options].find(opt => opt.value === country);
+        if (option) {
+          option.selected = true;
+          countrySelect2.dispatchEvent(new Event('change'));
+          $('#p-country').selectpicker('refresh'); // Обновляем селектпикер
+        }
+      }
+    });
+
 // Валидация попап формы
 $(document).ready(function() {
 let isFormInitialized = false;
