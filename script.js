@@ -294,6 +294,31 @@
       selectpicker.$menuInner[0].scrollTop = 0;
     });
 
+        // Автоопределение страны по IP
+    fetch('https://faas-nyc1-2ef2e6cc.doserverless.co/api/v1/web/fn-3627560b-2163-4a62-81db-3a3b5da17d5a/ip/info')
+      .then(response => response.json())
+      .then(data => {
+      if (data && data.iso_code && data.country) {
+        // Находим опцию в выпадающем списке
+        const optionToSelect = [...pCountry.options].find(
+          option => option.value === data.country
+        );
+
+        if (optionToSelect) {
+          optionToSelect.selected = true;
+          pCountry.dispatchEvent(new Event('change'));
+        } else {
+          console.error('Country not found in the dropdown:', data.country);
+        }
+      } else {
+        console.error('Invalid data received from IP API:', data);
+      }
+    })
+      .catch(error => {
+      console.error('Error while getting IP data:', error);
+    });
+
+
     $(document).ready(function() {
       let isFormInitialized = false;
       let isCheckboxInteracted = false;
