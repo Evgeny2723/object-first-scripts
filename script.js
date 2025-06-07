@@ -545,7 +545,7 @@
     .filter(Boolean);
     const pPathLocale = pPathSegments[0] || '';
     const pAllowedLocales = ['en', 'de', 'fr', 'es', 'it', 'pt'];
-    const pLocaleHeader = allowedLocales.includes(pathLocale) ? pathLocale : 'en';
+    const pLocaleHeader = pAllowedLocales.includes(pPathLocale) ? pPathLocale : 'en';
 
     function submitForm(formData) {
       const url = '<https://of-web-api.objectfirst.com/api/application/webflow>';
