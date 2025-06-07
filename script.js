@@ -17,7 +17,7 @@
     const submitButton2 = document.getElementById('p-submit');
     const form2 = document.getElementById('p-main-form');
     const codeInput = document.getElementById('p-code');
-    const submit2Button = document.getElementById('p-submit2');
+    const submit2Button = document.getElementById('p-submit-code');
     const formCode = document.getElementById('p-code-form');
     const codeFormContainer = document.getElementById('p-code-form-container');
     const mainFormContainer = document.getElementById('p-main-form-container');
@@ -482,7 +482,7 @@
         }
 
         toggleSubmitButton('#p-submit', isFormValid && isCheckboxRequirementMet);
-        toggleSubmitButton('#p-submit2', isFormCodeValid);
+        toggleSubmitButton('#p-submit-code', isFormCodeValid);
       }
 
       function toggleCountrySpecificElements(selectedCountry) {
@@ -517,7 +517,7 @@
       });
 
       $('#p-submit').attr('disabled', 'disabled');
-      $('#p-submit2').attr('disabled', 'disabled');
+      $('#p-submit-code').attr('disabled', 'disabled');
     });
 
     function addPlaceholder() {
