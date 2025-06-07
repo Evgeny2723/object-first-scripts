@@ -1,4 +1,3 @@
-<script>
   document.addEventListener('DOMContentLoaded', function() {
     // --- ЭЛЕМЕНТЫ И ПЕРЕМЕННЫЕ ДЛЯ ПОПАП-ФОРМЫ ---
     const fullNameInput = document.getElementById('p-full-name');
@@ -793,10 +792,8 @@
     });
     observer.observe(document.body, { childList: true, subtree: true });
   });
-</script>
 
 <!-- Оригинальный скрипт для «второй» формы остаётся без изменений -->
-<script>
   document.addEventListener('DOMContentLoaded', function() {
     const firstNameInput = document.getElementById('First-Name');
     const lastNameInput = document.getElementById('Last-Name');
@@ -1518,4 +1515,3 @@
       }
     });
   });
-</script>
