@@ -357,7 +357,7 @@ const dropdownMexico = document.querySelector('.p-states-mexico');
 const dropdownState2 = document.querySelector('.p-dropdown-state');
 const checkboxField = document.querySelector('.p-checkbox-field');
 const checkbox = document.querySelector('.p-checkbox-field input[type="checkbox"]');
-const submitButton2 = document.getElementById('p-submit');
+const submitButton2 = document.getElementById('p-submit2');
 const form2 = document.getElementById('p-main-form');
   pCodeFormContainer.style.display = 'none';
 
