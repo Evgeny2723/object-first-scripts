@@ -721,7 +721,8 @@ ignoreTitle: true,
 onfocusin: function(element) {
 $(element).data("interacted", true);
 }
-
+});
+  
 // Обработчик отправки формы ввода кода попапа
 pCodeForm.addEventListener('submit', async function(event) {
 event.preventDefault();
@@ -766,7 +767,6 @@ console.error('Ошибка при верификации кода:', error);
 isCodeSubmitting = false;
 pSubmitCodeButton.removeAttribute('disabled');
 }
-});
 });
 
 // Обработчик «Отправить код заново» для попапа
