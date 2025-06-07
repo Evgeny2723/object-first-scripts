@@ -22,7 +22,7 @@
     const pCodeFormContainer = document.getElementById('p-code-form-container');
     const pMainFormContainer = document.getElementById('p-main-form-container');
     const pEmailDisplay = document.getElementById('p-email-display');
-    let isSubmitting = false;
+    let pIsSubmitting = false;
     pCodeFormContainer.style.display = 'none';
         const countryCodeMap = {
       "Australia": "AU",
@@ -530,7 +530,7 @@
 
     addPlaceholder();
 
-    const observer = new MutationObserver((mutationsList, observer) => {
+    const pObserver = new MutationObserver((mutationsList, pObserver) => {
       for (let mutation of mutationsList) {
         if (mutation.type === 'childList') {
           addPlaceholder();
@@ -538,14 +538,14 @@
       }
     });
 
-    observer.observe(document.body, { childList: true, subtree: true });
+    pObserver.observe(document.body, { childList: true, subtree: true });
 
-    const pathSegments = window.location.pathname
+    const pPathSegments = window.location.pathname
     .split('/')
     .filter(Boolean);
-    const pathLocale = pathSegments[0] || '';
-    const allowedLocales = ['en', 'de', 'fr', 'es', 'it', 'pt'];
-    const localeHeader = allowedLocales.includes(pathLocale) ? pathLocale : 'en';
+    const pPathLocale = pPathSegments[0] || '';
+    const pAllowedLocales = ['en', 'de', 'fr', 'es', 'it', 'pt'];
+    const pLocaleHeader = allowedLocales.includes(pathLocale) ? pathLocale : 'en';
 
     function submitForm(formData) {
       const url = '<https://of-web-api.objectfirst.com/api/application/webflow>';
@@ -644,11 +644,11 @@
         return;
       }
 
-      if (isSubmitting) {
+      if (pIsSubmitting) {
         return;
       }
 
-      isSubmitting = true;
+      pIsSubmitting = true;
       pSubmitButton.setAttribute('disabled', 'disabled');
 
       const form = this;
@@ -735,7 +735,7 @@
           });
         }
       } finally {
-        isSubmitting = false;
+        pIsSubmitting = false;
         pSubmitButton.removeAttribute('disabled');
       }
     });
@@ -744,10 +744,10 @@
     $('#p-code-form').on('submit', async function(event) {
       event.preventDefault();
 
-      if (isSubmitting) return;
+      if (pIsSubmitting) return;
       if (!$(this).valid()) return;
 
-      isSubmitting = true;
+      pIsSubmitting = true;
       pSubmitButtonCode.setAttribute('disabled', 'disabled');
 
       const code = $('#p-code').val().trim();
@@ -794,13 +794,13 @@
       } catch (error) {
         console.error('Error submitting code form:', error);
       } finally {
-        isSubmitting = false;
+        pIsSubmitting = false;
         pSubmitButtonCode.removeAttribute('disabled');
       }
     });
 
     // Обработчик кнопки повторной отправки кода
-    const resendCodeButton = document.getElementById('p-resend-code');
+    const pResendCodeButton = document.getElementById('p-resend-code');
     resendCodeButton.addEventListener('click', async function(event) {
       event.preventDefault();
 
@@ -810,12 +810,12 @@
         return;
       }
 
-      resendCodeButton.disabled = true;
-      resendCodeButton.textContent = 'Please wait...';
+      pResendCodeButton.disabled = true;
+      pResendCodeButton.textContent = 'Please wait...';
 
       setTimeout(() => {
-        resendCodeButton.disabled = false;
-        resendCodeButton.textContent = 'Resend Code';
+        pResendCodeButton.disabled = false;
+        pResendCodeButton.textContent = 'Resend Code';
       }, 30000);
 
       try {
@@ -840,7 +840,6 @@
       }
     });
 
-<script src="https://cdn.jsdelivr.net/gh/Evgeny2723/webflow-scripts@f7c87c0/script.js"></script>
 // Переменные для полей формы
     const firstNameInput = document.getElementById('First-Name');
     const lastNameInput = document.getElementById('Last-Name');
