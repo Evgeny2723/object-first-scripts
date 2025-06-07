@@ -721,6 +721,14 @@ ignoreTitle: true,
 onfocusin: function(element) {
   $(element).data("interacted", true);
 }
+    invalidHandler: function(form, validator) {
+    // Деактивируем кнопку при невалидной форме
+    pSubmitCodeButton.setAttribute('disabled', 'disabled');
+  },
+  success: function(label) {
+    // Активируем кнопку при валидной форме
+    pSubmitCodeButton.removeAttribute('disabled');
+  }
 });
 
 // Обработчик отправки формы ввода кода попапа
@@ -728,6 +736,15 @@ pCodeForm.addEventListener('submit', async function(event) {
 event.preventDefault();
 if (isCodeSubmitting) return;
 if (!$(pCodeForm).valid()) return;
+
+    // Проверяем валидность формы перед отправкой
+  if (!$(pCodeForm).valid()) {
+    pSubmitCodeButton.setAttribute('disabled', 'disabled');
+    return;
+  }
+
+  isCodeSubmitting = true;
+  pSubmitCodeButton.setAttribute('disabled', 'disabled');
 
 isCodeSubmitting = true;
 pSubmitCodeButton.setAttribute('disabled', 'disabled');
