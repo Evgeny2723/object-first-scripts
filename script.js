@@ -339,8 +339,6 @@ const pResendCodeButton = document.getElementById('p-resend-code');
 const pEmailDisplay = document.getElementById('p-email-display');
 let isPopupSubmitting = false;
 let isCodeSubmitting = false;
-pCodeFormContainer.style.display = 'none';
-
 
 if (pMainFormContainer) {
 // Элементы попап формы
@@ -361,6 +359,7 @@ const checkboxField = document.querySelector('.p-checkbox-field');
 const checkbox = document.querySelector('.p-checkbox-field input[type="checkbox"]');
 const submitButton2 = document.getElementById('p-submit');
 const form2 = document.getElementById('p-main-form');
+  pCodeFormContainer.style.display = 'none';
 
 // Обработчики лейблов
 [fullNameInput, emailInput2, companyInput2].forEach(input => {
