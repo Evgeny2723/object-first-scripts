@@ -721,15 +721,6 @@ ignoreTitle: true,
 onfocusin: function(element) {
   $(element).data("interacted", true);
 }
-    invalidHandler: function(form, validator) {
-    // Деактивируем кнопку при невалидной форме
-    pSubmitCodeButton.setAttribute('disabled', 'disabled');
-  },
-  success: function(label) {
-    // Активируем кнопку при валидной форме
-    pSubmitCodeButton.removeAttribute('disabled');
-  }
-});
 
 // Обработчик отправки формы ввода кода попапа
 pCodeForm.addEventListener('submit', async function(event) {
