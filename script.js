@@ -860,7 +860,7 @@
     const stateSelect2 = document.getElementById('state-2');
     const checkboxField = document.querySelector('.checkbox-field');
     const checkbox = document.querySelector('.checkbox-field input[type="checkbox"]');
-    const submitButton2 = document.getElementById('submit');
+    const submitButton2 = document.getElementById('submit-2');
     const submit2Button = document.getElementById('submit2');
     const form2 = document.getElementById('main-form-2');
     const formCode = document.getElementById('code-form');
@@ -1234,7 +1234,7 @@
       }
 
       // Использование функции для всех кнопок
-      toggleSubmitButton('#submit', isFormValid && isCheckboxRequirementMet);
+      toggleSubmitButton('#submit-2', isFormValid && isCheckboxRequirementMet);
       toggleSubmitButton('#submit2', isFormCodeValid);
     }
 
@@ -1268,7 +1268,7 @@
     });
 
     // Изначально деактивируем кнопку отправки
-    $('#submit').attr('disabled', 'disabled');
+    $('#submit-2').attr('disabled', 'disabled');
     $('#submit2').attr('disabled', 'disabled');
 
     // Функция добавления placeholder для поиска
