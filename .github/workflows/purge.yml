@@ -6,11 +6,20 @@ on:
       - main
     paths:
       - 'script.js'
+  workflow_dispatch:
 
 jobs:
   purge-jsdelivr:
     runs-on: ubuntu-latest
     steps:
+      - name: Debug jsDelivr purge
+        run: |
+          echo "Checking current headers:"
+          curl -I "https://cdn.jsdelivr.net/gh/Evgeny2723/webflow-scripts@main/script.js"
       - name: Purge jsDelivr CDN cache
         run: |
           curl -X GET "https://purge.jsdelivr.net/gh/Evgeny2723/webflow-scripts@main/script.js"
+      - name: Verify purge
+        run: |
+          echo "After purge headers:"
+          curl -I "https://cdn.jsdelivr.net/gh/Evgeny2723/webflow-scripts@main/script.js"
