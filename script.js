@@ -801,7 +801,7 @@
 
     // Обработчик кнопки повторной отправки кода
     const pResendCodeButton = document.getElementById('p-resend-code');
-    resendCodeButton.addEventListener('click', async function(event) {
+    pResendCodeButton.addEventListener('click', async function(event) {
       event.preventDefault();
 
       const email = $('#p-email').val().trim();
