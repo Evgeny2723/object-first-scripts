@@ -719,9 +719,12 @@
         page: 'ransomware-proof-backup-promo'
       };
 
-      try {
-        const responseData = await submitFormToVerifiedWebflow(payload);
+      let responseData = null;
 
+      try {
+         const response = await submitFormToVerifiedWebflow(payload);
+          responseData = response;
+        
         if (responseData.success === true) {
           // Если верификация не требуется
           const userId = generateUserId();
@@ -753,8 +756,6 @@
         }
 
       } catch (error) {
-        const responseData = await response.json();
-        console.error('An error occurred while submitting the form:', error);
         if (error.message !== 'Code verification required.') {
           $('#p-main-form').validate().showErrors({
             'email': responseData.errors.email[0]
