@@ -719,18 +719,8 @@
         page: 'ransomware-proof-backup-promo'
       };
 
-      let responseData;
-
       try {
-        const response = await fetch('<https://of-web-api.objectfirst.com/api/application/verified-webflow>', {
-            method: 'POST',
-            body: JSON.stringify(payload),
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
-
-        const responseData = await response.json();
+        const responseData = await submitFormToVerifiedWebflow(payload);
         
         if (responseData.success === true) {
           // Если верификация не требуется
@@ -763,10 +753,10 @@
         }
 
       } catch (error) {
-        if (error.message !== 'Code verification required.' && responseData?.errors?.email?.[0]) {
-          $('#p-main-form').validate().showErrors({
-            'email': responseData.errors.email[0]
-          });
+        if (responseData.errors) {
+              $('#p-main-form').validate().showErrors({
+                'email': responseData.errors.email ? responseData.errors.email[0] : 'Invalid email.'
+            });
         }
       } finally {
         pIsSubmitting = false;
