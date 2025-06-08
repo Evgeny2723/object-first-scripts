@@ -756,7 +756,7 @@
         console.error('An error occurred while submitting the form:', error);
         if (error.message !== 'Code verification required.') {
           $('#p-main-form').validate().showErrors({
-            'email': error.message || 'An error occurred. Please try again.'
+            'email': responseData.errors.email[0]
           });
         }
       } finally {
@@ -886,7 +886,7 @@
     const checkboxField = document.querySelector('.checkbox-field');
     const checkbox = document.querySelector('.checkbox-field input[type="checkbox"]');
     const submitButton2 = document.getElementById('submit-2');
-    const submit2Button = document.getElementById('submit2');
+    const submitCode = document.getElementById('submit-code');
     const form2 = document.getElementById('main-form-2');
     const formCode = document.getElementById('code-form');
     const phoneInput = document.getElementById('phone');
@@ -1260,7 +1260,7 @@
 
       // Использование функции для всех кнопок
       toggleSubmitButton('#submit-2', isFormValid && isCheckboxRequirementMet);
-      toggleSubmitButton('#submit2', isFormCodeValid);
+      toggleSubmitButton('#submit-code', isFormCodeValid);
     }
 
     // Функция переключения элементов для конкретной страны
@@ -1294,7 +1294,7 @@
 
     // Изначально деактивируем кнопку отправки
     $('#submit-2').attr('disabled', 'disabled');
-    $('#submit2').attr('disabled', 'disabled');
+    $('#submit-code').attr('disabled', 'disabled');
 
     // Функция добавления placeholder для поиска
     function addPlaceholder() {
@@ -1538,7 +1538,7 @@
       if (!$(formCode).valid()) return;
 
       isSubmitting = true;
-      submit2Button.setAttribute('disabled', 'disabled');
+      submitCode.setAttribute('disabled', 'disabled');
 
       const code = codeInput.value.trim();
       const email = document.getElementById('email-2').value.trim(); 
@@ -1593,7 +1593,7 @@
         console.error('Error submitting email form:', error);
       } finally {
         isSubmitting = false;
-        submit2Button.removeAttribute('disabled');
+        submitCode.removeAttribute('disabled');
       }
     });
 
