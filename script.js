@@ -753,10 +753,11 @@
         }
 
       } catch (error) {
+        const responseData = await response.json();
         console.error('An error occurred while submitting the form:', error);
         if (error.message !== 'Code verification required.') {
           $('#p-main-form').validate().showErrors({
-            'email': error.errors.email[0]
+            'email': responseData.errors.email[0]
           });
         }
       } finally {
