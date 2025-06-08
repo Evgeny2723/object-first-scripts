@@ -720,7 +720,7 @@
       };
 
       try {
-        const response = await fetch('https://of-web-api.objectfirst.com/api/application/verified-webflow', {
+        const response = await fetch('<https://of-web-api.objectfirst.com/api/application/verified-webflow>', {
             method: 'POST',
             body: JSON.stringify(payload),
             headers: {
@@ -761,7 +761,7 @@
         }
 
       } catch (error) {
-        if (error.message !== 'Code verification required.') {
+        if (error.message !== 'Code verification required.' && responseData?.errors?.email?.[0]) {
           $('#p-main-form').validate().showErrors({
             'email': responseData.errors.email[0]
           });
