@@ -441,14 +441,14 @@
           }
         },
         rules: {
-          code: {
+          'p-code': {
             required: true,
             noSpacesOnly: true,
             minlength: 6,
           }
         },
         messages: {
-          code: {
+          'p-code': {
             required: "This field is required",
           }
         },
