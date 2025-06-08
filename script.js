@@ -720,7 +720,7 @@
       };
 
       try {
-        const response = await fetch('<https://of-web-api.objectfirst.com/api/application/verified-webflow>', {
+        const response = await fetch('https://of-web-api.objectfirst.com/api/application/verified-webflow', {
             method: 'POST',
             body: JSON.stringify(payload),
             headers: {
