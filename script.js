@@ -1517,8 +1517,7 @@
             $('#main-form-2').validate().showErrors({
               'email': responseData.errors.email[0]
             });
-            if (formFields) formFields.style.display = 'none';
-            if (successMessage) successMessage.style.display = 'block';
+            return;
           }
           throw new Error('Server error: ' + JSON.stringify(responseData));
         }
