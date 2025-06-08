@@ -732,6 +732,7 @@
 
           const leadId = getCookieValue('userId') || '';
           const roleValue = payload.lead_type.charAt(0).toUpperCase() + payload.lead_type.slice(1).toLowerCase();
+          const responseData = await response.json();
 
           if (window.dataLayer) {
             window.dataLayer.push({
