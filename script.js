@@ -719,6 +719,8 @@
         page: 'ransomware-proof-backup-promo'
       };
 
+      let responseData;
+
       try {
         const response = await fetch('<https://of-web-api.objectfirst.com/api/application/verified-webflow>', {
             method: 'POST',
