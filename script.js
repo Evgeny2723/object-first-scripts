@@ -1594,7 +1594,7 @@ const countryCodeMap = {
 		if (!$(formCode).valid()) return;
 
 		isSubmitting = true;
-		submit2Button.setAttribute('disabled', 'disabled');
+		submitCode.setAttribute('disabled', 'disabled');
 
 		const code = codeInput.value.trim();
 		const email = document.getElementById('email-2').value.trim();
@@ -1649,7 +1649,7 @@ const countryCodeMap = {
 			console.error('Error submitting email form:', error);
 		} finally {
 			isSubmitting = false;
-			submit2Button.removeAttribute('disabled');
+			submitCode.removeAttribute('disabled');
 		}
 	});
 
