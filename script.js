@@ -719,67 +719,77 @@
         page: 'ransomware-proof-backup-promo'
       };
       
-    async function submitFormToVerifiedWebflow(payload) {
-      try {
-    const response = await fetch('https://of-web-api.objectfirst.com/api/application/verified-webflow', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'locale': localeHeader
-      },
-      body: JSON.stringify(payload),
-      credentials: 'include',
-    });
+async function submitFormToVerifiedWebflow(payload) {
+    let response; // Объявляем переменную здесь, чтобы она была доступна в catch
+    let responseData;
 
-    const responseData = await response.json();
+    try {
+        response = await fetch('https://of-web-api.objectfirst.com/api/application/verified-webflow', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'locale': localeHeader // Убедитесь, что localeHeader определен
+            },
+            body: JSON.stringify(payload),
+            credentials: 'include',
+        });
+
+        responseData = await response.json();
+
         if (responseData.success === true) {
-          // Если верификация не требуется
-          const userId = generateUserId();
-          document.cookie = `userId=${userId}; path=/; max-age=31536000`;
+            const userId = generateUserId();
+            document.cookie = `userId=${userId}; path=/; max-age=31536000`;
 
-          const leadId = getCookieValue('userId') || '';
-          const roleValue = payload.lead_type.charAt(0).toUpperCase() + payload.lead_type.slice(1).toLowerCase();
+            const leadId = getCookieValue('userId') || '';
+            const roleValue = payload.lead_type.charAt(0).toUpperCase() + 
+                            payload.lead_type.slice(1).toLowerCase();
 
-          if (window.dataLayer) {
-            window.dataLayer.push({
-              'event': 'whitepaper',
-              'role': roleValue,
-              'type': '',
-              'email': payload.email,
-              'lead_id': leadId
-            });
-          } else {
-            console.warn('dataLayer не определен');
-          }
+            if (window.dataLayer) {
+                window.dataLayer.push({
+                    'event': 'whitepaper',
+                    'role': roleValue,
+                    'type': '',
+                    'email': payload.email,
+                    'lead_id': leadId
+                });
+            }
 
-          console.log('Form submitted successfully.', responseData);
-          $('#p-success-message').show();
-          $('#p-main-form').hide();
+            $('#p-success-message').show();
+            $('#p-main-form').hide();
+            return responseData; // Возвращаем данные при успехе
         } else {
-          pCodeFormContainer.style.display = 'block';
-          pMainFormContainer.style.display = 'none';
-          pEmailDisplay.textContent = payload.email.trim();
-          throw new Error('Code verification required.');
+            pCodeFormContainer.style.display = 'block';
+            pMainFormContainer.style.display = 'none';
+            pEmailDisplay.textContent = payload.email.trim();
+            throw new Error('Code verification required.');
+        }
+    } catch (error) {
+        if (error.message === 'Code verification required.') {
+            throw error; // Пробрасываем дальше ожидаемую ошибку
         }
 
-      } catch (error) {
-          if (!response.ok) {
-        if (responseData.errors?.email?.[0]) {
-          $('#p-main-form').validate().showErrors({
-            'email': responseData.errors.email[0]
-          });
-          return null; // обработано, не продолжаем
+        // Обработка ошибок ответа сервера
+        if (response && !response.ok) {
+            if (responseData?.errors?.email?.[0]) {
+                $('#p-main-form').validate().showErrors({
+                    'email': responseData.errors.email[0]
+                });
+                return null;
+            }
+            throw new Error('Server error: ' + (responseData ? JSON.stringify(responseData) : 'No response data'));
         }
-  
-        throw new Error('Server error: ' + JSON.stringify(responseData));
-      }
-          }
-      } finally {
+
+        // Обработка других ошибок (например, сетевых)
+        console.error('Request failed:', error);
+        $('#p-main-form').validate().showErrors({
+            'email': 'Произошла ошибка при отправке формы. Пожалуйста, попробуйте еще раз.'
+        });
+        throw error; // Пробрасываем ошибку дальше
+    } finally {
         pIsSubmitting = false;
         pSubmitButton.removeAttribute('disabled');
-      }
-    });
-  }
+    }
+}
 
     // Обработчик отправки формы верификации кода
     $('#p-code-form').on('submit', async function(event) {
