@@ -603,7 +603,7 @@
     }
 
     function submitFormToVerifiedWebflow(data) {
-      const url = '<https://of-web-api.objectfirst.com/api/application/verified-webflow>';
+      const url = 'https://of-web-api.objectfirst.com/api/application/verified-webflow';
 
       return fetch(url, {
         method: 'POST',
@@ -718,23 +718,9 @@
         href: window.location.href,
         page: 'ransomware-proof-backup-promo'
       };
-      
-async function submitFormToVerifiedWebflow(payload) {
-    let response; // Объявляем переменную здесь, чтобы она была доступна в catch
-    let responseData;
 
     try {
-        response = await fetch('https://of-web-api.objectfirst.com/api/application/verified-webflow', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'locale': localeHeader // Убедитесь, что localeHeader определен
-            },
-            body: JSON.stringify(payload),
-            credentials: 'include',
-        });
-
-        responseData = await response.json();
+        const responseData = await submitFormToVerifiedWebflow(data);
 
         if (responseData.success === true) {
             const userId = generateUserId();
@@ -764,21 +750,6 @@ async function submitFormToVerifiedWebflow(payload) {
             throw new Error('Code verification required.');
         }
     } catch (error) {
-        if (error.message === 'Code verification required.') {
-            throw error; // Пробрасываем дальше ожидаемую ошибку
-        }
-
-        // Обработка ошибок ответа сервера
-        if (response && !response.ok) {
-            if (responseData?.errors?.email?.[0]) {
-                $('#p-main-form').validate().showErrors({
-                    'email': responseData.errors.email[0]
-                });
-                return null;
-            }
-            throw new Error('Server error: ' + (responseData ? JSON.stringify(responseData) : 'No response data'));
-        }
-
         // Обработка других ошибок (например, сетевых)
         console.error('Request failed:', error);
         $('#p-main-form').validate().showErrors({
@@ -805,7 +776,7 @@ async function submitFormToVerifiedWebflow(payload) {
       const email = $('#p-email').val().trim();
 
       try {
-        const response = await fetch('<https://of-web-api.objectfirst.com/api/application/webflow/verify>', {
+        const response = await fetch('https://of-web-api.objectfirst.com/api/application/webflow/verify', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, code }),
@@ -870,7 +841,7 @@ async function submitFormToVerifiedWebflow(payload) {
       }, 30000);
 
       try {
-        const response = await fetch('<https://of-web-api.objectfirst.com/api/application/verified-webflow>', {
+        const response = await fetch('https://of-web-api.objectfirst.com/api/application/verified-webflow', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email }),
@@ -1456,7 +1427,7 @@ async function submitFormToVerifiedWebflow(payload) {
 
           if (responseData.success === true) {
             // Email уже подтверждён → заявка финализировалась
-            formContainer.style.display = 'flex';
+            mainFormContainer.style.display = 'flex';
             codeFormContainer.style.display = 'none';
 
             // Показать успех
@@ -1663,4 +1634,3 @@ async function submitFormToVerifiedWebflow(payload) {
       }
     });
   });
-});
