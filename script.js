@@ -358,10 +358,10 @@ document.addEventListener('DOMContentLoaded', function() {
       onkeyup: function(element) { $(element).data('modified', true); $(element).valid(); },
       onclick: function(element) { if (popupIsFormInitialized) { $(element).valid(); } },
       rules: {
-        code: { required: true, noSpacesOnly: true, minlength: 6 }
+        'p-code': { required: true, noSpacesOnly: true, minlength: 6 }
       },
       messages: {
-        code: { required: "This field is required" }
+        'p-code': { required: "This field is required" }
       },
       errorPlacement: function (error, element) { if ($(element).data('modified')) { error.appendTo(element.closest(".field-row")); } },
       highlight: function(element) { if ($(element).data('modified')) { $(element).css('border', '1px solid #c50006'); } },
