@@ -531,7 +531,6 @@ document.addEventListener('DOMContentLoaded', function() {
           full_name: formData.get('full-name'),
           email: formData.get('email'),
           company: formData.get('company'),
-          // phone: iti.getNumber() - УДАЛЕНО
           lead_type: leadTypeValue,
           country: formData.get('country'),
           state: stateValue || null,
@@ -569,11 +568,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (window.dataLayer) {
               window.dataLayer.push({
-                'event': 'demo',
+                'event': 'whitepaper',
                 'role': roleValue,
                 'type': '',
                 'email': data.email,
-                // 'phone': data.phone, - УДАЛЕНО
                 'lead_id': leadId
               });
             } else {
@@ -656,7 +654,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         const result = await response.json();
         if (!response.ok) {
-          $(pFormCode).validate().showErrors({ code: result.message || 'Invalid code.' });
+          $(pFormCode).validate().showErrors({ 'p-code': result.message || 'Invalid code.' });
           return;
         }
         
@@ -667,16 +665,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const leadTypeValue = document.querySelector('input[name="lead_type"]:checked')?.value || '';
         const roleValue = leadTypeValue ? leadTypeValue.charAt(0).toUpperCase() + leadTypeValue.slice(1).toLowerCase() : '';
-        // const phoneNumber = iti.getNumber(); - УДАЛЕНО
         const leadId = getCookieValue('userId') || '';
 
         if (window.dataLayer) {
           window.dataLayer.push({
-            'event': 'demo',
+            'event': 'whitepaper',
             'role': roleValue,
             'type': '',
             'email': email,
-            // 'phone': phoneNumber, - УДАЛЕНО
             'lead_id': leadId
           });
         } else {
