@@ -573,7 +573,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	const pLocaleHeader = pAllowedLocales.includes(pPathLocale) ? pPathLocale : 'en';
 
 	function submitForm(formData) {
-		const url = '<https://of-web-api.objectfirst.com/api/application/webflow>';
+		const url = 'https://of-web-api.objectfirst.com/api/application/webflow/verify';
 
 		return fetch(url, {
 			method: 'POST',
