@@ -1246,8 +1246,8 @@ document.addEventListener('DOMContentLoaded', function () {
 		}
 
 		// Использование функции для всех кнопок
-		toggleSubmitButton('#submit', isFormValid && isCheckboxRequirementMet);
-		toggleSubmitButton('#submit2', isFormCodeValid);
+		toggleSubmitButton('#submit-2', isFormValid && isCheckboxRequirementMet);
+		toggleSubmitButton('#submit-code', isFormCodeValid);
 	}
 
 	// Функция переключения элементов для конкретной страны
@@ -1280,8 +1280,8 @@ document.addEventListener('DOMContentLoaded', function () {
 	});
 
 	// Изначально деактивируем кнопку отправки
-	$('#submit').attr('disabled', 'disabled');
-	$('#submit2').attr('disabled', 'disabled');
+	$('#submit-2').attr('disabled', 'disabled');
+	$('#submit-code').attr('disabled', 'disabled');
 
 	// Функция добавления placeholder для поиска
 	function addPlaceholder() {
