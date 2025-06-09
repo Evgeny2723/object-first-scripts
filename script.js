@@ -718,10 +718,20 @@
         href: window.location.href,
         page: 'ransomware-proof-backup-promo'
       };
-
+      
+    async function submitFormToVerifiedWebflow(payload) {
       try {
-        const responseData = await submitFormToVerifiedWebflow(payload);
-        
+    const response = await fetch('https://of-web-api.objectfirst.com/api/application/verified-webflow', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'locale': localeHeader
+      },
+      body: JSON.stringify(payload),
+      credentials: 'include',
+    });
+
+    const responseData = await response.json();
         if (responseData.success === true) {
           // Если верификация не требуется
           const userId = generateUserId();
@@ -753,16 +763,23 @@
         }
 
       } catch (error) {
-        if (responseData.errors) {
-              $('#p-main-form').validate().showErrors({
-                'email': responseData.errors.email ? responseData.errors.email[0] : 'Invalid email.'
-            });
+          if (!response.ok) {
+        if (responseData.errors?.email?.[0]) {
+          $('#p-main-form').validate().showErrors({
+            'email': responseData.errors.email[0]
+          });
+          return null; // обработано, не продолжаем
         }
+  
+        throw new Error('Server error: ' + JSON.stringify(responseData));
+      }
+          }
       } finally {
         pIsSubmitting = false;
         pSubmitButton.removeAttribute('disabled');
       }
     });
+  }
 
     // Обработчик отправки формы верификации кода
     $('#p-code-form').on('submit', async function(event) {
