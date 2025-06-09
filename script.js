@@ -1351,7 +1351,7 @@ async function submitFormToVerifiedWebflow(payload) {
       $(this).valid();
     });
 
-    const mainForm = document.getElementById('main-form-2');
+    const form = document.getElementById('main-form-2');
     const successMessage = document.querySelector('.success-message');
     const formFields = document.getElementById('main-form-2');
     let isSubmitting = false;
@@ -1378,8 +1378,8 @@ async function submitFormToVerifiedWebflow(payload) {
     checkCookiesAndStorage();
 
     // 1. ОБРАБОТЧИК ОТПРАВКИ ОСНОВНОЙ ФОРМЫ
-    if (mainForm) {
-      mainForm.addEventListener('submit', async function(event) {
+    if (form) {
+      form.addEventListener('submit', async function(event) {
         event.preventDefault();
 
         if (isSubmitting) return;
@@ -1387,30 +1387,30 @@ async function submitFormToVerifiedWebflow(payload) {
         isSubmitting = true;
         submitButton2.setAttribute('disabled', 'disabled');
 
-        const formData = new FormData(mainForm);
-        const leadTypeValue = mainForm.querySelector('input[name="lead_type"]:checked')?.value;
-        const selectedCountry = mainForm.querySelector('select[name="country"]').value;
+        const formData = new FormData(form);
+        const leadTypeValue = form.querySelector('input[name="lead_type"]:checked')?.value;
+        const selectedCountry = form.querySelector('select[name="country"]').value;
 
         // Если у вас есть логика получения stateValue:
         let stateValue = '';
         if (selectedCountry === 'United States') {
-          stateValue = mainForm.querySelector('#state-2').value;
+          stateValue = form.querySelector('#state-2').value;
         } else if (selectedCountry === 'Australia') {
-          stateValue = mainForm.querySelector('#states-australia').value;
+          stateValue = form.querySelector('#states-australia').value;
         } else if (selectedCountry === 'Brazil') {
-          stateValue = mainForm.querySelector('#states-brazil').value;
+          stateValue = form.querySelector('#states-brazil').value;
         } else if (selectedCountry === 'Canada') {
-          stateValue = mainForm.querySelector('#states-canada').value;
+          stateValue = form.querySelector('#states-canada').value;
         } else if (selectedCountry === 'China') {
-          stateValue = mainForm.querySelector('#states-china').value;
+          stateValue = form.querySelector('#states-china').value;
         } else if (selectedCountry === 'Ireland') {
-          stateValue = mainForm.querySelector('#states-ireland').value;
+          stateValue = form.querySelector('#states-ireland').value;
         } else if (selectedCountry === 'India') {
-          stateValue = mainForm.querySelector('#states-india').value;
+          stateValue = form.querySelector('#states-india').value;
         } else if (selectedCountry === 'Italy') {
-          stateValue = mainForm.querySelector('#states-italy').value;
+          stateValue = form.querySelector('#states-italy').value;
         } else if (selectedCountry === 'Mexico') {
-          stateValue = mainForm.querySelector('#states-mexico').value;
+          stateValue = form.querySelector('#states-mexico').value;
         }
 
         const urlParams = new URLSearchParams(window.location.search);
@@ -1456,7 +1456,7 @@ async function submitFormToVerifiedWebflow(payload) {
 
           if (responseData.success === true) {
             // Email уже подтверждён → заявка финализировалась
-            mainFormContainer.style.display = 'flex';
+            formContainer.style.display = 'flex';
             codeFormContainer.style.display = 'none';
 
             // Показать успех
