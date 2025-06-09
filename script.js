@@ -535,7 +535,7 @@ document.addEventListener('DOMContentLoaded', function() {
           country: formData.get('country'),
           state: stateValue || null,
           href: window.location.href,
-          page: 'best-storage-for-veeam',
+          page: window.location.pathname.substring(1),
           cookie: {
             _ga: getCookieValue('_ga'),
             c_of__ga: getCookieValue('c_of__ga'),
@@ -736,7 +736,7 @@ if (pResendCodeButton) {
             country: selectedCountry,
             state: stateValue || null,
             href: window.location.href,
-            page: 'best-storage-for-veeam',
+            page: window.location.pathname.substring(1),
         };
 
         if (selectedCountry !== 'United States' && !stateValue) {
@@ -1502,7 +1502,7 @@ const countryCodeMap = {
 				country: formData.get('country'),
 				state: stateValue || null,
 				href: window.location.href,
-				page: 'best-storage-for-veeam',
+				page: window.location.pathname.substring(1),
 				cookie: {
 					_ga: getCookieValue('_ga'),
 					c_of__ga: getCookieValue('c_of__ga'),
