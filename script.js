@@ -686,42 +686,86 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
 
-    // 4. ПОВТОРНАЯ ОТПРАВКА КОДА
-    const pResendCodeButton = document.getElementById('p-resend-code');
-    if (pResendCodeButton) {
-      pResendCodeButton.addEventListener('click', async function (event) {
+// 4. ПОВТОРНАЯ ОТПРАВКА КОДА
+const pResendCodeButton = document.getElementById('p-resend-code');
+if (pResendCodeButton) {
+    pResendCodeButton.addEventListener('click', async function (event) {
         event.preventDefault();
-        const email = document.getElementById('p-email').value.trim();
-        if (!email) {
-          alert('Email is missing. Please fill in the email field in the previous step.');
-          return;
+
+        // Получаем данные из основной формы
+        const mainForm = document.getElementById('p-main-form');
+        if (!mainForm) {
+            alert('Error: Main form not found.');
+            return;
         }
+        const formData = new FormData(mainForm);
+        const email = formData.get('email');
+
+        if (!email) {
+            alert('Email is missing. Please fill in the email field in the previous step.');
+            return;
+        }
+
+        // Блокируем кнопку на время отправки
         pResendCodeButton.disabled = true;
         pResendCodeButton.textContent = 'Please wait...';
         setTimeout(() => {
-          pResendCodeButton.disabled = false;
-          pResendCodeButton.textContent = 'Resend Code';
-        }, 30000);
-        try {
-          const response = await fetch('https://of-web-api.objectfirst.com/api/application/verified-webflow', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email }),
-            credentials: 'include',
-          });
-          const result = await response.json();
-          if (response.ok) {
-            alert('A new confirmation code has been sent to your email.');
-          } else {
-            console.error('Error resending code:', result);
-            alert(result.message || 'Failed to resend the code. Please try again.');
-          }
-        } catch (error) {
-          console.error('Error:', error);
-          alert('An error occurred while resending the code. Please try again later.');
+            pResendCodeButton.disabled = false;
+            pResendCodeButton.textContent = 'Resend Code';
+        }, 30000); // Тайм-аут 30 секунд
+
+        // Собираем ВСЕ данные из формы, а не только email
+        const leadTypeValue = formData.get('lead_type') || '';
+        const selectedCountry = formData.get('country');
+        let stateValue = '';
+        if (selectedCountry === 'United States') stateValue = mainForm.querySelector('#p-state')?.value;
+        else if (selectedCountry === 'Australia') stateValue = mainForm.querySelector('#p-states-australia')?.value;
+        else if (selectedCountry === 'Brazil') stateValue = mainForm.querySelector('#p-states-brazil')?.value;
+        else if (selectedCountry === 'Canada') stateValue = mainForm.querySelector('#p-states-canada')?.value;
+        else if (selectedCountry === 'China') stateValue = mainForm.querySelector('#p-states-china')?.value;
+        else if (selectedCountry === 'Ireland') stateValue = mainForm.querySelector('#p-states-ireland')?.value;
+        else if (selectedCountry === 'India') stateValue = mainForm.querySelector('#p-states-india')?.value;
+        else if (selectedCountry === 'Italy') stateValue = mainForm.querySelector('#p-states-italy')?.value;
+        else if (selectedCountry === 'Mexico') stateValue = mainForm.querySelector('#p-states-mexico')?.value;
+
+        const dataToSend = {
+            full_name: formData.get('full-name'),
+            email: email,
+            company: formData.get('company'),
+            lead_type: leadTypeValue,
+            country: selectedCountry,
+            state: stateValue || null,
+            href: window.location.href,
+            page: 'best-storage-for-veeam',
+        };
+
+        if (selectedCountry !== 'United States' && !stateValue) {
+            delete dataToSend.state;
         }
-      });
-    }
+        
+        try {
+            // Отправляем ПОЛНЫЕ данные, как при первой отправке
+            const response = await fetch('https://of-web-api.objectfirst.com/api/application/verified-webflow', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'locale': popupLocaleHeader },
+                body: JSON.stringify(dataToSend),
+                credentials: 'include',
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                alert('A new confirmation code has been sent to your email.');
+            } else {
+                console.error('Error resending code:', result);
+                alert(result.message || 'Failed to resend the code. Please try again.');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred while resending the code. Please try again later.');
+        }
+    });
+}
 });
 
 	// Переменные для полей формы
@@ -1649,43 +1693,66 @@ const countryCodeMap = {
 		}
 	});
 
-	// 4. Пример «Resend Code» (если есть такая кнопка)
-	const resendCodeButton = document.getElementById('resend-code');
-	resendCodeButton.addEventListener('click', async function (event) {
-		event.preventDefault();
+	// 4. ПОВТОРНАЯ ОТПРАВКА КОДА (ИСПРАВЛЕНО ДЛЯ ВТОРОЙ ФОРМЫ)
+const resendCodeButton = document.getElementById('resend-code'); // Убедитесь, что ID кнопки правильный
+if (resendCodeButton) {
+    resendCodeButton.addEventListener('click', async function (event) {
+        event.preventDefault();
 
-		const email = document.getElementById('email-2').value.trim();
-		if (!email) {
-			alert('Email is missing. Please fill in the email field in the previous step.');
-			return;
-		}
+        // Получаем данные из второй основной формы
+        const mainForm = document.getElementById('main-form-2');
+        if (!mainForm) {
+            alert('Error: Main form #2 not found.');
+            return;
+        }
+        const formData = new FormData(mainForm);
+        const email = formData.get('email'); // Убедитесь, что у поля email есть name="email"
 
-		resendCodeButton.disabled = true;
-		resendCodeButton.textContent = 'Please wait...';
+        if (!email) {
+            alert('Email is missing. Please fill in the email field in the previous step.');
+            return;
+        }
 
-		setTimeout(() => {
-			resendCodeButton.disabled = false;
-			resendCodeButton.textContent = 'Resend Code';
-		}, 30000);
+        resendCodeButton.disabled = true;
+        resendCodeButton.textContent = 'Please wait...';
+        setTimeout(() => {
+            resendCodeButton.disabled = false;
+            resendCodeButton.textContent = 'Resend Code';
+        }, 30000);
 
-		try {
-			const response = await fetch('https://of-web-api.objectfirst.com/api/application/verified-webflow', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ email }),
-				credentials: 'include',
-			});
+        // Собираем ВСЕ данные из второй формы
+        const dataToSend = {
+            firstname: formData.get('firstname'),
+            lastname: formData.get('lastname'),
+            email: email,
+            job_title: formData.get('job_title'),
+            company: formData.get('company'),
+            phone: iti.getNumber(), // Если телефон используется во второй форме
+            lead_type: formData.get('lead_type') || '',
+            country: formData.get('country'),
+            // ... и так далее, соберите все поля, как в основном обработчике отправки второй формы
+        };
+        
+        try {
+            // Отправляем ПОЛНЫЕ данные
+            const response = await fetch('https://of-web-api.objectfirst.com/api/application/verified-webflow', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'locale': localeHeader }, // Используйте localeHeader для второй формы
+                body: JSON.stringify(dataToSend),
+                credentials: 'include',
+            });
 
-			const result = await response.json();
+            const result = await response.json();
 
-			if (response.ok) {
-				alert('A new confirmation code has been sent to your email.');
-			} else {
-				console.error('Error resending code:', result);
-				alert(result.message || 'Failed to resend the code. Please try again.');
-			}
-		} catch (error) {
-			console.error('Error:', error);
-			alert('An error occurred while resending the code. Please try again later.');
-		}
-	});
+            if (response.ok) {
+                alert('A new confirmation code has been sent to your email.');
+            } else {
+                console.error('Error resending code:', result);
+                alert(result.message || 'Failed to resend the code. Please try again.');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred while resending the code. Please try again later.');
+        }
+    });
+}
