@@ -748,7 +748,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			console.error('An error occurred while submitting the form:', error);
 		} finally {
 			isSubmitting = false;
-			submitButton2.removeAttribute('disabled');
+			pSubmitButton.removeAttribute('disabled');
 		}
 	});
 
