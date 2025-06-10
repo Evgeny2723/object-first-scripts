@@ -766,6 +766,7 @@ if (pResendCodeButton) {
         }
     });
 }
+	});
 	
 	// Переменные для полей формы
 	const firstNameInput = document.getElementById('First-Name');
@@ -1562,4 +1563,3 @@ if (resendCodeButton) {
         }
     });
 }
-});
