@@ -766,8 +766,7 @@ if (pResendCodeButton) {
         }
     });
 }
-});
-
+	
 	// Переменные для полей формы
 	const firstNameInput = document.getElementById('First-Name');
 	const lastNameInput = document.getElementById('Last-Name');
@@ -788,7 +787,7 @@ if (pResendCodeButton) {
 	const stateSelect2 = document.getElementById('state-2');
 	const checkboxField = document.querySelector('.checkbox-field');
 	const checkbox = document.querySelector('.checkbox-field input[type="checkbox"]');
-	const submitButton2 = document.getElementById('submit-2');
+	const submitButton = document.querySelector('#submit, #submit-2');
 	const submitCode = document.getElementById('submit-code');
 	const form2 = document.getElementById('main-form-2');
 	const formCode = document.getElementById('code-form');
@@ -798,199 +797,6 @@ if (pResendCodeButton) {
 	const emailDisplay = document.getElementById('email-display');
 
 	codeFormContainer.style.display = 'none';
-
-const countryCodeMap = {
-      "Australia": "AU",
-      "Austria": "AT",
-      "Azerbaijan": "AZ",
-      "Albania": "AL",
-      "Algeria": "DZ",
-      "Angola": "AO",
-      "Andorra": "AD",
-      "Antigua and Barbuda": "AG",
-      "Argentina": "AR",
-      "Armenia": "AM",
-      "Afghanistan": "AF",
-      "Bahamas": "BS",
-      "Bangladesh": "BD",
-      "Barbados": "BB",
-      "Bahrain": "BH",
-      "Belarus": "BY",
-      "Belize": "BZ",
-      "Belgium": "BE",
-      "Benin": "BJ",
-      "Bulgaria": "BG",
-      "Bolivia": "BO",
-      "Bosnia and Herzegovina": "BA",
-      "Botswana": "BW",
-      "Brazil": "BR",
-      "Brunei Darussalam": "BN",
-      "Burkina Faso": "BF",
-      "Burundi": "BI",
-      "Bhutan": "BT",
-      "Vanuatu": "VU",
-      "Hungary": "HU",
-      "Venezuela": "VE",
-      "Vietnam": "VN",
-      "Gabon": "GA",
-      "Haiti": "HT",
-      "Guyana": "GY",
-      "Gambia": "GM",
-      "Ghana": "GH",
-      "Guatemala": "GT",
-      "Guinea": "GN",
-      "Guinea-Bissau": "GW",
-      "Germany": "DE",
-      "Honduras": "HN",
-      "Grenada": "GD",
-      "Greece": "GR",
-      "Georgia": "GE",
-      "Denmark": "DK",
-      "Congo, Democratic Republic of the": "CD",
-      "Djibouti": "DJ",
-      "Dominica": "DM",
-      "Dominican Republic": "DO",
-      "Egypt": "EG",
-      "Zambia": "ZM",
-      "Zimbabwe": "ZW",
-      "Israel": "IL",
-      "India": "IN",
-      "Indonesia": "ID",
-      "Jordan": "JO",
-      "Iraq": "IQ",
-      "Iran": "IR",
-      "Ireland": "IE",
-      "Iceland": "IS",
-      "Spain": "ES",
-      "Italy": "IT",
-      "Yemen": "YE",
-      "Cabo Verde": "CV",
-      "Kazakhstan": "KZ",
-      "Cambodia": "KH",
-      "Cameroon": "CM",
-      "Canada": "CA",
-      "Qatar": "QA",
-      "Kenya": "KE",
-      "Cyprus": "CY",
-      "Kiribati": "KI",
-      "China": "CN",
-      "Colombia": "CO",
-      "Comoros": "KM",
-      "Congo": "CG",
-      "North Korea": "KP",
-      "Costa Rica": "CR",
-      "Côte d'Ivoire": "CI",
-      "Cuba": "CU",
-      "Kuwait": "KW",
-      "Kyrgyzstan": "KG",
-      "Lao People's Democratic Republic": "LA",
-      "Latvia": "LV",
-      "Lesotho": "LS",
-      "Liberia": "LR",
-      "Lebanon": "LB",
-      "Libya": "LY",
-      "Lithuania": "LT",
-      "Liechtenstein": "LI",
-      "Luxembourg": "LU",
-      "Mauritius": "MU",
-      "Mauritania": "MR",
-      "Madagascar": "MG",
-      "Malawi": "MW",
-      "Malaysia": "MY",
-      "Mali": "ML",
-      "Maldives": "MV",
-      "Malta": "MT",
-      "Morocco": "MA",
-      "Marshall Islands": "MH",
-      "Mexico": "MX",
-      "Mozambique": "MZ",
-      "Monaco": "MC",
-      "Mongolia": "MN",
-      "Myanmar": "MM",
-      "Namibia": "NA",
-      "Nauru": "NR",
-      "Nepal": "NP",
-      "Niger": "NE",
-      "Nigeria": "NG",
-      "Netherlands": "NL",
-      "Nicaragua": "NI",
-      "Niue": "NU",
-      "New Zealand": "NZ",
-      "Norway": "NO",
-      "Tanzania, United Republic of": "TZ",
-      "United Arab Emirates": "AE",
-      "Oman": "OM",
-      "Cook Islands": "CK",
-      "Pakistan": "PK",
-      "Panama": "PA",
-      "Papua New Guinea": "PG",
-      "Paraguay": "PY",
-      "Peru": "PE",
-      "Poland": "PL",
-      "Portugal": "PT",
-      "Korea, Republic of": "KR",
-      "Moldova, Republic of": "MD",
-      "Russian Federation": "RU",
-      "Rwanda": "RW",
-      "Romania": "RO",
-      "El Salvador": "SV",
-      "Samoa": "WS",
-      "San Marino": "SM",
-      "Sao Tome and Principe": "ST",
-      "Saudi Arabia": "SA",
-      "Holy See (Vatican City State)": "VA",
-      "North Macedonia": "MK",
-      "Seychelles": "SC",
-      "Senegal": "SN",
-      "Saint Vincent and the Grenadines": "VC",
-      "Saint Kitts and Nevis": "KN",
-      "Saint Lucia": "LC",
-      "Serbia": "RS",
-      "Singapore": "SG",
-      "Syrian Arab Republic": "SY",
-      "Slovakia": "SK",
-      "Slovenia": "SI",
-      "United Kingdom": "GB",
-      "United States": "US",
-      "Solomon Islands": "SB",
-      "Somalia": "SO",
-      "Sudan": "SD",
-      "Suriname": "SR",
-      "Sierra Leone": "SL",
-      "Tajikistan": "TJ",
-      "Thailand": "TH",
-      "Timor-Leste": "TL",
-      "Togo": "TG",
-      "Tonga": "TO",
-      "Trinidad and Tobago": "TT",
-      "Tuvalu": "TV",
-      "Tunisia": "TN",
-      "Turkmenistan": "TM",
-      "Turkey": "TR",
-      "Uganda": "UG",
-      "Uzbekistan": "UZ",
-      "Ukraine": "UA",
-      "Uruguay": "UY",
-      "Fiji": "FJ",
-      "Philippines": "PH",
-      "Finland": "FI",
-      "France": "FR",
-      "Croatia": "HR",
-      "Central African Republic": "CF",
-      "Chad": "TD",
-      "Montenegro": "ME",
-      "Czech Republic": "CZ",
-      "Chile": "CL",
-      "Switzerland": "CH",
-      "Sweden": "SE",
-      "Sri Lanka": "LK",
-      "Ecuador": "EC",
-      "Equatorial Guinea": "GQ",
-      "Eritrea": "ER",
-      "Eswatini": "SZ",
-      "Estonia": "EE",
-      "Ethiopia": "ET"
-    };
 
 	// Обработка изменения состояния меток полей
 	function handleLabel(input) {
@@ -1355,7 +1161,7 @@ const countryCodeMap = {
 		}
 
 		// Использование функции для всех кнопок
-		toggleSubmitButton('#submit-2', isFormValid && isCheckboxRequirementMet);
+		toggleSubmitButton('#submit, #submit-2', isFormValid && isCheckboxRequirementMet);
 		toggleSubmitButton('#submit-code', isFormCodeValid);
 	}
 
@@ -1389,7 +1195,7 @@ const countryCodeMap = {
 	});
 
 	// Изначально деактивируем кнопку отправки
-	$('#submit-2').attr('disabled', 'disabled');
+	$('#submit, #submit-2').attr('disabled', 'disabled');
 	$('#submit-code').attr('disabled', 'disabled');
 
 	// Функция добавления placeholder для поиска
@@ -1455,7 +1261,9 @@ const countryCodeMap = {
 			if (isSubmitting) return;
 
 			isSubmitting = true;
-			submitButton2.setAttribute('disabled', 'disabled');
+			if (submitButton) {
+				submitButton.setAttribute('disabled', 'disabled');
+			}
 
 			const formData = new FormData(form);
 			const leadTypeValue = form.querySelector('input[name="lead_type"]:checked')?.value;
@@ -1580,7 +1388,9 @@ const countryCodeMap = {
 				if (formFields) formFields.style.display = 'flex';
 			} finally {
 				isSubmitting = false;
-				submitButton2.removeAttribute('disabled');
+				if (submitButton) {
+					submitButton.removeAttribute('disabled');
+				}
 			}
 		});
 	}
@@ -1756,3 +1566,4 @@ if (resendCodeButton) {
         }
     });
 }
+});
