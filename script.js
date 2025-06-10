@@ -787,7 +787,7 @@ if (pResendCodeButton) {
 	const stateSelect2 = document.getElementById('state-2');
 	const checkboxField = document.querySelector('.checkbox-field');
 	const checkbox = document.querySelector('.checkbox-field input[type="checkbox"]');
-	const submitButton = document.querySelector('#submit, #submit-2');
+	const submitButton2 = document.getElementById('submit-2');
 	const submitCode = document.getElementById('submit-code');
 	const form2 = document.getElementById('main-form-2');
 	const formCode = document.getElementById('code-form');
@@ -1161,7 +1161,7 @@ if (pResendCodeButton) {
 		}
 
 		// Использование функции для всех кнопок
-		toggleSubmitButton('#submit, #submit-2', isFormValid && isCheckboxRequirementMet);
+		toggleSubmitButton('#submit-2', isFormValid && isCheckboxRequirementMet);
 		toggleSubmitButton('#submit-code', isFormCodeValid);
 	}
 
@@ -1195,7 +1195,7 @@ if (pResendCodeButton) {
 	});
 
 	// Изначально деактивируем кнопку отправки
-	$('#submit, #submit-2').attr('disabled', 'disabled');
+	$('#submit-2').attr('disabled', 'disabled');
 	$('#submit-code').attr('disabled', 'disabled');
 
 	// Функция добавления placeholder для поиска
@@ -1261,9 +1261,7 @@ if (pResendCodeButton) {
 			if (isSubmitting) return;
 
 			isSubmitting = true;
-			if (submitButton) {
-				submitButton.setAttribute('disabled', 'disabled');
-			}
+			submitButton2.setAttribute('disabled', 'disabled');
 
 			const formData = new FormData(form);
 			const leadTypeValue = form.querySelector('input[name="lead_type"]:checked')?.value;
@@ -1388,9 +1386,7 @@ if (pResendCodeButton) {
 				if (formFields) formFields.style.display = 'flex';
 			} finally {
 				isSubmitting = false;
-				if (submitButton) {
-					submitButton.removeAttribute('disabled');
-				}
+				submitButton2.removeAttribute('disabled');
 			}
 		});
 	}
