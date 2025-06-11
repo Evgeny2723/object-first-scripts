@@ -788,7 +788,7 @@ if (pResendCodeButton) {
 	const stateSelect2 = document.getElementById('state-2');
 	const checkboxField = document.querySelector('.checkbox-field');
 	const checkbox = document.querySelector('.checkbox-field input[type="checkbox"]');
-	const submitButton2 = document.getElementById('submit-2');
+	const submitButton = document.querySelector('#submit, #submit-2');
 	const submitCode = document.getElementById('submit-code');
 	const form2 = document.getElementById('main-form-2');
 	const formCode = document.getElementById('code-form');
@@ -1355,7 +1355,7 @@ const countryCodeMap = {
 		}
 
 		// Использование функции для всех кнопок
-		toggleSubmitButton('#submit-2', isFormValid && isCheckboxRequirementMet);
+		toggleSubmitButton('#submit, #submit-2', isFormValid && isCheckboxRequirementMet);
 		toggleSubmitButton('#submit-code', isFormCodeValid);
 	}
 
@@ -1389,7 +1389,7 @@ const countryCodeMap = {
 	});
 
 	// Изначально деактивируем кнопку отправки
-	$('#submit-2').attr('disabled', 'disabled');
+	$('#submit, #submit-2').attr('disabled', 'disabled');
 	$('#submit-code').attr('disabled', 'disabled');
 
 	// Функция добавления placeholder для поиска
@@ -1455,7 +1455,9 @@ const countryCodeMap = {
 			if (isSubmitting) return;
 
 			isSubmitting = true;
-			submitButton2.setAttribute('disabled', 'disabled');
+			if (submitButton) {
+    				submitButton.setAttribute('disabled', 'disabled');
+			}
 
 			const formData = new FormData(form);
 			const leadTypeValue = form.querySelector('input[name="lead_type"]:checked')?.value;
@@ -1580,7 +1582,9 @@ const countryCodeMap = {
 				if (formFields) formFields.style.display = 'flex';
 			} finally {
 				isSubmitting = false;
-				submitButton2.removeAttribute('disabled');
+				if (submitButton) {
+   		 			submitButton.setAttribute('disabled', 'disabled');
+				}
 			}
 		});
 	}
