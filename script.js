@@ -553,7 +553,7 @@
 
         try {
           let userId = getCookieValue('user_id') || generateUserId();
-          document.cookie = `userId=${userId}; path=/; max-age=31536000`;
+          document.cookie = `user_id=${userId}; path=/; max-age=31536000`;
 
           const responseData = await submitFormToVerifiedWebflow(data, userId);
           console.log('Form submitted successfully.', responseData);
@@ -1553,7 +1553,7 @@
       try {
         // Отправка данных на наш API verified-webflow
         let userId = getCookieValue('user_id') || generateUserId();
-        document.cookie = `userId=${userId}; path=/; max-age=31536000`;
+        document.cookie = `user_id=${userId}; path=/; max-age=31536000`;
         
         const responseData = await submitFormToVerifiedWebflow(data, userId);
 
