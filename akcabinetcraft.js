@@ -265,19 +265,36 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   
     // Hero Text Animation
-  const textAnimWrapper = document.querySelector('.hero-label__texts');
-  if (textAnimWrapper) {
-    const texts = gsap.utils.toArray('.hero-label__texts .hero-label__text');
+const textAnimWrapper = document.querySelector('.hero-label__texts');
+if (textAnimWrapper) {
+  const texts = gsap.utils.toArray('.hero-label__texts .hero-label__text');
+  
+  if (texts.length > 0) {
     const tl = gsap.timeline({ repeat: -1 });
+
     gsap.set(texts, { y: '100%', opacity: 0 });
     gsap.set(texts[0], { y: '0%', opacity: 1 });
+
     texts.forEach((text, index) => {
-      const nextIndex = (index + 1) % texts.length;
-      const nextText = texts[nextIndex];
-      tl.to(text, { y: '-100%', opacity: 0, duration: 0.5, delay: 2, ease: 'power2.inOut' })
-        .to(nextText, { y: '0%', opacity: 1, duration: 0.5, ease: 'power2.inOut' }, '<');
+      const currentText = texts[index];
+      const nextText = texts[(index + 1) % texts.length];
+
+      tl
+        .to(currentText, {
+          y: '-100%',
+          opacity: 0,
+          duration: 0.5,
+          delay: 2,
+          ease: 'power2.inOut'
+        })
+        .fromTo(nextText, 
+          { y: '100%', opacity: 1 },
+          { y: '0%', duration: 0.5, ease: 'power2.inOut' },
+          '<'
+        );
     });
   }
+}
   
   // --- Form & Validation Logic ---
   // 1. Telegram Submission
