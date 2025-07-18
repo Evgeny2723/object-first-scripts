@@ -263,8 +263,22 @@ document.addEventListener('DOMContentLoaded', function() {
       link.addEventListener('click', () => { if (isOpen) { btn.click(); } });
     });
   }
-
-
+  
+    // Hero Text Animation
+  const textAnimWrapper = document.querySelector('.hero-label__texts');
+  if (textAnimWrapper) {
+    const texts = gsap.utils.toArray('.hero-label__texts .hero-label__text');
+    const tl = gsap.timeline({ repeat: -1 });
+    gsap.set(texts, { y: '100%', opacity: 0 });
+    gsap.set(texts[0], { y: '0%', opacity: 1 });
+    texts.forEach((text, index) => {
+      const nextIndex = (index + 1) % texts.length;
+      const nextText = texts[nextIndex];
+      tl.to(text, { y: '-100%', opacity: 0, duration: 0.5, delay: 2, ease: 'power2.inOut' })
+        .to(nextText, { y: '0%', opacity: 1, duration: 0.5, ease: 'power2.inOut' }, '<');
+    });
+  }
+  
   // --- Form & Validation Logic ---
   // 1. Telegram Submission
   function sendToTelegram(message, form) {
