@@ -271,8 +271,7 @@ if (textAnimWrapper) {
 
   // Анимация запустится только если текста больше одного
   if (texts.length > 1) {
-    // Создаем таймлайн без повторения (убрали repeat: -1)
-    const tl = gsap.timeline();
+    const tl = gsap.timeline({ repeat: -1 });
 
     // 1. Устанавливаем начальное состояние: первый текст виден, остальные спрятаны
     gsap.set(texts[0], { y: '0%', opacity: 1 });
