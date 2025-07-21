@@ -270,6 +270,7 @@ if (textAnimWrapper) {
   const text = gsap.utils.toArray('.hero-label__texts .hero-label__text');
 
   gsap.set(text[0], { y: '0%', opacity: 1 });
+  gsap.set(text, { y: '100%', opacity: 0 });
   }
 }
   
