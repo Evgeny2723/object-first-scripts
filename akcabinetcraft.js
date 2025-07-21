@@ -268,50 +268,56 @@ document.addEventListener('DOMContentLoaded', function() {
 // Находим ВСЕ контейнеры с анимацией на странице
 const textAnimWrappers = gsap.utils.toArray('.hero-label__texts');
 
-// Для КАЖДОГО найденного контейнера запускаем свою независимую анимацию
+// Для КАЖДОГО найденного контейнера запускаем свою независимую логику
 textAnimWrappers.forEach(wrapper => {
-  // Ищем тексты ТОЛЬКО ВНУТРИ текущего контейнера (wrapper)
   const texts = wrapper.querySelectorAll('.hero-label__text');
 
   if (texts.length > 0) {
-    const tl = gsap.timeline({ repeat: -1 });
-
-    // 1. Изначально прячем ВСЕ тексты внизу.
+    // 1. Изначально прячем ВСЕ тексты, чтобы не было "мелькания"
     gsap.set(texts, { autoAlpha: 0, y: '100%' });
 
-    // 2. САМОЙ ПЕРВОЙ анимацией плавно показываем первый текст.
-    // Это и есть анимация появления при загрузке.
-    tl.to(texts[0], {
+    // 2. Создаем ОСНОВНУЮ зацикленную анимацию, но оборачиваем её в функцию,
+    // чтобы она не запускалась сразу.
+    function startMainLoop() {
+      const loopTl = gsap.timeline({ repeat: -1 });
+
+      // Этот цикл начинается с предположением, что первый текст уже виден.
+      // Он выдержит паузу, а затем начнет смену.
+      texts.forEach((text, index) => {
+        const currentText = texts[index];
+        const nextText = texts[(index + 1) % texts.length];
+
+        loopTl
+          .to({}, { duration: 2 }) // Пауза
+          .to(currentText, {
+            autoAlpha: 0,
+            y: '-100%',
+            duration: 0.5,
+            ease: 'power2.inOut'
+          })
+          .fromTo(nextText, 
+            { y: '100%' },
+            { 
+              autoAlpha: 1,
+              y: '0%', 
+              duration: 0.5, 
+              ease: 'power2.inOut',
+              immediateRender: false 
+            },
+            '<'
+          );
+      });
+    }
+
+    // 3. Создаем и запускаем ОТДЕЛЬНУЮ "вступительную" анимацию.
+    // Когда она завершится (onComplete), она вызовет функцию startMainLoop.
+    const introTl = gsap.timeline({ onComplete: startMainLoop });
+    
+    introTl.to(texts[0], {
       autoAlpha: 1,
       y: '0%',
       duration: 0.5,
       ease: 'power2.out'
-    });
-
-    // 3. Далее запускаем уже знакомый нам цикл смены текстов
-    texts.forEach((text, index) => {
-      const currentText = texts[index];
-      const nextText = texts[(index + 1) % texts.length];
-
-      tl
-        .to({}, { duration: 2 }) // Пауза
-        .to(currentText, {
-          autoAlpha: 0,
-          y: '-100%',
-          duration: 0.5,
-          ease: 'power2.inOut'
-        })
-        .fromTo(nextText, 
-          { y: '100%' },
-          { 
-            autoAlpha: 1,
-            y: '0%', 
-            duration: 0.5, 
-            ease: 'power2.inOut',
-            immediateRender: false 
-          },
-          '<'
-        );
     });
   }
 });
