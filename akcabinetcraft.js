@@ -267,37 +267,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Hero Text Animation
 const textAnimWrapper = document.querySelector('.hero-label__texts');
 if (textAnimWrapper) {
-  const texts = gsap.utils.toArray('.hero-label__texts .hero-label__text');
+  const text = gsap.utils.toArray('.hero-label__texts .hero-label__text');
 
-  if (texts.length > 0 && texts.length >= 3) { // Убедимся, что текста хотя бы 3
-    const tl = gsap.timeline({ repeat: -1 });
-
-    // 1. Устанавливаем начальное состояние: ПЕРВЫЙ текст виден, остальные спрятаны.
-    gsap.set(texts[0], { y: '0%', opacity: 1 });
-    gsap.set(texts.slice(1), { y: '100%', opacity: 0 });
-
-    // 2. Вручную прописываем всю последовательность
-    tl
-      // --- ПЕРЕХОД 1 -> 2 ---
-      // Сначала пауза 2 сек, пока виден первый текст
-      .addLabel("pause1", "+=2")
-      // Затем одновременная смена
-      .to(texts[0], { y: '-100%', opacity: 0, duration: 0.5, ease: 'power2.inOut' })
-      .fromTo(texts[1], { y: '100%', opacity: 0 }, { y: '0%', opacity: 1, duration: 0.5, ease: 'power2.inOut' }, "<")
-
-      // --- ПЕРЕХОД 2 -> 3 ---
-      // Снова пауза 2 сек, пока виден второй текст
-      .addLabel("pause2", "+=2")
-      // Затем одновременная смена
-      .to(texts[1], { y: '-100%', opacity: 0, duration: 0.5, ease: 'power2.inOut' })
-      .fromTo(texts[2], { y: '100%', opacity: 0 }, { y: '0%', opacity: 1, duration: 0.5, ease: 'power2.inOut' }, "<")
-
-      // --- ПЕРЕХОД 3 -> 1 (БЕСШОВНЫЙ) ---
-      // И снова пауза 2 сек, пока виден третий текст
-      .addLabel("pause3", "+=2")
-      // Затем одновременная смена
-      .to(texts[2], { y: '-100%', opacity: 0, duration: 0.5, ease: 'power2.inOut' })
-      .fromTo(texts[0], { y: '100%', opacity: 0 }, { y: '0%', opacity: 1, duration: 0.5, ease: 'power2.inOut' }, "<");
+  gsap.set(text[0], { y: '0%', opacity: 1 });
   }
 }
   
