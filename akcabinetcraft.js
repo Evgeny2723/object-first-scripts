@@ -268,7 +268,7 @@ document.addEventListener('DOMContentLoaded', function() {
 const textAnimWrapper = document.querySelector('.hero-label__texts');
 if (textAnimWrapper) {
   const texts = gsap.utils.toArray('.hero-label__texts .hero-label__text');
-  
+
   if (texts.length > 0) {
     const tl = gsap.timeline({ repeat: -1 });
 
@@ -280,16 +280,19 @@ if (textAnimWrapper) {
       const nextText = texts[(index + 1) % texts.length];
 
       tl
+        // Управляем паузой здесь, говоря таймлайну ждать 2 секунды
+        // перед началом этой анимации.
         .to(currentText, {
           y: '-100%',
           opacity: 0,
           duration: 0.5,
-          delay: 2,
           ease: 'power2.inOut'
-        })
+        }, "+=2")
+
+        // Запускаем появление следующего текста одновременно
         .fromTo(nextText, 
-          { y: '100%', opacity: 1 },
-          { y: '0%', duration: 0.5, ease: 'power2.inOut' },
+          { y: '100%', opacity: 0 },
+          { y: '0%', opacity: 1, duration: 0.5, ease: 'power2.inOut' },
           '<'
         );
     });
