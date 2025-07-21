@@ -267,10 +267,38 @@ document.addEventListener('DOMContentLoaded', function() {
     // Hero Text Animation
 const textAnimWrapper = document.querySelector('.hero-label__texts');
 if (textAnimWrapper) {
-  const text = gsap.utils.toArray('.hero-label__texts .hero-label__text');
+  const texts = gsap.utils.toArray('.hero-label__texts .hero-label__text');
 
-  gsap.set(text[0], { y: '0%', opacity: 1 });
-  gsap.set(text, { y: '100%', opacity: 0 });
+  // Анимация запустится только если текста больше одного
+  if (texts.length > 1) {
+    // Создаем таймлайн без повторения (убрали repeat: -1)
+    const tl = gsap.timeline();
+
+    // 1. Устанавливаем начальное состояние: первый текст виден, остальные спрятаны
+    gsap.set(texts[0], { y: '0%', opacity: 1 });
+    gsap.set(texts.slice(1), { y: '100%', opacity: 0 });
+
+    // 2. Проходим по каждому тексту, чтобы создать переход к следующему,
+    // но не включаем в цикл последний элемент.
+    for (let i = 0; i < texts.length - 1; i++) {
+      const currentText = texts[i];
+      const nextText = texts[i + 1];
+
+      tl
+        // Добавляем паузу в 2 секунды перед каждой сменой
+        .to(currentText, {
+          y: '-100%',
+          opacity: 0,
+          duration: 0.5,
+          ease: 'power2.inOut'
+        }, "+=2")
+        // Одновременно появляется следующий текст
+        .fromTo(nextText, 
+          { y: '100%', opacity: 0 },
+          { y: '0%', opacity: 1, duration: 0.5, ease: 'power2.inOut' },
+          '<'
+        );
+    }
   }
 }
   
