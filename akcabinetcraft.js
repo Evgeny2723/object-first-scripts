@@ -269,35 +269,36 @@ const textAnimWrapper = document.querySelector('.hero-label__texts');
 if (textAnimWrapper) {
   const texts = gsap.utils.toArray('.hero-label__texts .hero-label__text');
 
-  // Анимация запустится только если текста больше одного
+  // Убедимся, что текста достаточно для анимации
   if (texts.length > 1) {
     const tl = gsap.timeline({ repeat: -1 });
 
-    // 1. Устанавливаем начальное состояние: первый текст виден, остальные спрятаны
+    // 1. НАЧАЛЬНОЕ СОСТОЯНИЕ: Первый текст сразу виден.
+    // Это состояние, к которому анимация будет возвращаться при каждом повторе.
     gsap.set(texts[0], { y: '0%', opacity: 1 });
-    gsap.set(texts.slice(1), { y: '100%', opacity: 0 });
+    gsap.set(texts.slice(1), { y: '100%', opacity: 0 }); // Остальные спрятаны внизу
 
-    // 2. Проходим по каждому тексту, чтобы создать переход к следующему,
-    // но не включаем в цикл последний элемент.
-    for (let i = 0; i < texts.length - 1; i++) {
-      const currentText = texts[i];
-      const nextText = texts[i + 1];
+    // 2. ЦИКЛ АНИМАЦИЙ: Проходим по всем элементам, чтобы создать переходы.
+    texts.forEach((text, index) => {
+      const currentText = texts[index];
+      const nextText = texts[(index + 1) % texts.length]; // Это найдет следующий текст, а для последнего вернет первый
 
       tl
-        // Добавляем паузу в 2 секунды перед каждой сменой
+        // 3. ПАУЗА И ПЕРЕХОД:
+        // Сначала ждем 2 секунды, пока текущий текст виден.
+        // Затем одновременно убираем текущий и показываем следующий.
         .to(currentText, {
           y: '-100%',
           opacity: 0,
           duration: 0.5,
           ease: 'power2.inOut'
-        }, "+=2")
-        // Одновременно появляется следующий текст
+        }, "+=2") // Пауза в 2с ПЕРЕД каждой сменой
         .fromTo(nextText, 
-          { y: '100%', opacity: 0 },
+          { y: '100%', opacity: 0 }, // Следующий текст ВСЕГДА появляется снизу
           { y: '0%', opacity: 1, duration: 0.5, ease: 'power2.inOut' },
-          '<'
+          '<' // Запустить одновременно с предыдущей анимацией
         );
-    }
+    });
   }
 }
   
