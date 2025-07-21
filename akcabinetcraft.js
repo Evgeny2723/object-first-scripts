@@ -269,34 +269,47 @@ const textAnimWrapper = document.querySelector('.hero-label__texts');
 if (textAnimWrapper) {
   const texts = gsap.utils.toArray('.hero-label__texts .hero-label__text');
 
-  // Убедимся, что текста достаточно для анимации
-  if (texts.length > 1) {
+  if (texts.length > 0) {
+    // 1. Прячем все тексты и устанавливаем начальную позицию.
+    // Используем autoAlpha для управления и видимостью, и прозрачностью.
+    gsap.set(texts, { autoAlpha: 0, y: '100%' });
+
+    // Создаем таймлайн, который будет повторяться
     const tl = gsap.timeline({ repeat: -1 });
 
-    // 1. НАЧАЛЬНОЕ СОСТОЯНИЕ: Первый текст сразу виден.
-    // Это состояние, к которому анимация будет возвращаться при каждом повторе.
-    gsap.set(texts[0], { y: '0%', opacity: 1 });
-    gsap.set(texts.slice(1), { y: '100%', opacity: 0 }); // Остальные спрятаны внизу
+    // 2. В самом начале таймлайна мы ДЕЛАЕМ ВИДИМЫМ первый текст.
+    // Это решает проблему №1 (пустота при загрузке).
+    tl.set(texts[0], { autoAlpha: 1, y: '0%' });
 
-    // 2. ЦИКЛ АНИМАЦИЙ: Проходим по всем элементам, чтобы создать переходы.
+    // 3. Создаем цикл переходов
     texts.forEach((text, index) => {
       const currentText = texts[index];
-      const nextText = texts[(index + 1) % texts.length]; // Это найдет следующий текст, а для последнего вернет первый
+      const nextText = texts[(index + 1) % texts.length];
 
       tl
-        // 3. ПАУЗА И ПЕРЕХОД:
-        // Сначала ждем 2 секунды, пока текущий текст виден.
-        // Затем одновременно убираем текущий и показываем следующий.
+        // 4. Добавляем паузу, ПОКА текущий текст виден
+        .to({}, { duration: 2 }) // Пустая анимация для создания паузы
+
+        // 5. Анимируем уход текущего текста
         .to(currentText, {
+          autoAlpha: 0,
           y: '-100%',
-          opacity: 0,
           duration: 0.5,
           ease: 'power2.inOut'
-        }, "+=2") // Пауза в 2с ПЕРЕД каждой сменой
+        })
+        
+        // 6. Анимируем появление следующего.
+        // immediateRender: false - это ключ к решению проблемы №2.
         .fromTo(nextText, 
-          { y: '100%', opacity: 0 }, // Следующий текст ВСЕГДА появляется снизу
-          { y: '0%', opacity: 1, duration: 0.5, ease: 'power2.inOut' },
-          '<' // Запустить одновременно с предыдущей анимацией
+          { y: '100%' },
+          { 
+            autoAlpha: 1,
+            y: '0%', 
+            duration: 0.5, 
+            ease: 'power2.inOut',
+            immediateRender: false 
+          },
+          '<'
         );
     });
   }
