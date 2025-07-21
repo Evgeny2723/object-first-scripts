@@ -294,7 +294,7 @@ if (textAnimWrapper) {
         .to(currentText, {
           autoAlpha: 0,
           y: '-100%',
-          duration: 1.5,
+          duration: 1,
           ease: 'power2.0ut'
         })
         
@@ -305,7 +305,7 @@ if (textAnimWrapper) {
           { 
             autoAlpha: 1,
             y: '0%', 
-            duration: 1.5, 
+            duration: 1, 
             ease: 'power2.out',
             immediateRender: false 
           },
