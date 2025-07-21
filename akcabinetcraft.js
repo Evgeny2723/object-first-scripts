@@ -294,8 +294,8 @@ if (textAnimWrapper) {
         .to(currentText, {
           autoAlpha: 0,
           y: '-100%',
-          duration: 0.5,
-          ease: 'power2.inOut'
+          duration: 1.5,
+          ease: 'power2.0ut'
         })
         
         // 6. Анимируем появление следующего.
@@ -305,8 +305,8 @@ if (textAnimWrapper) {
           { 
             autoAlpha: 1,
             y: '0%', 
-            duration: 0.5, 
-            ease: 'power2.inOut',
+            duration: 1.5, 
+            ease: 'power2.out',
             immediateRender: false 
           },
           '<'
