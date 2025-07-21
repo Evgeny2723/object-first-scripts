@@ -265,55 +265,43 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   
     // Hero Text Animation
-const textAnimWrapper = document.querySelector('.hero-label__texts');
-if (textAnimWrapper) {
-  const texts = gsap.utils.toArray('.hero-label__texts .hero-label__text');
+const textAnimWrappers = gsap.utils.toArray('.hero-label__texts');
+
+textAnimWrappers.forEach(wrapper => {
+  const texts = wrapper.querySelectorAll('.hero-label__text');
 
   if (texts.length > 0) {
-    // 1. Прячем все тексты и устанавливаем начальную позицию.
-    // Используем autoAlpha для управления и видимостью, и прозрачностью.
-    gsap.set(texts, { autoAlpha: 0, y: '100%' });
-
-    // Создаем таймлайн, который будет повторяться
     const tl = gsap.timeline({ repeat: -1 });
 
-    // 2. В самом начале таймлайна мы ДЕЛАЕМ ВИДИМЫМ первый текст.
-    // Это решает проблему №1 (пустота при загрузке).
+    gsap.set(texts, { autoAlpha: 0, y: '100%' });
     tl.set(texts[0], { autoAlpha: 1, y: '0%' });
 
-    // 3. Создаем цикл переходов
     texts.forEach((text, index) => {
       const currentText = texts[index];
       const nextText = texts[(index + 1) % texts.length];
 
       tl
-        // 4. Добавляем паузу, ПОКА текущий текст виден
-        .to({}, { duration: 2 }) // Пустая анимация для создания паузы
-
-        // 5. Анимируем уход текущего текста
+        .to({}, { duration: 2 }) // Пауза
         .to(currentText, {
           autoAlpha: 0,
           y: '-100%',
           duration: 1,
-          ease: 'power2.0ut'
+          ease: 'power2.inOut'
         })
-        
-        // 6. Анимируем появление следующего.
-        // immediateRender: false - это ключ к решению проблемы №2.
         .fromTo(nextText, 
           { y: '100%' },
           { 
             autoAlpha: 1,
             y: '0%', 
             duration: 1, 
-            ease: 'power2.out',
+            ease: 'power2.inOut',
             immediateRender: false 
           },
           '<'
         );
     });
   }
-}
+});
   
   // --- Form & Validation Logic ---
   // 1. Telegram Submission
