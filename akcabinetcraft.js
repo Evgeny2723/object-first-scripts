@@ -265,17 +265,30 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   
     // Hero Text Animation
+// Находим ВСЕ контейнеры с анимацией на странице
 const textAnimWrappers = gsap.utils.toArray('.hero-label__texts');
 
+// Для КАЖДОГО найденного контейнера запускаем свою независимую анимацию
 textAnimWrappers.forEach(wrapper => {
+  // Ищем тексты ТОЛЬКО ВНУТРИ текущего контейнера (wrapper)
   const texts = wrapper.querySelectorAll('.hero-label__text');
 
   if (texts.length > 0) {
     const tl = gsap.timeline({ repeat: -1 });
 
+    // 1. Изначально прячем ВСЕ тексты внизу.
     gsap.set(texts, { autoAlpha: 0, y: '100%' });
-    tl.set(texts[0], { autoAlpha: 1, y: '0%' });
 
+    // 2. САМОЙ ПЕРВОЙ анимацией плавно показываем первый текст.
+    // Это и есть анимация появления при загрузке.
+    tl.to(texts[0], {
+      autoAlpha: 1,
+      y: '0%',
+      duration: 0.5,
+      ease: 'power2.out'
+    });
+
+    // 3. Далее запускаем уже знакомый нам цикл смены текстов
     texts.forEach((text, index) => {
       const currentText = texts[index];
       const nextText = texts[(index + 1) % texts.length];
@@ -285,7 +298,7 @@ textAnimWrappers.forEach(wrapper => {
         .to(currentText, {
           autoAlpha: 0,
           y: '-100%',
-          duration: 1,
+          duration: 0.5,
           ease: 'power2.inOut'
         })
         .fromTo(nextText, 
@@ -293,7 +306,7 @@ textAnimWrappers.forEach(wrapper => {
           { 
             autoAlpha: 1,
             y: '0%', 
-            duration: 1, 
+            duration: 0.5, 
             ease: 'power2.inOut',
             immediateRender: false 
           },
