@@ -536,6 +536,7 @@
           state: stateValue || null,
           href: window.location.href,
           page: window.location.pathname.substring(1),
+          ss_anonymous_id: window.segmentstream?.anonymousId?.() ?? '',
           cookie: {
             _ga: getCookieValue('_ga'),
             c_of__ga: getCookieValue('c_of__ga'),
@@ -1535,6 +1536,7 @@
         state: stateValue || null,
         href: window.location.href,
         page: window.location.pathname.substring(1),
+        ss_anonymous_id: window.segmentstream?.anonymousId?.() ?? '',
         cookie: {
           _ga: getCookieValue('_ga'),
           c_of__ga: getCookieValue('c_of__ga'),
