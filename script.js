@@ -528,11 +528,11 @@
 
         // Формируем данные для отправки (поле phone удалено)
         const data = {
-          full_name: formData.get('#p-full-name'),
-          email: formData.get('#p-email'),
-          company: formData.get('#p-company'),
+          full_name: formData.get('Full-Name'),
+          email: formData.get('email'),
+          company: formData.get('company'),
           lead_type: leadTypeValue,
-          country: formData.get('#p-country'),
+          country: formData.get('country'),
           state: stateValue || null,
           href: window.location.href,
           page: window.location.pathname.substring(1),
@@ -750,9 +750,9 @@
         else if (selectedCountry === 'Mexico') stateValue = mainForm.querySelector('#p-states-mexico')?.value;
 
         const dataToSend = {
-          full_name: formData.get('#p-full-name'),
+          full_name: formData.get('Full-Name'),
           email: email,
-          company: formData.get('#p-company'),
+          company: formData.get('company'),
           lead_type: leadTypeValue,
           country: selectedCountry,
           state: stateValue || null,
