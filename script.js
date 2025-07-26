@@ -750,9 +750,9 @@
         else if (selectedCountry === 'Mexico') stateValue = mainForm.querySelector('#p-states-mexico')?.value;
 
         const dataToSend = {
-          full_name: formData.get('full-name'),
+          full_name: formData.get('p-full-name'),
           email: email,
-          company: formData.get('company'),
+          company: formData.get('p-company'),
           lead_type: leadTypeValue,
           country: selectedCountry,
           state: stateValue || null,
