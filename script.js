@@ -528,11 +528,11 @@
 
         // Формируем данные для отправки (поле phone удалено)
         const data = {
-          full_name: formData.get('full-name'),
-          email: formData.get('email'),
-          company: formData.get('company'),
+          full_name: formData.get('p-full-name'),
+          email: formData.get('p-email'),
+          company: formData.get('p-company'),
           lead_type: leadTypeValue,
-          country: formData.get('country'),
+          country: formData.get('p-country'),
           state: stateValue || null,
           href: window.location.href,
           page: window.location.pathname.substring(1),
