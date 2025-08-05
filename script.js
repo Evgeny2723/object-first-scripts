@@ -570,7 +570,7 @@
 
             if (window.dataLayer) {
               window.dataLayer.push({
-                'event': 'whitepaper',
+                'event': 'lead2fa',
                 'role': roleValue,
                 'type': '',
                 'email': data.email,
@@ -690,7 +690,7 @@
 
         if (window.dataLayer) {
           window.dataLayer.push({
-            'event': 'whitepaper',
+            'event': 'lead2fa',
             'role': roleValue,
             'type': '',
             'email': email,
@@ -1575,7 +1575,7 @@
 
           if (window.dataLayer) {
             window.dataLayer.push({
-              'event': 'demo',
+              'event': 'lead2fa',
               'role': roleValue,
               'type': '',
               'email': data.email,
@@ -1725,7 +1725,7 @@
 
       if (window.dataLayer) {
         window.dataLayer.push({
-          'event': 'demo',
+          'event': 'lead2fa',
           'role': roleValue,
           'type': '',
           'email': email,
