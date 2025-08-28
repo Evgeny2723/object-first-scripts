@@ -491,6 +491,28 @@
     const pFormFields = document.getElementById('p-main-form');
     let popupIsSubmitting = false;
 
+    // Функция для разделения полного имени на First Name и Last Name
+    function splitFullName(fullName) {
+      if (!fullName) {
+        return { firstName: '', lastName: '' }; // Возвращаем пустые значения, если имя не указано
+      }
+
+      const nameParts = fullName.trim().split(' ');
+      const firstName = nameParts[0] || '';
+      const lastName = nameParts.slice(1).join(' ') || ''; // Объединяем все оставшиеся слова как Last Name
+
+      // Если указано только одно слово, дублируем его в First Name и Last Name
+      if (nameParts.length === 1) {
+        return { firstName, lastName: firstName };
+      }
+
+      // Если в имени больше двух слов, не разрешаем третий элемент
+      if (nameParts.length > 2) {
+        return { firstName, lastName: nameParts[1] || '' }; // Берем только первые два слова
+      }
+      return { firstName, lastName };
+    }
+
     function generateUserId() {
       return 'user_' + Math.random().toString(36).substr(2, 9);
     }
@@ -510,6 +532,10 @@
         pSubmitButton.setAttribute('disabled', 'disabled');
 
         const formData = new FormData(pForm);
+        // Проверка наличия значения в поле Full Name
+        const fullName = formData.get('Full-Name');
+        const { firstName, lastName } = splitFullName(fullName);
+        
         const leadTypeValue = pForm.querySelector('input[name="lead_type"]:checked')?.value;
         const selectedCountry = pForm.querySelector('select[name="country"]').value;
 
@@ -528,7 +554,8 @@
 
         // Формируем данные для отправки (поле phone удалено)
         const data = {
-          full_name: formData.get('Full-Name'),
+          'firstname': firstName,
+          'lastname': lastName,
           email: formData.get('email'),
           company: formData.get('company'),
           lead_type: leadTypeValue,
@@ -721,6 +748,9 @@
         }
         const formData = new FormData(mainForm);
         const email = formData.get('email');
+        // Проверка наличия значения в поле Full Name
+        const fullName = formData.get('Full-Name');
+        const { firstName, lastName } = splitFullName(fullName);
 
         if (!email) {
           alert('Email is missing. Please fill in the email field in the previous step.');
@@ -750,7 +780,8 @@
         else if (selectedCountry === 'Mexico') stateValue = mainForm.querySelector('#p-states-mexico')?.value;
 
         const dataToSend = {
-          full_name: formData.get('Full-Name'),
+          'firstname': firstName,
+          'lastname': lastName,
           email: email,
           company: formData.get('company'),
           lead_type: leadTypeValue,
