@@ -24,6 +24,7 @@
     const pCodeFormContainer = document.getElementById('p-code-form-container');
     const pMainFormContainer = document.getElementById('p-main-form-container');
     const pEmailDisplay = document.getElementById('p-email-display');
+    const selfAttributionInput = document.getElementById('p-self-attribution');
 
     pCodeFormContainer.style.display = 'none';
     const countryCodeMap = {
@@ -248,7 +249,7 @@
     }
 
     // Применение меток ко всем полям (поле phone удалено из списка)
-    [fullNameInput, pEmailInput, pCompanyInput, pCodeInput].forEach(input => {
+    [fullNameInput, pEmailInput, pCompanyInput, pCodeInput, selfAttributionInput].forEach(input => {
       handleLabel(input);
     });
 
@@ -379,6 +380,7 @@
         'full-name': { required: true, maxlength: 100, noSpacesOnly: true },
         email: { required: true, maxlength: 50, email: true, corporate: true, validEmailChars: true },
         company: { required: true, maxlength: 50, noSpacesOnly: true },
+        'self-attribution': { maxlength: 50 },
         agreement: {
           required: function(element) {
             return $('#p-country').val() !== 'United States' && $(element).is(':visible');
@@ -388,7 +390,8 @@
       messages: {
         'full-name': { required: "This field is required", maxlength: "Full Name must be at most 100 characters" },
         email: { required: "This field is required", maxlength: "Email must be at most 50 characters", email: "Invalid email address", corporate: "Please enter a valid corporate email address (e.g., yourname@company.com). Personal email addresses (e.g., Gmail, Yahoo) are not accepted." },
-        company: { required: "This field is required", maxlength: "Company must be at most 50 characters" }
+        company: { required: "This field is required", maxlength: "Company must be at most 50 characters" },
+        'self-attribution': { maxlength: "This field should contain no more than 50 characters" }
       },
       errorPlacement: function(error, element) { if ($(element).data('modified')) { error.appendTo(element.closest(".field-row")); } },
       highlight: function(element) { if ($(element).data('modified')) { $(element).css('border', '1px solid #c50006'); } },
@@ -561,6 +564,7 @@
           lead_type: leadTypeValue,
           country: formData.get('country'),
           state: stateValue || null,
+          self_attribution: formData.get('self-attribution'),
           href: window.location.href,
           page: window.location.pathname.substring(1),
           ss_anonymous_id: window.segmentstream?.anonymousId?.() ?? '',
@@ -858,6 +862,7 @@
   const codeFormContainer = document.getElementById('code-form-container');
   const mainFormContainer = document.getElementById('main-form-container');
   const emailDisplay = document.getElementById('email-display');
+  const selfAttributionInput = document.getElementById('self-attribution');
 
   codeFormContainer.style.display = 'none';
 
@@ -1085,7 +1090,7 @@
   }
 
   // Применение меток ко всем полям
-  [firstNameInput, lastNameInput, jobTitleInput, emailInput2, companyInput2, phoneInput, codeInput].forEach(input => {
+  [firstNameInput, lastNameInput, jobTitleInput, emailInput2, companyInput2, phoneInput, codeInput, selfAttributionInput].forEach(input => {
     handleLabel(input);
   });
 
@@ -1316,6 +1321,9 @@
       phone: {
         phoneCustom: true
       },
+      'self-attribution': {
+          maxlength: 50
+        },
       agreement: {
         required: function (element) {
           const selectedCountry = $('#country-2').val();
@@ -1348,7 +1356,10 @@
       },
       phone: {
         phoneCustom: "Phone number is invalid. Please add your country code, area code and phone number. Your phone number can contain numbers, spaces and these special characters: ( ) - # +",
-      }
+      },
+      'self-attribution': {
+          maxlength: "This field should contain no more than 50 characters"
+        }
     },
     errorPlacement: function (error, element) {
       if ($(element).data('modified')) {
@@ -1565,6 +1576,7 @@
         lead_type: leadTypeValue,
         country: formData.get('country'),
         state: stateValue || null,
+        self_attribution: formData.get('self-attribution'),
         href: window.location.href,
         page: window.location.pathname.substring(1),
         ss_anonymous_id: window.segmentstream?.anonymousId?.() ?? '',
