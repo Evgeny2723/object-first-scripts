@@ -783,7 +783,7 @@
     const stateSelect2 = document.getElementById('state-2');
     const checkboxField = document.querySelector('.checkbox-field');
     const checkbox = document.querySelector('.checkbox-field input[type="checkbox"]');
-    const submitButton2 = document.getElementById('submit');
+    const submitButton = document.querySelector('#submit, #submit-2');
     const form2 = document.getElementById('main-form-2');
     const phoneInput = document.getElementById('phone');
     const selfAttributionInput = document.getElementById('self-attribution');
@@ -1098,9 +1098,9 @@
       const isCheckboxRequirementMet = selectedCountry === 'United States' || isCheckboxChecked; // Если выбрана US, игнорируем состояние чекбокса
 
       if (isFormValid && isCheckboxRequirementMet) {
-        $('#submit').removeAttr('disabled'); // Активируем кнопку, если форма валидна и условие чекбокса выполнено
+        $('#submit, #submit-2').removeAttr('disabled'); // Активируем кнопку, если форма валидна и условие чекбокса выполнено
       } else {
-        $('#submit').attr('disabled', 'disabled'); // Деактивируем кнопку, если не выполнены условия
+        $('#submit, #submit-2').attr('disabled', 'disabled'); // Деактивируем кнопку, если не выполнены условия
       }
     }
 
@@ -1135,7 +1135,7 @@
     });
 
     // Изначально деактивируем кнопку отправки
-    $('#submit').attr('disabled', 'disabled');
+    $('#submit, #submit-2').attr('disabled', 'disabled');
 
     // Функция добавления placeholder для поиска
     function addPlaceholder() {
@@ -1449,7 +1449,7 @@
           return;
         }
         isSubmitting = true; // Устанавливаем флаг
-        submitButton2.setAttribute('disabled', 'disabled'); // Отключаем кнопку
+        submitButton.setAttribute('disabled', 'disabled'); // Отключаем кнопку
 
         const formData = new FormData(form);
         const confirmEmailValue = formData.get(replaceConfusableChars('confirm-email')) || '';
@@ -1569,7 +1569,7 @@
         } finally {
           // Сброс флага и разблокировка кнопки
           isSubmitting = false;
-          submitButton2.removeAttribute('disabled');
+          submitButton.removeAttribute('disabled');
         }
       });
     }
