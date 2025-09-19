@@ -377,7 +377,7 @@
       onkeyup: function(element) { $(element).data('modified', true); $(element).valid(); },
       onclick: function(element) { if (popupIsFormInitialized) { $(element).valid(); } },
       rules: {
-        'full-name': { required: true, maxlength: 100, noSpacesOnly: true },
+        'Full-Name': { required: true, maxlength: 100, noSpacesOnly: true },
         email: { required: true, maxlength: 50, email: true, corporate: true, validEmailChars: true },
         company: { required: true, maxlength: 50, noSpacesOnly: true },
         'self-attribution': { maxlength: 50 },
@@ -388,7 +388,7 @@
         }
       },
       messages: {
-        'full-name': { required: "This field is required", maxlength: "Full Name must be at most 100 characters" },
+        'Full-Name': { required: "This field is required", maxlength: "Full Name must be at most 100 characters" },
         email: { required: "This field is required", maxlength: "Email must be at most 50 characters", email: "Invalid email address", corporate: "Please enter a valid corporate email address (e.g., yourname@company.com). Personal email addresses (e.g., Gmail, Yahoo) are not accepted." },
         company: { required: "This field is required", maxlength: "Company must be at most 50 characters" },
         'self-attribution': { maxlength: "This field should contain no more than 50 characters" }
