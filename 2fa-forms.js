@@ -1525,6 +1525,8 @@
     form.addEventListener('submit', async function (event) {
       event.preventDefault();
 
+      if (!$(this).valid()) return;
+
       if (isSubmitting) return;
 
       isSubmitting = true;
