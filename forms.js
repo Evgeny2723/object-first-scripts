@@ -1444,8 +1444,8 @@
       form.addEventListener('submit', async function(event) {
         event.preventDefault();
 
-        if (!$(form).valid()) {
-        return;
+        if (!validator.form()) {
+          return;
         }
 
         // Проверка флага отправки
