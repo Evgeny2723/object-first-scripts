@@ -787,7 +787,6 @@
     const form2 = document.getElementById('main-form-2');
     const phoneInput = document.getElementById('phone');
     const selfAttributionInput = document.getElementById('self-attribution');
-    let isSubmitting = false;
 
     // Обработка изменения состояния меток полей
     function handleLabel(input) {
