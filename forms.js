@@ -1444,6 +1444,10 @@
       form.addEventListener('submit', async function(event) {
         event.preventDefault();
 
+        if (!$(form).valid()) {
+        return;
+    }
+
         // Проверка флага отправки
         if (isSubmitting) {
           return;
@@ -1569,7 +1573,7 @@
         } finally {
           // Сброс флага и разблокировка кнопки
           isSubmitting = false;
-          submitButton.removeAttribute('disabled');
+          updateSubmitButtonState();
         }
       });
     }
