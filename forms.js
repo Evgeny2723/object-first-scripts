@@ -1441,8 +1441,13 @@
           console.warn('Honeypot triggered: Decoy link was clicked.');
         });
       }
-      form.addEventListener('submit', async function(event) {
+
+        $('#main-form-2').on('submit', async function(event) {
         event.preventDefault();
+  
+        if (!$(this).valid()) {
+          return;
+        }
         
         // Проверка флага отправки
         if (isSubmitting) {
