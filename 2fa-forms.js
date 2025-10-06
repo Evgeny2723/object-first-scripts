@@ -834,673 +834,537 @@
     }
   });
 
-let formInteractionStartTime = 0;
-let decoyLinkClicked = false;
-function replaceConfusableChars(str) {
-  if (typeof str !== 'string') return str;
-  return str.replace(/e/g, '\u0435').replace(/a/g, '\u0430');
-}
-const firstNameInput = document.getElementById('First-Name');
-const lastNameInput = document.getElementById('Last-Name');
-const jobTitleInput = document.getElementById('Job-title');
-const emailInput2 = document.getElementById('email-2');
-const codeInput = document.getElementById('code');
-const companyInput2 = document.getElementById('company-2');
-const countrySelect2 = document.getElementById('country-2');
-const dropdownAustralia = document.querySelector('.states-australia');
-const dropdownBrazil = document.querySelector('.states-brazil');
-const dropdownCanada = document.querySelector('.states-canada');
-const dropdownChina = document.querySelector('.states-china');
-const dropdownIreland = document.querySelector('.states-ireland');
-const dropdownIndia = document.querySelector('.states-india');
-const dropdownItaly = document.querySelector('.states-italy');
-const dropdownMexico = document.querySelector('.states-mexico');
-const dropdownState2 = document.querySelector('.dropdown-state-2');
-const stateSelect2 = document.getElementById('state-2');
-const checkboxField = document.querySelector('.checkbox-field');
-const checkbox = document.querySelector('.checkbox-field input[type="checkbox"]');
-const submitButton = document.querySelector('#submit, #submit-2');
-const submitCode = document.querySelector('#submit-code-violet, #submit-code');
-const form2 = document.getElementById('main-form-2');
-const formCode = document.getElementById('code-form');
-const phoneInput = document.getElementById('phone');
-const codeFormContainer = document.getElementById('code-form-container');
-const mainFormContainer = document.getElementById('main-form-container');
-const emailDisplay = document.getElementById('email-display');
-const selfAttributionInput = document.getElementById('self-attribution');
-const submitButtonWrapper = document.querySelector('.submit-button-wrapper');
-codeFormContainer.style.display = 'none';
-const countryCodeMap = {
-    "Australia": "AU",
-    "Austria": "AT",
-    "Azerbaijan": "AZ",
-    "Albania": "AL",
-    "Algeria": "DZ",
-    "Angola": "AO",
-    "Andorra": "AD",
-    "Antigua and Barbuda": "AG",
-    "Argentina": "AR",
-    "Armenia": "AM",
-    "Afghanistan": "AF",
-    "Bahamas": "BS",
-    "Bangladesh": "BD",
-    "Barbados": "BB",
-    "Bahrain": "BH",
-    "Belarus": "BY",
-    "Belize": "BZ",
-    "Belgium": "BE",
-    "Benin": "BJ",
-    "Bulgaria": "BG",
-    "Bolivia": "BO",
-    "Bosnia and Herzegovina": "BA",
-    "Botswana": "BW",
-    "Brazil": "BR",
-    "Brunei Darussalam": "BN",
-    "Burkina Faso": "BF",
-    "Burundi": "BI",
-    "Bhutan": "BT",
-    "Vanuatu": "VU",
-    "Hungary": "HU",
-    "Venezuela": "VE",
-    "Vietnam": "VN",
-    "Gabon": "GA",
-    "Haiti": "HT",
-    "Guyana": "GY",
-    "Gambia": "GM",
-    "Ghana": "GH",
-    "Guatemala": "GT",
-    "Guinea": "GN",
-    "Guinea-Bissau": "GW",
-    "Germany": "DE",
-    "Honduras": "HN",
-    "Grenada": "GD",
-    "Greece": "GR",
-    "Georgia": "GE",
-    "Denmark": "DK",
-    "Congo, Democratic Republic of the": "CD",
-    "Djibouti": "DJ",
-    "Dominica": "DM",
-    "Dominican Republic": "DO",
-    "Egypt": "EG",
-    "Zambia": "ZM",
-    "Zimbabwe": "ZW",
-    "Israel": "IL",
-    "India": "IN",
-    "Indonesia": "ID",
-    "Jordan": "JO",
-    "Iraq": "IQ",
-    "Iran": "IR",
-    "Ireland": "IE",
-    "Iceland": "IS",
-    "Spain": "ES",
-    "Italy": "IT",
-    "Yemen": "YE",
-    "Cabo Verde": "CV",
-    "Kazakhstan": "KZ",
-    "Cambodia": "KH",
-    "Cameroon": "CM",
-    "Canada": "CA",
-    "Qatar": "QA",
-    "Kenya": "KE",
-    "Cyprus": "CY",
-    "Kiribati": "KI",
-    "China": "CN",
-    "Colombia": "CO",
-    "Comoros": "KM",
-    "Congo": "CG",
-    "North Korea": "KP",
-    "Costa Rica": "CR",
-    "Côte d'Ivoire": "CI",
-    "Cuba": "CU",
-    "Kuwait": "KW",
-    "Kyrgyzstan": "KG",
-    "Lao People's Democratic Republic": "LA",
-    "Latvia": "LV",
-    "Lesotho": "LS",
-    "Liberia": "LR",
-    "Lebanon": "LB",
-    "Libya": "LY",
-    "Lithuania": "LT",
-    "Liechtenstein": "LI",
-    "Luxembourg": "LU",
-    "Mauritius": "MU",
-    "Mauritania": "MR",
-    "Madagascar": "MG",
-    "Malawi": "MW",
-    "Malaysia": "MY",
-    "Mali": "ML",
-    "Maldives": "MV",
-    "Malta": "MT",
-    "Morocco": "MA",
-    "Marshall Islands": "MH",
-    "Mexico": "MX",
-    "Mozambique": "MZ",
-    "Monaco": "MC",
-    "Mongolia": "MN",
-    "Myanmar": "MM",
-    "Namibia": "NA",
-    "Nauru": "NR",
-    "Nepal": "NP",
-    "Niger": "NE",
-    "Nigeria": "NG",
-    "Netherlands": "NL",
-    "Nicaragua": "NI",
-    "Niue": "NU",
-    "New Zealand": "NZ",
-    "Norway": "NO",
-    "Tanzania, United Republic of": "TZ",
-    "United Arab Emirates": "AE",
-    "Oman": "OM",
-    "Cook Islands": "CK",
-    "Pakistan": "PK",
-    "Panama": "PA",
-    "Papua New Guinea": "PG",
-    "Paraguay": "PY",
-    "Peru": "PE",
-    "Poland": "PL",
-    "Portugal": "PT",
-    "Korea, Republic of": "KR",
-    "Moldova, Republic of": "MD",
-    "Russian Federation": "RU",
-    "Rwanda": "RW",
-    "Romania": "RO",
-    "El Salvador": "SV",
-    "Samoa": "WS",
-    "San Marino": "SM",
-    "Sao Tome and Principe": "ST",
-    "Saudi Arabia": "SA",
-    "Holy See (Vatican City State)": "VA",
-    "North Macedonia": "MK",
-    "Seychelles": "SC",
-    "Senegal": "SN",
-    "Saint Vincent and the Grenadines": "VC",
-    "Saint Kitts and Nevis": "KN",
-    "Saint Lucia": "LC",
-    "Serbia": "RS",
-    "Singapore": "SG",
-    "Syrian Arab Republic": "SY",
-    "Slovakia": "SK",
-    "Slovenia": "SI",
-    "United Kingdom": "GB",
-    "United States": "US",
-    "Solomon Islands": "SB",
-    "Somalia": "SO",
-    "Sudan": "SD",
-    "Suriname": "SR",
-    "Sierra Leone": "SL",
-    "Tajikistan": "TJ",
-    "Thailand": "TH",
-    "Timor-Leste": "TL",
-    "Togo": "TG",
-    "Tonga": "TO",
-    "Trinidad and Tobago": "TT",
-    "Tuvalu": "TV",
-    "Tunisia": "TN",
-    "Turkmenistan": "TM",
-    "Turkey": "TR",
-    "Uganda": "UG",
-    "Uzbekistan": "UZ",
-    "Ukraine": "UA",
-    "Uruguay": "UY",
-    "Fiji": "FJ",
-    "Philippines": "PH",
-    "Finland": "FI",
-    "France": "FR",
-    "Croatia": "HR",
-    "Central African Republic": "CF",
-    "Chad": "TD",
-    "Montenegro": "ME",
-    "Czech Republic": "CZ",
-    "Chile": "CL",
-    "Switzerland": "CH",
-    "Sweden": "SE",
-    "Sri Lanka": "LK",
-    "Ecuador": "EC",
-    "Equatorial Guinea": "GQ",
-    "Eritrea": "ER",
-    "Eswatini": "SZ",
-    "Estonia": "EE",
-    "Ethiopia": "ET"
+document.addEventListener('DOMContentLoaded', function() {
+  // --- НАЧАЛО: Переменные из вашего кода ---
+  const firstNameInput = document.getElementById('First-Name');
+  const lastNameInput = document.getElementById('Last-Name');
+  const jobTitleInput = document.getElementById('Job-title');
+  const emailInput2 = document.getElementById('email-2');
+  const codeInput = document.getElementById('code');
+  const companyInput2 = document.getElementById('company-2');
+  const countrySelect2 = document.getElementById('country-2');
+  const dropdownAustralia = document.querySelector('.states-australia');
+  const dropdownBrazil = document.querySelector('.states-brazil');
+  const dropdownCanada = document.querySelector('.states-canada');
+  const dropdownChina = document.querySelector('.states-china');
+  const dropdownIreland = document.querySelector('.states-ireland');
+  const dropdownIndia = document.querySelector('.states-india');
+  const dropdownItaly = document.querySelector('.states-italy');
+  const dropdownMexico = document.querySelector('.states-mexico');
+  const dropdownState2 = document.querySelector('.dropdown-state-2');
+  const stateSelect2 = document.getElementById('state-2');
+  const checkboxField = document.querySelector('.checkbox-field');
+  const checkbox = document.querySelector('.checkbox-field input[type="checkbox"]');
+  const submitButton = document.querySelector('#submit, #submit-2');
+  const submitCode = document.querySelector('#submit-code-violet, #submit-code');
+  const form2 = document.getElementById('main-form-2');
+  const formCode = document.getElementById('code-form');
+  const phoneInput = document.getElementById('phone');
+  const codeFormContainer = document.getElementById('code-form-container');
+  const mainFormContainer = document.getElementById('main-form-container');
+  const emailDisplay = document.getElementById('email-display');
+  const selfAttributionInput = document.getElementById('self-attribution');
+  // --- КОНЕЦ: Переменные из вашего кода ---
+
+  // --- НАЧАЛО: НОВЫЕ ПЕРЕМЕННЫЕ (Wrapper и Honeypot) ---
+  const submitButtonWrapper = submitButton ? submitButton.closest('.submit-button-wrapper') : null;
+  let formInteractionStartTime = 0;
+  let decoyLinkClicked = false;
+  // --- КОНЕЦ: НОВЫЕ ПЕРЕМЕННЫЕ ---
+
+  if (codeFormContainer) {
+    codeFormContainer.style.display = 'none';
+  }
+
+  const countryCodeMap = {
+    "Australia": "AU", "Austria": "AT", "Azerbaijan": "AZ", "Albania": "AL", "Algeria": "DZ",
+    "Angola": "AO", "Andorra": "AD", "Antigua and Barbuda": "AG", "Argentina": "AR", "Armenia": "AM",
+    "Afghanistan": "AF", "Bahamas": "BS", "Bangladesh": "BD", "Barbados": "BB", "Bahrain": "BH",
+    "Belarus": "BY", "Belize": "BZ", "Belgium": "BE", "Benin": "BJ", "Bulgaria": "BG",
+    "Bolivia": "BO", "Bosnia and Herzegovina": "BA", "Botswana": "BW", "Brazil": "BR",
+    "Brunei Darussalam": "BN", "Burkina Faso": "BF", "Burundi": "BI", "Bhutan": "BT", "Vanuatu": "VU",
+    "Hungary": "HU", "Venezuela": "VE", "Vietnam": "VN", "Gabon": "GA", "Haiti": "HT",
+    "Guyana": "GY", "Gambia": "GM", "Ghana": "GH", "Guatemala": "GT", "Guinea": "GN",
+    "Guinea-Bissau": "GW", "Germany": "DE", "Honduras": "HN", "Grenada": "GD", "Greece": "GR",
+    "Georgia": "GE", "Denmark": "DK", "Congo, Democratic Republic of the": "CD", "Djibouti": "DJ",
+    "Dominica": "DM", "Dominican Republic": "DO", "Egypt": "EG", "Zambia": "ZM", "Zimbabwe": "ZW",
+    "Israel": "IL", "India": "IN", "Indonesia": "ID", "Jordan": "JO", "Iraq": "IQ", "Iran": "IR",
+    "Ireland": "IE", "Iceland": "IS", "Spain": "ES", "Italy": "IT", "Yemen": "YE",
+    "Cabo Verde": "CV", "Kazakhstan": "KZ", "Cambodia": "KH", "Cameroon": "CM", "Canada": "CA",
+    "Qatar": "QA", "Kenya": "KE", "Cyprus": "CY", "Kiribati": "KI", "China": "CN",
+    "Colombia": "CO", "Comoros": "KM", "Congo": "CG", "North Korea": "KP", "Costa Rica": "CR",
+    "Côte d'Ivoire": "CI", "Cuba": "CU", "Kuwait": "KW", "Kyrgyzstan": "KG",
+    "Lao People's Democratic Republic": "LA", "Latvia": "LV", "Lesotho": "LS", "Liberia": "LR",
+    "Lebanon": "LB", "Libya": "LY", "Lithuania": "LT", "Liechtenstein": "LI", "Luxembourg": "LU",
+    "Mauritius": "MU", "Mauritania": "MR", "Madagascar": "MG", "Malawi": "MW", "Malaysia": "MY",
+    "Mali": "ML", "Maldives": "MV", "Malta": "MT", "Morocco": "MA", "Marshall Islands": "MH",
+    "Mexico": "MX", "Mozambique": "MZ", "Monaco": "MC", "Mongolia": "MN", "Myanmar": "MM",
+    "Namibia": "NA", "Nauru": "NR", "Nepal": "NP", "Niger": "NE", "Nigeria": "NG",
+    "Netherlands": "NL", "Nicaragua": "NI", "Niue": "NU", "New Zealand": "NZ", "Norway": "NO",
+    "Tanzania, United Republic of": "TZ", "United Arab Emirates": "AE", "Oman": "OM",
+    "Cook Islands": "CK", "Pakistan": "PK", "Panama": "PA", "Papua New Guinea": "PG",
+    "Paraguay": "PY", "Peru": "PE", "Poland": "PL", "Portugal": "PT", "Korea, Republic of": "KR",
+    "Moldova, Republic of": "MD", "Russian Federation": "RU", "Rwanda": "RW", "Romania": "RO",
+    "El Salvador": "SV", "S Samoa": "WS", "San Marino": "SM", "Sao Tome and Principe": "ST",
+    "Saudi Arabia": "SA", "Holy See (Vatican City State)": "VA", "North Macedonia": "MK",
+    "Seychelles": "SC", "Senegal": "SN", "Saint Vincent and the Grenadines": "VC",
+    "Saint Kitts and Nevis": "KN", "Saint Lucia": "LC", "Serbia": "RS", "Singapore": "SG",
+    "Syrian Arab Republic": "SY", "Slovakia": "SK", "Slovenia": "SI", "United Kingdom": "GB",
+    "United States": "US", "Solomon Islands": "SB", "Somalia": "SO", "Sudan": "SD",
+    "Suriname": "SR", "Sierra Leone": "SL", "Tajikistan": "TJ", "Thailand": "TH",
+    "Timor-Leste": "TL", "Togo": "TG", "Tonga": "TO", "Trinidad and Tobago": "TT", "Tuvalu": "TV",
+    "Tunisia": "TN", "Turkmenistan": "TM", "Turkey": "TR", "Uganda": "UG", "Uzbekistan": "UZ",
+    "Ukraine": "UA", "Uruguay": "UY", "Fiji": "FJ", "Philippines": "PH", "Finland": "FI",
+    "France": "FR", "Croatia": "HR", "Central African Republic": "CF", "Chad": "TD",
+    "Montenegro": "ME", "Czech Republic": "CZ", "Chile": "CL", "Switzerland": "CH", "Sweden": "SE",
+    "Sri Lanka": "LK", "Ecuador": "EC", "Equatorial Guinea": "GQ", "Eritrea": "ER",
+    "Eswatini": "SZ", "Estonia": "EE", "Ethiopia": "ET"
   };
 
-if (form2) {
-  form2.addEventListener('input', () => {
-    if (formInteractionStartTime === 0) formInteractionStartTime = Date.now();
-  }, { once: true });
-  const decoyLink = document.getElementById('optional-link');
-  if (decoyLink) {
-    decoyLink.addEventListener('click', (e) => {
-      e.preventDefault();
-      decoyLinkClicked = true;
+  function handleLabel(input) {
+    if (!input) return;
+    const label = input.nextElementSibling;
+    const updateLabelState = () => {
+      if (input.value !== '') {
+        label.classList.add('active');
+        input.classList.add('not-empty');
+      } else {
+        label.classList.remove('active');
+        input.classList.remove('not-empty');
+      }
+    };
+    updateLabelState();
+    input.addEventListener('focus', () => label.classList.add('active'));
+    input.addEventListener('blur', updateLabelState);
+    input.addEventListener('input', updateLabelState);
+  }
+
+  [firstNameInput, lastNameInput, jobTitleInput, emailInput2, companyInput2, phoneInput, codeInput, selfAttributionInput].forEach(input => {
+    if (input) handleLabel(input);
+  });
+
+  if (phoneInput) {
+    phoneInput.addEventListener('focus', () => {
+      if (phoneInput.nextElementSibling) {
+        phoneInput.nextElementSibling.classList.add('active');
+      }
     });
   }
-}
-function handleLabel(input) {
-  if (!input) return;
-  const label = input.nextElementSibling;
-  const updateLabelState = () => {
-    if (input.value !== '') {
-      label.classList.add('active');
-      input.classList.add('not-empty');
-    } else {
-      label.classList.remove('active');
-      input.classList.remove('not-empty');
+
+  if (countrySelect2) {
+    countrySelect2.addEventListener('change', function() {
+      const selectedCountry = countrySelect2.value;
+      const dropdowns = {
+        'United States': dropdownState2, 'Australia': dropdownAustralia, 'Brazil': dropdownBrazil,
+        'Canada': dropdownCanada, 'China': dropdownChina, 'Ireland': dropdownIreland,
+        'India': dropdownIndia, 'Italy': dropdownItaly, 'Mexico': dropdownMexico
+      };
+      Object.values(dropdowns).forEach(dropdown => {
+        if (dropdown) dropdown.style.display = 'none';
+      });
+      if (dropdowns[selectedCountry]) {
+        dropdowns[selectedCountry].style.display = 'block';
+      }
+    });
+  }
+
+  if ($.fn.selectpicker) {
+    $('#country-2').selectpicker();
+    $('#state-2, #states-australia, #states-brazil, #states-canada, #states-china, #states-ireland, #states-india, #states-italy, #states-mexico').selectpicker();
+    const setupScrollTop = function() {
+      const selectpicker = $(this).data('selectpicker');
+      if (selectpicker && selectpicker.$menuInner && selectpicker.$menuInner[0]) {
+        selectpicker.$menuInner[0].scrollTop = 0;
+      }
+    };
+    $('#country-2').on('shown.bs.select', setupScrollTop);
+    $('#state-2, #states-australia, #states-brazil, #states-canada, #states-china, #states-ireland, #states-india, #states-italy, #states-mexico').on('shown.bs.select', setupScrollTop);
+  }
+
+  let iti;
+  if (phoneInput) {
+    iti = window.intlTelInput(phoneInput, {
+      utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
+      autoPlaceholder: "aggressive",
+      separateDialCode: true,
+      initialCountry: "auto",
+      geoIpLookup: function(success, failure) {
+        fetch('https://faas-nyc1-2ef2e6cc.doserverless.co/api/v1/web/fn-3627560b-2163-4a62-81db-3a3b5da17d5a/ip/info')
+          .then(response => response.json())
+          .then(data => {
+            if (data && data.iso_code && data.country) {
+              success(data.iso_code);
+              const optionToSelect = [...countrySelect2.options].find(option => option.value === data.country);
+              if (optionToSelect) {
+                optionToSelect.selected = true;
+                if ($.fn.selectpicker) $(countrySelect2).selectpicker('refresh');
+                countrySelect2.dispatchEvent(new Event('change'));
+              } else console.error('Country not found in dropdown:', data.country);
+            } else {
+              console.error('Invalid data from IP API:', data);
+              failure();
+            }
+          }).catch(error => {
+            console.error('Error getting IP data:', error);
+            failure();
+          });
+      }
+    });
+  }
+
+  let isFormInitialized = false;
+  let isCheckboxInteracted = false;
+
+  function updateCheckboxErrorClass() {
+    const $checkbox = $('#agreement');
+    if (!$checkbox.length) return;
+    const $label = $checkbox.closest('.checkbox-field').find('.checkbox-text');
+    if (isCheckboxInteracted) {
+      $label.toggleClass('error', !$checkbox.is(':checked'));
     }
-  };
-  updateLabelState();
-  input.addEventListener('focus', () => {
-    label.classList.add('active');
+  }
+  
+  $('#agreement').on('change', () => {
+    isCheckboxInteracted = true;
+    updateCheckboxErrorClass();
   });
-  input.addEventListener('blur', () => {
-    updateLabelState();
+
+  $(document).ready(() => {
+    if ($('#agreement').length) {
+      $('#agreement').closest('.checkbox-field').find('.checkbox-text').removeClass('error');
+      resetCheckbox();
+      updateCheckboxErrorClass();
+    }
   });
-  input.addEventListener('input', () => {
-    updateLabelState();
+
+  if ($.fn.mask) $('#code').mask('000000');
+  
+  if ($.fn.validate) {
+    const validationOptions = {
+      onfocusout: function(element) { if ($(element).data('modified')) $(element).valid(); },
+      onkeyup: function(element) { $(element).data('modified', true); $(element).valid(); },
+      errorPlacement: function(error, element) { if ($(element).data('modified')) error.appendTo(element.closest(".field-row")); },
+      highlight: function(element) { if ($(element).data('modified')) $(element).css('border', '1px solid #c50006'); },
+      unhighlight: function(element) { $(element).css('border', ''); },
+      ignoreTitle: true,
+      onfocusin: function(element) { isFormInitialized = true; $(element).data("interacted", true); }
+    };
+
+    $('#code-form').validate($.extend({}, validationOptions, {
+      rules: { code: { required: true, noSpacesOnly: true, minlength: 6 } },
+      messages: { code: { required: "This field is required" } }
+    }));
+    
+    $('#main-form-2').validate($.extend({}, validationOptions, {
+      rules: {
+        firstname: { required: true, maxlength: 50, noSpacesOnly: true },
+        lastname: { required: true, maxlength: 50, noSpacesOnly: true },
+        email: { required: true, maxlength: 50, email: true, corporate: true, validEmailChars: true },
+        job_title: { required: true, maxlength: 50, noSpacesOnly: true },
+        company: { required: true, maxlength: 50, noSpacesOnly: true },
+        phone: { phoneCustom: true },
+        'self-attribution': { maxlength: 50 },
+        agreement: { required: () => $('#country-2').val() !== 'United States' && $('#agreement').is(':visible') }
+      },
+      messages: {
+        firstname: "This field is required",
+        lastname: "This field is required",
+        email: { required: "This field is required", email: "Invalid email address", corporate: "Please use a corporate email address." },
+        job_title: "This field is required",
+        company: "This field is required",
+      }
+    }));
+    
+    $.validator.addMethod("phoneCustom", () => !iti || iti.isValidNumber(), "Invalid phone number.");
+    $.validator.addMethod("corporate", (value) => !/@(gmail\.com|yahoo\.com|hotmail\.com|outlook\.com|mail\.ru)$/i.test(value));
+    $.validator.addMethod("validEmailChars", (value, element) => validationOptions.optional(element) || /^[a-zA-Z0-9@.\-_]+$/.test(value));
+    $.validator.addMethod("noSpacesOnly", (value, element) => validationOptions.optional(element) || value.trim().length > 0);
+  }
+
+  function resetCheckbox() {
+    const $checkbox = $('#agreement');
+    if ($checkbox.length) {
+      $checkbox.prop('checked', false).removeAttr('checked');
+      $checkbox.parent().find('.w-checkbox-input').removeClass('w--redirected-checked');
+    }
+  }
+
+  function updateSubmitButtonState() {
+    const isMainFormValid = $('#main-form-2').valid();
+    const isCodeFormValid = $('#code-form').valid();
+    const isCheckboxOk = $('#country-2').val() === 'United States' || $('#agreement').is(':checked');
+    
+    const $mainSubmit = $('#submit, #submit-2');
+    const $codeSubmit = $('#submit-code-violet, #submit-code');
+
+    if (isMainFormValid && isCheckboxOk) {
+      $mainSubmit.removeAttr('disabled');
+      if (submitButtonWrapper) $(submitButtonWrapper).removeClass('button-is-inactive');
+    } else {
+      $mainSubmit.attr('disabled', 'disabled');
+      if (submitButtonWrapper) $(submitButtonWrapper).addClass('button-is-inactive');
+    }
+    
+    $codeSubmit.prop('disabled', !isCodeFormValid);
+  }
+
+  function toggleCountrySpecificElements(selectedCountry) {
+    resetCheckbox();
+    const $formMessage = $('.form-message');
+    const $formMessageUsa = $('.form-message_usa');
+    if ($formMessage.length && $formMessageUsa.length) {
+      if (selectedCountry === 'United States') {
+        $formMessage.hide();
+        $formMessageUsa.show();
+        $('#agreement').prop('checked', true).parent().hide();
+      } else {
+        $formMessage.show();
+        $formMessageUsa.hide();
+        $('#agreement').parent().show();
+      }
+    }
+    setTimeout(updateSubmitButtonState, 50);
+  }
+  
+  $('#agreement').on('change', updateSubmitButtonState);
+  $('#main-form-2, #code-form').on('input change', updateSubmitButtonState);
+
+  $('#submit, #submit-2, #submit-code-violet, #submit-code').attr('disabled', 'disabled');
+  if (submitButtonWrapper) $(submitButtonWrapper).addClass('button-is-inactive');
+  
+  function addPlaceholder() {
+    document.querySelectorAll('.form-control[type="search"]').forEach(input => {
+      if (!input.hasAttribute('placeholder')) input.setAttribute('placeholder', 'Search');
+    });
+  }
+  addPlaceholder();
+  new MutationObserver(mutations => {
+    mutations.forEach(mutation => {
+      if (mutation.type === 'childList') addPlaceholder();
+    });
+  }).observe(document.body, { childList: true, subtree: true });
+
+  $('#country-2').on('change', function() {
+    toggleCountrySpecificElements(this.value);
+    if (iti) iti.setCountry(countryCodeMap[this.value] || '');
+    $(this).valid();
   });
-}
-[firstNameInput, lastNameInput, jobTitleInput, emailInput2, companyInput2, phoneInput, codeInput, selfAttributionInput].forEach(input => { handleLabel(input); });
-if (phoneInput) {
-  phoneInput.addEventListener('focus', () => {
-    if (phoneInput.nextElementSibling) phoneInput.nextElementSibling.classList.add('active');
-  });
-}
-countrySelect2.addEventListener('change', function () {
-  const selectedCountry = countrySelect2.value;
-  const dropdowns = {
-    'United States': dropdownState2,
-    'Australia': dropdownAustralia,
-    'Brazil': dropdownBrazil,
-    'Canada': dropdownCanada,
-    'China': dropdownChina,
-    'Ireland': dropdownIreland,
-    'India': dropdownIndia,
-    'Italy': dropdownItaly,
-    'Mexico': dropdownMexico
-  };
-  Object.values(dropdowns).forEach(dropdown => {
-    if (dropdown) dropdown.style.display = 'none';
-  });
-  if (dropdowns[selectedCountry]) dropdowns[selectedCountry].style.display = 'block';
-  else Object.values(dropdowns).forEach(dropdown => { if (dropdown) dropdown.style.display = 'none'; });
-});
-$('#country-2').selectpicker();
-$('#state-2, #states-australia, #states-brazil, #states-canada, #states-china, #states-ireland, #states-india, #states-italy, #states-mexico').selectpicker();
-$('#country-2').on('shown.bs.select', function () { const selectpicker = $(this).data('selectpicker'); selectpicker.$menuInner[0].scrollTop = 0; });
-$('#state-2, #states-australia, #states-brazil, #states-canada, #states-china, #states-ireland, #states-india, #states-italy, #states-mexico').on('shown.bs.select', function () { const selectpicker = $(this).data('selectpicker'); selectpicker.$menuInner[0].scrollTop = 0; });
-const iti = window.intlTelInput(phoneInput, {
-  utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
-  autoPlaceholder: "aggressive",
-  separateDialCode: true,
-  initialCountry: "auto",
-  geoIpLookup: function (success, failure) {
-    fetch('https://faas-nyc1-2ef2e6cc.doserverless.co/api/v1/web/fn-3627560b-2163-4a62-81db-3a3b5da17d5a/ip/info')
-      .then(response => response.json()).then(data => {
-        if (data && data.iso_code && data.country) {
-          success(data.iso_code);
-          const optionToSelect = [...countrySelect2.options].find(opt => opt.value === data.country);
-          if (optionToSelect) {
-            optionToSelect.selected = true;
-            countrySelect2.dispatchEvent(new Event('change'));
+
+  const form = document.getElementById('main-form-2');
+  const successMessage = document.querySelector('.success-message');
+  let isSubmitting = false;
+
+  function generateUserId() { return 'user_' + Math.random().toString(36).substr(2, 9); }
+  function getCookieValue(name) { const match = document.cookie.match(new RegExp(`(^| )${name}=([^;]+)`)); return match ? match[2] : null; }
+  function replaceConfusableChars(str) { return typeof str === 'string' ? str.replace(/e/g, '\u0435').replace(/a/g, '\u0430') : str; }
+
+  try {
+    ['input[name="confirm-email"]', 'input[name="city"]'].forEach(selector => {
+      const input = document.querySelector(selector);
+      if (input) {
+        const parentWrapper = input.closest('.input-w');
+        const label = parentWrapper ? parentWrapper.querySelector('label') : null;
+        if (label) label.textContent = replaceConfusableChars(label.textContent);
+        if (selector.includes('confirm-email')) input.name = replaceConfusableChars(input.name);
+      }
+    });
+  } catch (error) { console.error('Honeypot obfuscation error:', error); }
+
+  if (form) {
+    form.addEventListener('input', () => {
+      if (formInteractionStartTime === 0) formInteractionStartTime = Date.now();
+    }, { once: true });
+
+    const decoyLink = document.getElementById('optional-link');
+    if (decoyLink) {
+      decoyLink.addEventListener('click', e => {
+        e.preventDefault();
+        decoyLinkClicked = true;
+      });
+    }
+
+    form.addEventListener('submit', async function(event) {
+      event.preventDefault();
+      if (!$(this).valid() || isSubmitting) return;
+
+      isSubmitting = true;
+      if (submitButton) submitButton.setAttribute('disabled', 'disabled');
+
+      const formData = new FormData(form);
+      
+      const JUNK_REASONS = { HONEYPOT_FILLED: 1, DECOY_CLICKED: 2, FILLED_TOO_FAST: 3 };
+      const confirmEmailValue = formData.get(replaceConfusableChars('confirm-email')) || '';
+      const cityValue = formData.get('city') || '';
+      let junk_lead = false, junk_reason = null, junk_context = null;
+      const formFillingTime = formInteractionStartTime > 0 ? (Date.now() - formInteractionStartTime) / 1000 : 999;
+
+      if (confirmEmailValue.length > 0 || cityValue.length > 0) {
+        junk_context = { email: confirmEmailValue || null, city: cityValue || null };
+        junk_lead = true;
+        junk_reason = JUNK_REASONS.HONEYPOT_FILLED;
+      } else if (decoyLinkClicked) {
+        junk_lead = true;
+        junk_reason = JUNK_REASONS.DECOY_CLICKED;
+      } else if (formFillingTime < 0.5) {
+        junk_lead = true;
+        junk_reason = JUNK_REASONS.FILLED_TOO_FAST;
+      }
+
+      const leadTypeValue = form.querySelector('input[name="lead_type"]:checked')?.value;
+      const selectedCountry = form.querySelector('select[name="country"]').value;
+      const stateDropdowns = {
+          'United States': '#state-2', 'Australia': '#states-australia', 'Brazil': '#states-brazil',
+          'Canada': '#states-canada', 'China': '#states-china', 'Ireland': '#states-ireland',
+          'India': '#states-india', 'Italy': '#states-italy', 'Mexico': '#states-mexico'
+      };
+      const stateSelector = stateDropdowns[selectedCountry];
+      const stateValue = stateSelector ? form.querySelector(stateSelector).value : '';
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const data = {
+        firstname: formData.get('firstname'), lastname: formData.get('lastname'),
+        email: formData.get('email'), job_title: formData.get('job_title'),
+        company: formData.get('company'), phone: iti ? iti.getNumber() : '',
+        lead_type: leadTypeValue, country: formData.get('country'),
+        state: stateValue || null, self_attribution: formData.get('self-attribution'),
+        href: window.location.href, page: window.location.pathname.substring(1),
+        ss_anonymous_id: window.segmentstream?.anonymousId?.() ?? '',
+        junk_lead: junk_lead, of_form_duration: formFillingTime,
+        junk_reason: junk_reason, junk_context: junk_context,
+        cookie: {
+          _ga: getCookieValue('_ga'), c_of__ga: getCookieValue('c_of__ga'),
+          c_of_utm_campaign: urlParams.get('utm_campaign') || '', c_of_utm_content: urlParams.get('utm_content') || '',
+          c_of_utm_medium: urlParams.get('utm_medium') || '', c_of_utm_source: urlParams.get('utm_source') || '',
+          c_of_utm_term: urlParams.get('utm_term') || ''
+        }
+      };
+      if (!stateValue) delete data.state;
+
+      try {
+        let userId = getCookieValue('user_id') || generateUserId();
+        document.cookie = `user_id=${userId}; path=/; max-age=31536000`;
+        const responseData = await submitFormToVerifiedWebflow(data, userId);
+
+        if (responseData.success === true) {
+          if (form) form.style.display = 'none';
+          if (successMessage) successMessage.style.display = 'block';
+
+          const roleValue = data.lead_type ? data.lead_type.charAt(0).toUpperCase() + data.lead_type.slice(1).toLowerCase() : '';
+          if (window.dataLayer) {
+            window.dataLayer.push({
+              'event': 'lead2fa', 'role': roleValue, 'type': '',
+              'email': data.email, 'phone': data.phone, 'lead_id': userId
+            });
+          }
+        } else {
+          if (responseData.errors) {
+            $('#main-form-2').validate().showErrors({ 'email': responseData.errors.email ? responseData.errors.email[0] : 'Invalid email.' });
+          } else {
+            if (codeFormContainer) codeFormContainer.style.display = 'block';
+            if (mainFormContainer) mainFormContainer.style.display = 'none';
+            if (emailDisplay) emailDisplay.textContent = data.email.trim();
           }
         }
-      });
-  }
-});
-let isFormInitialized = false;
-let isCheckboxInteracted = false;
-function updateCheckboxErrorClass() {
-  const checkbox = $('#agreement');
-  const label = checkbox.closest('.checkbox-field').find('.checkbox-text');
-  if (isCheckboxInteracted) {
-    if (checkbox.is(':checked')) label.removeClass('error');
-    else label.addClass('error');
-  }
-}
-$('#agreement').on('change', function () {
-  isCheckboxInteracted = true; updateCheckboxErrorClass();
-});
-$(document).ready(function () {
-  const checkbox = $('#agreement');
-  const label = checkbox.closest('.checkbox-field').find('.checkbox-text');
-  label.removeClass('error');
-  resetCheckbox();
-  updateCheckboxErrorClass();
-});
-$('#code').mask('000000');
-const validatorCode = $('#code-form').validate({
-  onfocusout: function (element) { if ($(element).data('modified')) $(element).valid(); },
-  onkeyup: function (element) { $(element).data('modified', true); $(element).valid(); },
-  onclick: function (element) { if (isFormInitialized) $(element).valid(); },
-  rules: { code: { required: true, noSpacesOnly: true, minlength: 6 } },
-  messages: { code: { required: "This field is required" } },
-  errorPlacement: function (error, element) { if ($(element).data('modified')) error.appendTo(element.closest(".field-row")); },
-  highlight: function (element) { if ($(element).data('modified')) $(element).css('border', '1px solid #c50006'); },
-  unhighlight: function (element) { $(element).css('border', ''); },
-  ignoreTitle: true,
-  onfocusin: function (element) { isFormInitialized = true; $(element).data("interacted", true); }
-});
-const validator = $('#main-form-2').validate({
-  onfocusout: function (element) { if ($(element).data('modified')) $(element).valid(); },
-  onkeyup: function (element) { $(element).data('modified', true); $(element).valid(); },
-  onclick: function (element) { if (isFormInitialized) $(element).valid(); },
-  rules: { firstname: { required: true, maxlength: 50, noSpacesOnly: true }, lastname: { required: true, maxlength: 50, noSpacesOnly: true }, email: { required: true, maxlength: 50, email: true, corporate: true, validEmailChars: true }, job_title: { required: true, maxlength: 50, noSpacesOnly: true }, company: { required: true, maxlength: 50, noSpacesOnly: true }, phone: { phoneCustom: true }, 'self-attribution': { maxlength: 50 }, agreement: { required: function (element) { const selectedCountry = $('#country-2').val(); return selectedCountry !== 'United States' && $(element).is(':visible'); } } },
-  messages: { firstname: { required: "This field is required", maxlength: "Firstname must be at most 50 characters" }, lastname: { required: "This field is required", maxlength: "Lastname must be at most 50 characters" }, email: { required: "This field is required", maxlength: "Email must be at most 50 characters", email: "Invalid email address", corporate: "Please enter a valid corporate email address (e.g., yourname@company.com). Personal email addresses (e.g., Gmail, Yahoo) are not accepted." }, job_title: { required: "This field is required", maxlength: "Job title must be at most 50 characters" }, company: { required: "This field is required", maxlength: "Company must be at most 50 characters" }, phone: { phoneCustom: "Phone number is invalid. Please add your country code, area code and phone number. Your phone number can contain numbers, spaces and these special characters: ( ) - # +", }, 'self-attribution': { maxlength: "This field should contain no more than 50 characters" } },
-  errorPlacement: function (error, element) { if ($(element).data('modified')) error.appendTo(element.closest(".field-row")); },
-  highlight: function (element) { if ($(element).data('modified')) $(element).css('border', '1px solid #c50006'); },
-  unhighlight: function (element) { $(element).css('border', ''); },
-  ignoreTitle: true,
-  onfocusin: function (element) { isFormInitialized = true; $(element).data("interacted", true); }
-});
-$.validator.addMethod("phoneCustom", function (value, element) { return iti.isValidNumber(); }, "Phone number is invalid. Please add your country code, area code and phone number. Your phone number can contain numbers, spaces and these special characters: ( ) - # +");
-$.validator.addMethod("corporate", function (value, element) { return !/@(gmail\.com|yahoo\.com|hotmail\.com|outlook\.com|mail\.ru)$/i.test(value); }, "Please enter a valid corporate email address (e.g., yourname@company.com). Personal email addresses (e.g., Gmail, Yahoo) are not accepted.");
-$.validator.addMethod("validEmailChars", function (value, element) { return this.optional(element) || /^[a-zA-Z0-9@.\-_]+$/.test(value); }, "Please use only valid characters in the email field (letters, numbers, @, ., -, _).");
-$.validator.addMethod("noSpacesOnly", function (value, element) { return this.optional(element) || value.trim().length > 0; }, "This field cannot contain only spaces.");
-function resetCheckbox() {
-  const checkbox = $('#agreement');
-  checkbox.prop('checked', false).removeAttr('checked');
-  checkbox.parent().find('.w-checkbox-input').removeClass('w--redirected-checked');
-}
-function updateSubmitButtonState() {
-  const isFormValid = $('#main-form-2').valid();
-  const isFormCodeValid = $('#code-form').valid();
-  const selectedCountry = $('#country-2').val();
-  const isCheckboxChecked = $('#agreement').prop('checked');
-  const isCheckboxRequirementMet = selectedCountry === 'United States' || isCheckboxChecked;
-  if (isFormValid && isCheckboxRequirementMet) {
-    $('#submit, #submit-2').removeAttr('disabled').removeClass('submit-inactive');
-    if (submitButtonWrapper) submitButtonWrapper.classList.remove('button-is-inactive');
-  } else {
-    $('#submit, #submit-2').attr('disabled', 'disabled').addClass('submit-inactive');
-    if (submitButtonWrapper) submitButtonWrapper.classList.add('button-is-inactive');
-  }
-  if (isFormCodeValid) {
-    $('#submit-code-violet, #submit-code').removeAttr('disabled');
-  } else {
-    $('#submit-code-violet, #submit-code').attr('disabled', 'disabled');
-  }
-}
-function toggleCountrySpecificElements(selectedCountry) {
-  resetCheckbox();
-  if (selectedCountry === 'United States') {
-    document.querySelector('.form-message').style.display = 'none';
-    document.querySelector('.form-message_usa').style.display = 'block';
-    $('#agreement').prop('checked', true).parent().hide();
-  } else {
-    document.querySelector('.form-message').style.display = 'block';
-    document.querySelector('.form-message_usa').style.display = 'none';
-    $('#agreement').parent().show();
-  }
-  setTimeout(() => { updateSubmitButtonState(); }, 50);
-}
-$('#agreement').on('change', function () { updateSubmitButtonState(); });
-$('#main-form-2, #code-form').on('input change', function (event) { updateSubmitButtonState(); });
-$('#submit, #submit-2').attr('disabled', 'disabled');
-$('#submit-code-violet, #submit-code').attr('disabled', 'disabled');
-function addPlaceholder() {
-  const searchInputs = document.querySelectorAll('.form-control[type="search"]');
-  searchInputs.forEach(function (searchInput) {
-    if (searchInput && !searchInput.getAttribute('placeholder')) {
-      searchInput.setAttribute('placeholder', 'Search');
-    }
-  });
-}
-addPlaceholder();
-const observer = new MutationObserver((mutationsList, observer) => {
-  for (let mutation of mutationsList) { if (mutation.type === 'childList') addPlaceholder(); }
-});
-observer.observe(document.body, { childList: true, subtree: true });
-$('#country-2').on('change', function () {
-  toggleCountrySpecificElements(this.value);
-  iti.setCountry(countryCodeMap[this.value]);
-  $(this).valid();
-});
-const form = document.getElementById('main-form-2');
-const successMessage = document.querySelector('.success-message');
-const formFields = document.getElementById('main-form-2');
-let isSubmitting = false;
-function generateUserId() {
-  return 'user_' + Math.random().toString(36).substr(2, 9);
-}
-function getCookieValue(name) {
-  const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
-  if (match) return match[2];
-  return null;
-}
-function checkCookiesAndStorage() {
-  const cookies = document.cookie.split(';').reduce((acc, cookie) => {
-    const [name, value] = cookie.trim().split('=');
-    acc[name] = value;
-    return acc;
-  }, {});
-}
-checkCookiesAndStorage();
-if (form) {
-  form.addEventListener('submit', async function (event) {
-    event.preventDefault();
-    if (!$(this).valid()) return;
-    if (isSubmitting) return;
-    isSubmitting = true;
-    if (submitButton) submitButton.setAttribute('disabled', 'disabled');
-    const formData = new FormData(form);
-    const confirmEmailValue = formData.get(replaceConfusableChars('confirm-email')) || '';
-    const cityValue = formData.get('city') || '';
-    let junk_lead = false, junk_reason = null, junk_context = null;
-    const formFillingTime = formInteractionStartTime > 0 ? (Date.now() - formInteractionStartTime) / 1000 : 999;
-    const JUNK_REASONS = { HONEYPOT_FILLED: 1, DECOY_CLICKED: 2, FILLED_TOO_FAST: 3 };
-    if (confirmEmailValue.length > 0 || cityValue.length > 0) {
-      junk_context = { email: confirmEmailValue.length > 0 ? confirmEmailValue : null, city: cityValue.length > 0 ? cityValue : null, };
-      junk_lead = true;
-      junk_reason = JUNK_REASONS.HONEYPOT_FILLED;
-    } else if (decoyLinkClicked) {
-      junk_lead = true; junk_reason = JUNK_REASONS.DECOY_CLICKED;
-    } else if (formFillingTime < 0.5) {
-      junk_lead = true; junk_reason = JUNK_REASONS.FILLED_TOO_FAST;
-    }
-    const leadTypeValue = form.querySelector('input[name="lead_type"]:checked')?.value;
-    const selectedCountry = form.querySelector('select[name="country"]').value;
-    let stateValue = '';
-    if (selectedCountry === 'United States') stateValue = form.querySelector('#state-2').value;
-    else if (selectedCountry === 'Australia') stateValue = form.querySelector('#states-australia').value;
-    else if (selectedCountry === 'Brazil') stateValue = form.querySelector('#states-brazil').value;
-    else if (selectedCountry === 'Canada') stateValue = form.querySelector('#states-canada').value;
-    else if (selectedCountry === 'China') stateValue = form.querySelector('#states-china').value;
-    else if (selectedCountry === 'Ireland') stateValue = form.querySelector('#states-ireland').value;
-    else if (selectedCountry === 'India') stateValue = form.querySelector('#states-india').value;
-    else if (selectedCountry === 'Italy') stateValue = form.querySelector('#states-italy').value;
-    else if (selectedCountry === 'Mexico') stateValue = form.querySelector('#states-mexico').value;
-    const urlParams = new URLSearchParams(window.location.search);
-    const utmCampaign = urlParams.get('utm_campaign') || '';
-    const utmContent = urlParams.get('utm_content') || '';
-    const utmMedium = urlParams.get('utm_medium') || '';
-    const utmSource = urlParams.get('utm_source') || '';
-    const utmTerm = urlParams.get('utm_term') || '';
-    const data = {
-      firstname: formData.get('firstname'),
-      lastname: formData.get('lastname'),
-      email: formData.get('email'),
-      job_title: formData.get('job_title'),
-      company: formData.get('company'),
-      phone: iti.getNumber(),
-      lead_type: leadTypeValue,
-      country: formData.get('country'),
-      state: stateValue || null,
-      self_attribution: formData.get('self-attribution'),
-      href: window.location.href,
-      page: window.location.pathname.substring(1),
-      ss_anonymous_id: window.segmentstream?.anonymousId?.() ?? '',
-      cookie: {
-        _ga: getCookieValue('_ga'),
-        c_of__ga: getCookieValue('c_of__ga'),
-        c_of_utm_campaign: utmCampaign,
-        c_of_utm_content: utmContent,
-        c_of_utm_medium: utmMedium,
-        c_of_utm_source: utmSource,
-        c_of_utm_term: utmTerm
-      },
-      junk_lead: junk_lead,
-      junk_reason: junk_reason,
-      junk_context: junk_context,
-      of_form_duration: formFillingTime
-    };
-    if (selectedCountry !== 'United States' && !stateValue) { delete data.state; }
-    try {
-      let userId = getCookieValue('user_id') || generateUserId();
-      document.cookie = `user_id=${userId}; path=/; max-age=31536000`;
-      const responseData = await submitFormToVerifiedWebflow(data, userId);
-      if (responseData.success === true) {
-        mainFormContainer.style.display = 'flex';
-        codeFormContainer.style.display = 'none';
-        if (formFields) formFields.style.display = 'none';
-        if (successMessage) successMessage.style.display = 'block';
-        const leadId = userId;
-        const roleValue = data.lead_type.charAt(0).toUpperCase() + data.lead_type.slice(1).toLowerCase();
-        if (window.dataLayer) {
-          window.dataLayer.push({
-            'event': 'lead2fa',
-            'role': roleValue,
-            'type': '',
-            'email': data.email,
-            'phone': data.phone,
-            'lead_id': leadId
-          });
-        }
-      } else {
-        if (responseData.errors) {
-          $('#main-form-2').validate().showErrors({
-            'email': responseData.errors.email ? responseData.errors.email[0] : 'Invalid email.'
-          });
-          mainFormContainer.style.display = 'flex';
-          codeFormContainer.style.display = 'none';
-          throw new Error('Form validation failed.');
-        }
-        codeFormContainer.style.display = 'block';
-        mainFormContainer.style.display = 'none';
-        emailDisplay.textContent = data.email.trim();
-        throw new Error('Code verification required.');
+      } catch (error) {
+        console.error('Error:', error.message);
+      } finally {
+        isSubmitting = false;
+        updateSubmitButtonState();
       }
-    } catch (error) {
-      if (successMessage) successMessage.style.display = 'none';
-      if (formFields) formFields.style.display = 'flex';
-    } finally {
-      isSubmitting = false;
-      if (submitButton) submitButton.setAttribute('disabled', 'disabled');
-      updateSubmitButtonState();
-    }
-  });
-}
-const pathSegments = window.location.pathname.split('/').filter(Boolean)
-const pathLocale = pathSegments[0] || '';
-const allowedLocales = ['en', 'de', 'fr', 'es', 'it', 'pt'];
-const localeHeader = allowedLocales.includes(pathLocale) ? pathLocale : 'en';
-async function submitFormToVerifiedWebflow(data, userId) {
-  try {
-    const headers = {
-      'Content-Type': 'application/json',
-      'locale': localeHeader
-    };
+    });
+  }
+
+  const pathSegments = window.location.pathname.split('/').filter(Boolean);
+  const pathLocale = ['en', 'de', 'fr', 'es', 'it', 'pt'].includes(pathSegments[0]) ? pathSegments[0] : 'en';
+
+  async function submitFormToVerifiedWebflow(data, userId) {
+    const headers = { 'Content-Type': 'application/json', 'locale': pathLocale };
     if (userId) headers['user_id'] = userId;
     const response = await fetch('https://of-web-api.objectfirst.com/api/application/verified-webflow', {
-      method: 'POST',
-      headers: headers,
-      body: JSON.stringify(data),
-      credentials: 'include',
+      method: 'POST', headers: headers, body: JSON.stringify(data), credentials: 'include',
     });
-    const responseData = await response.json();
-    if (!response.ok) {
-      if (responseData.errors && responseData.errors.email) {
-        $('#main-form-2').validate().showErrors({
-          'email': responseData.errors.email[0]
-        });
-        if (formFields) formFields.style.display = 'none';
-        if (successMessage) successMessage.style.display = 'block';
-      }
-      throw new Error('Server error: ' + JSON.stringify(responseData));
-    }
-    return responseData;
-  } catch (error) {
-    throw error;
+    if (!response.ok) throw new Error('Server error: ' + await response.text());
+    return await response.json();
   }
-}
-formCode.addEventListener('submit', async function (event) {
-  event.preventDefault();
-  if (isSubmitting) return;
-  if (!$(formCode).valid()) return;
-  isSubmitting = true;
-  if (submitCode) submitCode.setAttribute('disabled', 'disabled');
-  const code = codeInput.value.trim();
-  const email = document.getElementById('email-2').value.trim();
-  try {
-    const userId = getCookieValue('user_id');
-    const headers = { 'Content-Type': 'application/json' };
-    if (userId) headers['user_id'] = userId;
-    const response = await fetch('https://of-web-api.objectfirst.com/api/application/webflow/verify', {
-      method: 'POST',
-      headers: headers,
-      body: JSON.stringify({ email, code }),
-      credentials: 'include',
+
+  if (formCode) {
+    formCode.addEventListener('submit', async function(event) {
+      event.preventDefault();
+      if (!$(formCode).valid() || isSubmitting) return;
+
+      isSubmitting = true;
+      if (submitCode) submitCode.setAttribute('disabled', 'disabled');
+
+      const code = codeInput.value.trim();
+      const email = document.getElementById('email-2').value.trim();
+      const userId = getCookieValue('user_id');
+      const headers = { 'Content-Type': 'application/json' };
+      if (userId) headers['user_id'] = userId;
+
+      try {
+        const response = await fetch('https://of-web-api.objectfirst.com/api/application/webflow/verify', {
+          method: 'POST', headers: headers, body: JSON.stringify({ email, code }), credentials: 'include',
+        });
+        const result = await response.json();
+        if (!response.ok) {
+          $(formCode).validate().showErrors({ code: result.message || 'Invalid code.' });
+          return;
+        }
+
+        if (codeFormContainer) codeFormContainer.style.display = 'none';
+        if (successMessage) successMessage.style.display = 'block';
+        if (form) form.style.display = 'none';
+        
+        const leadTypeValue = document.querySelector('input[name="lead_type"]:checked')?.value || '';
+        const roleValue = leadTypeValue ? leadTypeValue.charAt(0).toUpperCase() + leadTypeValue.slice(1).toLowerCase() : '';
+        const phoneNumber = iti ? iti.getNumber() : '';
+        const leadId = getCookieValue('user_id') || '';
+        if (window.dataLayer) {
+          window.dataLayer.push({
+            'event': 'lead2fa', 'role': roleValue, 'type': '',
+            'email': email, 'phone': phoneNumber, 'lead_id': leadId
+          });
+        }
+      } catch (error) {
+        console.error('Error submitting code:', error);
+      } finally {
+        isSubmitting = false;
+        if (submitCode) submitCode.removeAttribute('disabled');
+      }
     });
-    const result = await response.json();
-    if (!response.ok) {
-      $(formCode).validate().showErrors({ code: result.message || 'Invalid code.' }); return;
-    }
-    codeFormContainer.style.display = 'none';
-    mainFormContainer.style.display = 'flex';
-    if (successMessage) successMessage.style.display = 'block';
-    if (formFields) formFields.style.display = 'none';
-    const leadTypeValue = document.querySelector('input[name="lead_type"]:checked')?.value || '';
-    const roleValue = leadTypeValue ? leadTypeValue.charAt(0).toUpperCase() + leadTypeValue.slice(1).toLowerCase() : '';
-    const phoneNumber = iti.getNumber();
-    const leadId = getCookieValue('userId') || '';
-    if (window.dataLayer) {
-      window.dataLayer.push({
-        'event': 'lead2fa',
-        'role': roleValue,
-        'type': '',
-        'email': email,
-        'phone': phoneNumber,
-        'lead_id': leadId
-      });
-    }
-  } catch (error) {} finally {
-    isSubmitting = false;
-    if (submitCode) submitCode.removeAttribute('disabled');
+  }
+
+  const resendCodeButton = document.getElementById('resend-code');
+  if (resendCodeButton) {
+    resendCodeButton.addEventListener('click', async function(event) {
+      event.preventDefault();
+      const email = document.getElementById('email-2').value.trim();
+      if (!email) {
+        alert('Email is missing.');
+        return;
+      }
+      
+      this.disabled = true;
+      this.textContent = 'Please wait...';
+      setTimeout(() => {
+        this.disabled = false;
+        this.textContent = 'Resend Code';
+      }, 30000);
+
+      const dataToSend = { email: email };
+      
+      try {
+        const response = await fetch('https://of-web-api.objectfirst.com/api/application/verified-webflow', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'locale': pathLocale },
+          body: JSON.stringify(dataToSend),
+          credentials: 'include',
+        });
+        const result = await response.json();
+        alert(response.ok ? 'A new confirmation code has been sent.' : result.message || 'Failed to resend the code.');
+      } catch (error) {
+        alert('An error occurred while resending the code.');
+      }
+    });
   }
 });
-const resendCodeButton = document.getElementById('resend-code');
-if (resendCodeButton) {
-  resendCodeButton.addEventListener('click', async function (event) {
-    event.preventDefault();
-    const mainForm = document.getElementById('main-form-2');
-    if (!mainForm) { alert('Error: Main form #2 not found.'); return; }
-    const formData = new FormData(mainForm);
-    const email = formData.get('email');
-    if (!email) { alert('Email is missing. Please fill in the email field in the previous step.'); return; }
-    resendCodeButton.disabled = true;
-    resendCodeButton.textContent = 'Please wait...';
-    setTimeout(() => {
-      resendCodeButton.disabled = false;
-      resendCodeButton.textContent = 'Resend Code';
-    }, 30000);
-    const dataToSend = {
-      firstname: formData.get('firstname'),
-      lastname: formData.get('lastname'),
-      email: email,
-      job_title: formData.get('job_title'),
-      company: formData.get('company'),
-      phone: iti.getNumber(),
-      lead_type: formData.get('lead_type') || '',
-      country: formData.get('country'),
-    };
-    try {
-      const response = await fetch('https://of-web-api.objectfirst.com/api/application/verified-webflow', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'locale': localeHeader },
-        body: JSON.stringify(dataToSend),
-        credentials: 'include',
-      });
-      const result = await response.json();
-      if (response.ok) alert('A new confirmation code has been sent to your email.');
-      else { alert(result.message || 'Failed to resend the code. Please try again.'); }
-    } catch (error) { alert('An error occurred while resending the code. Please try again later.'); }
-  });
-}
