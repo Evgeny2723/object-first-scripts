@@ -1778,4 +1778,4 @@ if (resendCodeButton) {
       alert('An error occurred while resending the code. Please try again later.');
     }
   });
-});
+}
