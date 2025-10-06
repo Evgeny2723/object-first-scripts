@@ -1543,7 +1543,7 @@
         if (isSubmitting) return;
 
         isSubmitting = true;
-        submitButton.setAttribute('disabled', 'disabled');
+        submitButtons.forEach(btn => btn.setAttribute('disabled', 'disabled'));
 
         const formData = new FormData(form);
         // Проверка наличия значения в поле Full Name
@@ -1640,7 +1640,7 @@
           if (formFields) formFields.style.display = 'flex';
         } finally {
           isSubmitting = false;
-          submitButton.removeAttribute('disabled');
+          updateSubmitButtonState();
         }
       });
     }
