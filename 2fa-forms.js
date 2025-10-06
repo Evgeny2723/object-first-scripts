@@ -834,7 +834,7 @@
     }
   });
 
-  // Переменные для полей формы
+// Переменные для полей формы
 const firstNameInput = document.getElementById('First-Name');
 const lastNameInput = document.getElementById('Last-Name');
 const jobTitleInput = document.getElementById('Job-title');
@@ -854,8 +854,8 @@ const dropdownState2 = document.querySelector('.dropdown-state-2');
 const stateSelect2 = document.getElementById('state-2');
 const checkboxField = document.querySelector('.checkbox-field');
 const checkbox = document.querySelector('.checkbox-field input[type="checkbox"]');
-const submitButtons = document.querySelectorAll('#submit, #submit-2');
-const submitCode = document.querySelectorAll('#submit-code-violet, #submit-code');
+const submitButton = document.querySelector('#submit, #submit-2');
+const submitCode = document.querySelector('#submit-code-violet, #submit-code');
 const form2 = document.getElementById('main-form-2');
 const formCode = document.getElementById('code-form');
 const phoneInput = document.getElementById('phone');
@@ -863,7 +863,6 @@ const codeFormContainer = document.getElementById('code-form-container');
 const mainFormContainer = document.getElementById('main-form-container');
 const emailDisplay = document.getElementById('email-display');
 const selfAttributionInput = document.getElementById('self-attribution');
-const submitButtonWrappers = Array.from(submitButtons).map(btn => btn.closest('.submit-button-wrapper')).filter(Boolean);
 
 codeFormContainer.style.display = 'none';
 
@@ -1127,6 +1126,12 @@ countrySelect2.addEventListener('change', function () {
 
   if (dropdowns[selectedCountry]) {
     dropdowns[selectedCountry].style.display = 'block';
+  } else {
+    Object.values(dropdowns).forEach(dropdown => {
+      if (dropdown) {
+        dropdown.style.display = 'none';
+      }
+    });
   }
 });
 
@@ -1181,9 +1186,8 @@ const iti = window.intlTelInput(phoneInput, {
   }
 });
 
-
 let isFormInitialized = false;
-let isSubmitting = false; // Глобальный флаг для предотвращения мультиотправки формы
+
 let isCheckboxInteracted = false; // Флаг для отслеживания взаимодействия с чекбоксом
 
 // Функция для обновления состояния класса error у текста чекбокса
@@ -1205,7 +1209,6 @@ function updateCheckboxErrorClass() {
 $('#agreement').on('change', function () {
   isCheckboxInteracted = true; // Отмечаем, что было взаимодействие
   updateCheckboxErrorClass(); // Обновляем класс error при изменении состояния чекбокса
-  updateSubmitButtonState(); // Обновляем состояние кнопки при изменении чекбокса
 });
 
 // Изначально сбрасываем класс error и состояние чекбокса при загрузке страницы
@@ -1219,7 +1222,6 @@ $(document).ready(function () {
   // Проверяем состояние чекбокса после загрузки страницы и сброса
   resetCheckbox(); // Сбрасываем состояние чекбокса
   updateCheckboxErrorClass(); // Проверяем и обновляем класс error (если чекбокс был сброшен)
-  updateSubmitButtonState(); // Обновляем состояние кнопки при инициализации страницы
 });
 
 $('#code').mask('000000');
@@ -1408,37 +1410,64 @@ function resetCheckbox() {
   checkbox.parent().find('.w-checkbox-input').removeClass('w--redirected-checked'); // Убираем визуальное выделение
 }
 
+// Новый враппер основной кнопки
+const submitButtonWrapper = submitButton ? submitButton.closest('.submit-button-wrapper') : null;
+
+// Универсальная утилита для переключения disabled и CSS-классов у кнопок
+function setButtonState({
+  targets,
+  enabled,
+  inactiveClass = 'submit-inactive',
+  wrapper,
+  wrapperInactiveClass = 'button-is-inactive'
+}) {
+  const elements =
+    (typeof targets === 'string') ? document.querySelectorAll(targets) :
+    (targets instanceof Element) ? [targets] :
+    (targets && typeof targets.length === 'number') ? targets : [];
+
+  elements.forEach(el => {
+    if (!el) return;
+    if (enabled) {
+      el.removeAttribute('disabled');
+      el.classList.remove(inactiveClass);
+    } else {
+      el.setAttribute('disabled', 'disabled');
+      el.classList.add(inactiveClass);
+    }
+  });
+
+  if (wrapper) {
+    if (enabled) {
+      wrapper.classList.remove(wrapperInactiveClass);
+    } else {
+      wrapper.classList.add(wrapperInactiveClass);
+    }
+  }
+}
+
+// Функция обновления состояния кнопки отправки
 function updateSubmitButtonState() {
-  const isFormValid = $('#main-form-2').valid();
+  const isFormValid = $('#main-form-2').valid(); // Проверяем валидность всей формы
+  const isFormCodeValid = $('#code-form').valid();
   const selectedCountry = $('#country-2').val();
   const isCheckboxChecked = $('#agreement').prop('checked');
-  const isMainButtonEnabled = isFormValid && (selectedCountry === 'United States' || isCheckboxChecked);
+  const isCheckboxRequirementMet = selectedCountry === 'United States' || isCheckboxChecked; // Если выбрана US, игнорируем состояние чекбокса
 
-  submitButtons.forEach(btn => {
-    if (isMainButtonEnabled) {
-      btn.removeAttribute('disabled');
-      btn.classList.remove('submit-inactive');
-    } else {
-      btn.setAttribute('disabled', 'disabled');
-      btn.classList.add('submit-inactive');
-    }
+  // Основные кнопки: управляем disabled, submit-inactive и враппером
+  setButtonState({
+    targets: '#submit, #submit-2',
+    enabled: Boolean(isFormValid && isCheckboxRequirementMet),
+    inactiveClass: 'submit-inactive',
+    wrapper: submitButtonWrapper,
+    wrapperInactiveClass: 'button-is-inactive'
   });
 
-  submitButtonWrappers.forEach(wrapper => {
-    if (isMainButtonEnabled) {
-      wrapper.classList.remove('button-is-inactive');
-    } else {
-      wrapper.classList.add('button-is-inactive');
-    }
-  });
-
-  const isCodeFormValid = $('#code-form').valid();
-  submitCode.forEach(btn => {
-    if (isCodeFormValid) {
-      btn.removeAttribute('disabled');
-    } else {
-      btn.setAttribute('disabled', 'disabled');
-    }
+  // Кнопки кода: только кнопки, без враппера
+  setButtonState({
+    targets: '#submit-code-violet, #submit-code',
+    enabled: Boolean(isFormCodeValid),
+    inactiveClass: 'submit-inactive'
   });
 }
 
@@ -1461,14 +1490,29 @@ function toggleCountrySpecificElements(selectedCountry) {
   }, 50);
 }
 
+// Обработчик изменения состояния чекбокса
+$('#agreement').on('change', function () {
+  updateSubmitButtonState(); // Обновляем состояние кнопки
+});
+
 // Обновляем состояние кнопки при изменении формы
-$('#main-form-2, #code-form').on('input change', function () {
+$('#main-form-2, #code-form').on('input change', function (event) {
   updateSubmitButtonState();
 });
 
-// Изначально деактивируем кнопку отправки
-submitButtons.forEach(btn => btn.setAttribute('disabled', 'disabled'));
-submitCode.forEach(btn => btn.setAttribute('disabled', 'disabled'));
+// Изначально деактивируем кнопку отправки (оба вида) и кнопку кода + классы
+setButtonState({
+  targets: '#submit, #submit-2',
+  enabled: false,
+  inactiveClass: 'submit-inactive',
+  wrapper: submitButtonWrapper,
+  wrapperInactiveClass: 'button-is-inactive'
+});
+setButtonState({
+  targets: '#submit-code-violet, #submit-code',
+  enabled: false,
+  inactiveClass: 'submit-inactive'
+});
 
 // Функция добавления placeholder для поиска
 function addPlaceholder() {
@@ -1482,7 +1526,7 @@ function addPlaceholder() {
 
 addPlaceholder();
 
-const observer = new MutationObserver((mutationsList) => {
+const observer = new MutationObserver((mutationsList, observer) => {
   for (let mutation of mutationsList) {
     if (mutation.type === 'childList') {
       addPlaceholder();
@@ -1499,34 +1543,35 @@ $('#country-2').on('change', function () {
   $(this).valid();
 });
 
+const form = document.getElementById('main-form-2');
+const successMessage = document.querySelector('.success-message');
+const formFields = document.getElementById('main-form-2');
+let isSubmitting = false;
+
 function generateUserId() {
-      return 'user_' + Math.random().toString(36).substr(2, 9);
-    }
+  return 'user_' + Math.random().toString(36).substr(2, 9);
+}
 
-    function getCookieValue(name) {
-      const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
-      if (match) return match[2];
-      return null;
-    }
+function getCookieValue(name) {
+  const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+  if (match) return match[2];
+  return null;
+}
 
-    // Проверка cookies и localStorage
-    function checkCookiesAndStorage() {
-      const cookies = document.cookie.split(';').reduce((acc, cookie) => {
-        const [name, value] = cookie.trim().split('=');
-        acc[name] = value;
-        return acc;
-      }, {});
-    }
+// Проверка cookies и localStorage
+function checkCookiesAndStorage() {
+  const cookies = document.cookie.split(';').reduce((acc, cookie) => {
+    const [name, value] = cookie.trim().split('=');
+    acc[name] = value;
+    return acc;
+  }, {});
+}
 
-    checkCookiesAndStorage();
+checkCookiesAndStorage();
 
-// Основные переменные для кнопок отправки форм
-const submitButton2 = document.getElementById('submit-2');
-const submit2Button = document.getElementById('submit-code');
-
-// Основная форма
-if (form2) {
-  form2.addEventListener('submit', async function (event) {
+// 1. ОБРАБОТЧИК ОТПРАВКИ ОСНОВНОЙ ФОРМЫ
+if (form) {
+  form.addEventListener('submit', async function (event) {
     event.preventDefault();
 
     if (!$(this).valid()) return;
@@ -1534,31 +1579,39 @@ if (form2) {
     if (isSubmitting) return;
 
     isSubmitting = true;
-    if (submitButton2) submitButton2.setAttribute('disabled', 'disabled');
+    // Блокируем основные кнопки и ставим классы неактивности
+    setButtonState({
+      targets: '#submit, #submit-2',
+      enabled: false,
+      inactiveClass: 'submit-inactive',
+      wrapper: submitButtonWrapper,
+      wrapperInactiveClass: 'button-is-inactive'
+    });
 
-    const formData = new FormData(form2);
-    const leadTypeValue = form2.querySelector('input[name="lead_type"]:checked')?.value;
-    const selectedCountry = form2.querySelector('select[name="country"]').value;
+    const formData = new FormData(form);
+    const leadTypeValue = form.querySelector('input[name="lead_type"]:checked')?.value;
+    const selectedCountry = form.querySelector('select[name="country"]').value;
 
+    // Если у вас есть логика получения stateValue:
     let stateValue = '';
     if (selectedCountry === 'United States') {
-      stateValue = form2.querySelector('#state-2').value;
+      stateValue = form.querySelector('#state-2').value;
     } else if (selectedCountry === 'Australia') {
-      stateValue = form2.querySelector('#states-australia').value;
+      stateValue = form.querySelector('#states-australia').value;
     } else if (selectedCountry === 'Brazil') {
-      stateValue = form2.querySelector('#states-brazil').value;
+      stateValue = form.querySelector('#states-brazil').value;
     } else if (selectedCountry === 'Canada') {
-      stateValue = form2.querySelector('#states-canada').value;
+      stateValue = form.querySelector('#states-canada').value;
     } else if (selectedCountry === 'China') {
-      stateValue = form2.querySelector('#states-china').value;
+      stateValue = form.querySelector('#states-china').value;
     } else if (selectedCountry === 'Ireland') {
-      stateValue = form2.querySelector('#states-ireland').value;
+      stateValue = form.querySelector('#states-ireland').value;
     } else if (selectedCountry === 'India') {
-      stateValue = form2.querySelector('#states-india').value;
+      stateValue = form.querySelector('#states-india').value;
     } else if (selectedCountry === 'Italy') {
-      stateValue = form2.querySelector('#states-italy').value;
+      stateValue = form.querySelector('#states-italy').value;
     } else if (selectedCountry === 'Mexico') {
-      stateValue = form2.querySelector('#states-mexico').value;
+      stateValue = form.querySelector('#states-mexico').value;
     }
 
     const urlParams = new URLSearchParams(window.location.search);
@@ -1568,6 +1621,7 @@ if (form2) {
     const utmSource = urlParams.get('utm_source') || '';
     const utmTerm = urlParams.get('utm_term') || '';
 
+    // Формируем данные для отправки
     const data = {
       firstname: formData.get('firstname'),
       lastname: formData.get('lastname'),
@@ -1598,7 +1652,10 @@ if (form2) {
     }
 
     try {
+      // Отправка данных на наш API verified-webflow
       let userId = getCookieValue('user_id') || generateUserId();
+      document.cookie = `user_id=${userId}; path=/; max-age=31536000`;
+      
       const responseData = await submitFormToVerifiedWebflow(data, userId);
 
       console.log('Form submitted successfully.', responseData);
@@ -1607,10 +1664,10 @@ if (form2) {
         // Email уже подтверждён → заявка финализировалась
         mainFormContainer.style.display = 'flex';
         codeFormContainer.style.display = 'none';
-        if (form2) form2.style.display = 'none';
-        if (successMessage) successMessage.style.display = 'block';
 
-        document.cookie = `user_id=${userId}; path=/; max-age=31536000`;
+        // Показать успех
+        if (formFields) formFields.style.display = 'none';
+        if (successMessage) successMessage.style.display = 'block';
 
         const leadId = userId;
         const roleValue = data.lead_type.charAt(0).toUpperCase() + data.lead_type.slice(1).toLowerCase();
@@ -1627,6 +1684,7 @@ if (form2) {
         } else {
           console.warn('dataLayer не определен');
         }
+
       } else {
         // success === false → email не подтверждён, сервер отправил код, создал «черновик»
         if (responseData.errors) {
@@ -1638,33 +1696,37 @@ if (form2) {
           codeFormContainer.style.display = 'none';
           throw new Error('Form validation failed.');
         }
+
         // Если нет errors, но success: false → показываем форму кода
         codeFormContainer.style.display = 'block';
         mainFormContainer.style.display = 'none';
 
+        // Показываем введённый email
         emailDisplay.textContent = data.email.trim();
 
         throw new Error('Code verification required.');
       }
+
     } catch (error) {
       console.error('Error:', error.message);
       if (successMessage) successMessage.style.display = 'none';
-      if (form2) form2.style.display = 'flex';
+      if (formFields) formFields.style.display = 'flex';
     } finally {
       isSubmitting = false;
-      if (submitButton2) submitButton2.removeAttribute('disabled');
+      // Синхронизируем состояние кнопок и классов с текущей валидностью
+      setTimeout(updateSubmitButtonState, 0);
     }
   });
 }
 
 const pathSegments = window.location.pathname
   .split('/')
-  .filter(Boolean);
+  .filter(Boolean)
 const pathLocale = pathSegments[0] || '';
 const allowedLocales = ['en', 'de', 'fr', 'es', 'it', 'pt'];
 const localeHeader = allowedLocales.includes(pathLocale) ? pathLocale : 'en';
 
-// Функция отправки данных на API
+// 2. ФУНКЦИЯ отправки данных на https://api2-prod.objectfirst.app/api/application/verified-webflow
 async function submitFormToVerifiedWebflow(data, userId) {
   try {
     const headers = {
@@ -1678,20 +1740,21 @@ async function submitFormToVerifiedWebflow(data, userId) {
 
     const response = await fetch('https://of-web-api.objectfirst.com/api/application/verified-webflow', {
       method: 'POST',
-      headers,
+      headers: headers,
       body: JSON.stringify(data),
       credentials: 'include',
     });
 
     const responseData = await response.json();
 
+    // Проверяем HTTP статус
     if (!response.ok) {
       if (responseData.errors && responseData.errors.email) {
         $('#main-form-2').validate().showErrors({
           'email': responseData.errors.email[0]
         });
-        if (form2) form2.style.display = 'flex';
-        if (successMessage) successMessage.style.display = 'none';
+        if (formFields) formFields.style.display = 'none';
+        if (successMessage) successMessage.style.display = 'block';
       }
       throw new Error('Server error: ' + JSON.stringify(responseData));
     }
@@ -1703,68 +1766,100 @@ async function submitFormToVerifiedWebflow(data, userId) {
   }
 }
 
-// Форма для кода
-if (formCode) {
-  formCode.addEventListener('submit', async function (event) {
-    event.preventDefault();
+// 3. ОБРАБОТЧИК ФОРМЫ ДЛЯ КОДА
+formCode.addEventListener('submit', async function (event) {
+  event.preventDefault();
 
-    if (isSubmitting) return;
-    if (!$(formCode).valid()) return;
+  if (isSubmitting) return;
+  if (!$(formCode).valid()) return;
 
-    isSubmitting = true;
-    if (submit2Button) submit2Button.setAttribute('disabled', 'disabled');
-
-    const code = codeInput.value.trim();
-    const email = emailDisplay.textContent.trim() || emailInput2.value.trim();
-
-    try {
-      const userId = getCookieValue('user_id');
-
-      const headers = {
-        'Content-Type': 'application/json'
-      };
-      if (userId) {
-        headers['user_id'] = userId;
-      }
-
-      const response = await fetch('https://of-web-api.objectfirst.com/api/application/webflow/verify', {
-        method: 'POST',
-        headers,
-        body: JSON.stringify({ email, code }),
-        credentials: 'include',
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        if (result.message) {
-          $(formCode).validate().showErrors({ code: result.message });
-        }
-        throw new Error('Code submission failed');
-      }
-
-      codeFormContainer.style.display = 'none';
-      mainFormContainer.style.display = 'flex';
-
-      if (successMessage) successMessage.style.display = 'block';
-      if (form2) form2.style.display = 'none';
-
-    } catch (error) {
-      console.error('Error submitting code form:', error);
-    } finally {
-      isSubmitting = false;
-      if (submit2Button) submit2Button.removeAttribute('disabled');
-    }
+  isSubmitting = true;
+  // Блокируем кнопки кода и ставим класс неактивности
+  setButtonState({
+    targets: '#submit-code-violet, #submit-code',
+    enabled: false,
+    inactiveClass: 'submit-inactive'
   });
-}
 
-// Кнопка повторной отправки кода
+  const code = codeInput.value.trim();
+  const email = document.getElementById('email-2').value.trim();
+
+  try {
+    // Отправляем код на /api/application/webflow/verify
+    const userId = getCookieValue('user_id'); 
+
+    const headers = {
+      'Content-Type': 'application/json'
+    };
+    if (userId) {
+      headers['user_id'] = userId;
+    }
+
+    const response = await fetch('https://of-web-api.objectfirst.com/api/application/webflow/verify', {
+      method: 'POST',
+      headers: headers,
+      body: JSON.stringify({ email, code }),
+      credentials: 'include',
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      // Если код неверен, сервер присылает message
+      $(formCode).validate().showErrors({ code: result.message || 'Invalid code.' });
+      return;
+    }
+
+    // Код верен → сервер «финализирует» черновую заявку
+    codeFormContainer.style.display = 'none';
+    mainFormContainer.style.display = 'flex';
+
+    if (successMessage) successMessage.style.display = 'block';
+    if (formFields) formFields.style.display = 'none';
+
+    const leadTypeValue = document.querySelector('input[name="lead_type"]:checked')?.value || '';
+    const roleValue = leadTypeValue
+      ? leadTypeValue.charAt(0).toUpperCase() + leadTypeValue.slice(1).toLowerCase()
+      : '';
+    const phoneNumber = iti.getNumber();
+    const leadId = getCookieValue('userId') || '';
+
+    if (window.dataLayer) {
+      window.dataLayer.push({
+        'event': 'lead2fa',
+        'role': roleValue,
+        'type': '',
+        'email': email,
+        'phone': phoneNumber,
+        'lead_id': leadId
+      });
+    } else {
+      console.warn('dataLayer не определен');
+    }
+
+  } catch (error) {
+    console.error('Error submitting email form:', error);
+  } finally {
+    isSubmitting = false;
+    // Возвращаем кнопкам кода состояние согласно текущей валидности
+    setTimeout(updateSubmitButtonState, 0);
+  }
+});
+
+// ПОВТОРНАЯ ОТПРАВКА КОДА
 const resendCodeButton = document.getElementById('resend-code');
 if (resendCodeButton) {
   resendCodeButton.addEventListener('click', async function (event) {
     event.preventDefault();
 
-    const email = emailInput2.value.trim();
+    const mainForm = document.getElementById('main-form-2');
+    if (!mainForm) {
+      alert('Error: Main form #2 not found.');
+      return;
+    }
+    const formData = new FormData(mainForm);
+    const email = formData.get('email');
+
     if (!email) {
       alert('Email is missing. Please fill in the email field in the previous step.');
       return;
@@ -1772,17 +1867,27 @@ if (resendCodeButton) {
 
     resendCodeButton.disabled = true;
     resendCodeButton.textContent = 'Please wait...';
-
     setTimeout(() => {
       resendCodeButton.disabled = false;
       resendCodeButton.textContent = 'Resend Code';
     }, 30000);
 
+    const dataToSend = {
+      firstname: formData.get('firstname'),
+      lastname: formData.get('lastname'),
+      email: email,
+      job_title: formData.get('job_title'),
+      company: formData.get('company'),
+      phone: iti.getNumber(),
+      lead_type: formData.get('lead_type') || '',
+      country: formData.get('country'),
+    };
+
     try {
       const response = await fetch('https://of-web-api.objectfirst.com/api/application/verified-webflow', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
+        headers: { 'Content-Type': 'application/json', 'locale': localeHeader },
+        body: JSON.stringify(dataToSend),
         credentials: 'include',
       });
 
