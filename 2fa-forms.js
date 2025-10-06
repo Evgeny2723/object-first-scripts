@@ -854,7 +854,7 @@
   const stateSelect2 = document.getElementById('state-2');
   const checkboxField = document.querySelector('.checkbox-field');
   const checkbox = document.querySelector('.checkbox-field input[type="checkbox"]');
-  const submitButton = document.querySelector('#submit, #submit-2');
+  const submitButton = document.querySelectorAll('#submit, #submit-2');
   const submitCode = document.querySelector('#submit-code-violet, #submit-code');
   const form2 = document.getElementById('main-form-2');
   const formCode = document.getElementById('code-form');
@@ -863,12 +863,7 @@
   const mainFormContainer = document.getElementById('main-form-container');
   const emailDisplay = document.getElementById('email-display');
   const selfAttributionInput = document.getElementById('self-attribution');
-
-  const submitButtonWrappers = [];
-    submitButton.forEach(btn => {
-      const wrapper = btn.closest('.submit-button-wrapper');
-      if (wrapper) submitButtonWrappers.push(wrapper);
-    });
+  const submitButtonWrappers = Array.from(submitButtons).map(btn => btn.closest('.submit-button-wrapper')).filter(Boolean);
 
   codeFormContainer.style.display = 'none';
 
@@ -1416,29 +1411,37 @@
     checkbox.parent().find('.w-checkbox-input').removeClass('w--redirected-checked'); // Убираем визуальное выделение
   }
 
-function updateSubmitButtonState() {
-  // --- Логика для основной кнопки отправки ---
+  function updateSubmitButtonState() {
   const isFormValid = $('#main-form-2').valid();
   const selectedCountry = $('#country-2').val();
   const isCheckboxChecked = $('#agreement').prop('checked');
   const isMainButtonEnabled = isFormValid && (selectedCountry === 'United States' || isCheckboxChecked);
 
-  // Обновляем основную кнопку (или кнопки)
-  $('#submit, #submit-2').prop('disabled', !isMainButtonEnabled);
+  submitButtons.forEach(btn => {
+    if (isMainButtonEnabled) {
+      btn.removeAttribute('disabled');
+      btn.classList.remove('submit-inactive');
+    } else {
+      btn.setAttribute('disabled', 'disabled');
+      btn.classList.add('submit-inactive');
+    }
+  });
+  submitButtonWrappers.forEach(wrapper => {
+    if (isMainButtonEnabled) {
+      wrapper.classList.remove('button-is-inactive');
+    } else {
+      wrapper.classList.add('button-is-inactive');
+    }
+  });
 
-  // Обновляем CSS классы для основной кнопки и её обёртки
-  $('#submit, #submit-2').toggleClass('submit-inactive', !isMainButtonEnabled);
-  // Предполагается, что переменная submitButtonWrapper определена глобально
-  if (typeof submitButtonWrapper !== 'undefined' && submitButtonWrapper) {
-      $(submitButtonWrapper).toggleClass('button-is-inactive', !isMainButtonEnabled);
-  }
-
-
-  // --- Логика для кнопки отправки кода ---
-  const isCodeFormValid = $('#code-form').valid();
-
-  // Обновляем кнопку кода (или кнопки)
-  $('#submit-code-violet, #submit-code').prop('disabled', !isCodeFormValid);
+  const isCodeFormValid = $('#code-form').valid && $('#code-form').valid();
+  document.querySelectorAll('#submit-code-violet, #submit-code').forEach(btn => {
+    if (isCodeFormValid) {
+      btn.removeAttribute('disabled');
+    } else {
+      btn.setAttribute('disabled', 'disabled');
+    }
+  });
 }
 
   // Функция переключения элементов для конкретной страны
