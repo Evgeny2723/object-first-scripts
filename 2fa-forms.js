@@ -865,7 +865,7 @@
   const selfAttributionInput = document.getElementById('self-attribution');
 
   const submitButtonWrappers = [];
-    submitButtons.forEach(btn => {
+    submitButton.forEach(btn => {
       const wrapper = btn.closest('.submit-button-wrapper');
       if (wrapper) submitButtonWrappers.push(wrapper);
     });
