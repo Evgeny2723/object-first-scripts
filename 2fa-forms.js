@@ -835,331 +835,325 @@
   });
 
   // Переменные для полей формы
-  const firstNameInput = document.getElementById('First-Name');
-  const lastNameInput = document.getElementById('Last-Name');
-  const jobTitleInput = document.getElementById('Job-title');
-  const emailInput2 = document.getElementById('email-2');
-  const codeInput = document.getElementById('code');
-  const companyInput2 = document.getElementById('company-2');
-  const countrySelect2 = document.getElementById('country-2');
-  const dropdownAustralia = document.querySelector('.states-australia');
-  const dropdownBrazil = document.querySelector('.states-brazil');
-  const dropdownCanada = document.querySelector('.states-canada');
-  const dropdownChina = document.querySelector('.states-china');
-  const dropdownIreland = document.querySelector('.states-ireland');
-  const dropdownIndia = document.querySelector('.states-india');
-  const dropdownItaly = document.querySelector('.states-italy');
-  const dropdownMexico = document.querySelector('.states-mexico');
-  const dropdownState2 = document.querySelector('.dropdown-state-2');
-  const stateSelect2 = document.getElementById('state-2');
-  const checkboxField = document.querySelector('.checkbox-field');
-  const checkbox = document.querySelector('.checkbox-field input[type="checkbox"]');
-  const submitButtons = document.querySelectorAll('#submit, #submit-2');
-  const submitCode = document.querySelector('#submit-code-violet, #submit-code');
-  const form2 = document.getElementById('main-form-2');
-  const formCode = document.getElementById('code-form');
-  const phoneInput = document.getElementById('phone');
-  const codeFormContainer = document.getElementById('code-form-container');
-  const mainFormContainer = document.getElementById('main-form-container');
-  const emailDisplay = document.getElementById('email-display');
-  const selfAttributionInput = document.getElementById('self-attribution');
-  const submitButtonWrappers = Array.from(submitButtons).map(btn => btn.closest('.submit-button-wrapper')).filter(Boolean);
+const firstNameInput = document.getElementById('First-Name');
+const lastNameInput = document.getElementById('Last-Name');
+const jobTitleInput = document.getElementById('Job-title');
+const emailInput2 = document.getElementById('email-2');
+const codeInput = document.getElementById('code');
+const companyInput2 = document.getElementById('company-2');
+const countrySelect2 = document.getElementById('country-2');
+const dropdownAustralia = document.querySelector('.states-australia');
+const dropdownBrazil = document.querySelector('.states-brazil');
+const dropdownCanada = document.querySelector('.states-canada');
+const dropdownChina = document.querySelector('.states-china');
+const dropdownIreland = document.querySelector('.states-ireland');
+const dropdownIndia = document.querySelector('.states-india');
+const dropdownItaly = document.querySelector('.states-italy');
+const dropdownMexico = document.querySelector('.states-mexico');
+const dropdownState2 = document.querySelector('.dropdown-state-2');
+const stateSelect2 = document.getElementById('state-2');
+const checkboxField = document.querySelector('.checkbox-field');
+const checkbox = document.querySelector('.checkbox-field input[type="checkbox"]');
+const submitButtons = document.querySelectorAll('#submit, #submit-2');
+const submitCode = document.querySelectorAll('#submit-code-violet, #submit-code');
+const form2 = document.getElementById('main-form-2');
+const formCode = document.getElementById('code-form');
+const phoneInput = document.getElementById('phone');
+const codeFormContainer = document.getElementById('code-form-container');
+const mainFormContainer = document.getElementById('main-form-container');
+const emailDisplay = document.getElementById('email-display');
+const selfAttributionInput = document.getElementById('self-attribution');
+const submitButtonWrappers = Array.from(submitButtons).map(btn => btn.closest('.submit-button-wrapper')).filter(Boolean);
 
-  codeFormContainer.style.display = 'none';
+codeFormContainer.style.display = 'none';
 
-  const countryCodeMap = {
-    "Australia": "AU",
-    "Austria": "AT",
-    "Azerbaijan": "AZ",
-    "Albania": "AL",
-    "Algeria": "DZ",
-    "Angola": "AO",
-    "Andorra": "AD",
-    "Antigua and Barbuda": "AG",
-    "Argentina": "AR",
-    "Armenia": "AM",
-    "Afghanistan": "AF",
-    "Bahamas": "BS",
-    "Bangladesh": "BD",
-    "Barbados": "BB",
-    "Bahrain": "BH",
-    "Belarus": "BY",
-    "Belize": "BZ",
-    "Belgium": "BE",
-    "Benin": "BJ",
-    "Bulgaria": "BG",
-    "Bolivia": "BO",
-    "Bosnia and Herzegovina": "BA",
-    "Botswana": "BW",
-    "Brazil": "BR",
-    "Brunei Darussalam": "BN",
-    "Burkina Faso": "BF",
-    "Burundi": "BI",
-    "Bhutan": "BT",
-    "Vanuatu": "VU",
-    "Hungary": "HU",
-    "Venezuela": "VE",
-    "Vietnam": "VN",
-    "Gabon": "GA",
-    "Haiti": "HT",
-    "Guyana": "GY",
-    "Gambia": "GM",
-    "Ghana": "GH",
-    "Guatemala": "GT",
-    "Guinea": "GN",
-    "Guinea-Bissau": "GW",
-    "Germany": "DE",
-    "Honduras": "HN",
-    "Grenada": "GD",
-    "Greece": "GR",
-    "Georgia": "GE",
-    "Denmark": "DK",
-    "Congo, Democratic Republic of the": "CD",
-    "Djibouti": "DJ",
-    "Dominica": "DM",
-    "Dominican Republic": "DO",
-    "Egypt": "EG",
-    "Zambia": "ZM",
-    "Zimbabwe": "ZW",
-    "Israel": "IL",
-    "India": "IN",
-    "Indonesia": "ID",
-    "Jordan": "JO",
-    "Iraq": "IQ",
-    "Iran": "IR",
-    "Ireland": "IE",
-    "Iceland": "IS",
-    "Spain": "ES",
-    "Italy": "IT",
-    "Yemen": "YE",
-    "Cabo Verde": "CV",
-    "Kazakhstan": "KZ",
-    "Cambodia": "KH",
-    "Cameroon": "CM",
-    "Canada": "CA",
-    "Qatar": "QA",
-    "Kenya": "KE",
-    "Cyprus": "CY",
-    "Kiribati": "KI",
-    "China": "CN",
-    "Colombia": "CO",
-    "Comoros": "KM",
-    "Congo": "CG",
-    "North Korea": "KP",
-    "Costa Rica": "CR",
-    "Côte d'Ivoire": "CI",
-    "Cuba": "CU",
-    "Kuwait": "KW",
-    "Kyrgyzstan": "KG",
-    "Lao People's Democratic Republic": "LA",
-    "Latvia": "LV",
-    "Lesotho": "LS",
-    "Liberia": "LR",
-    "Lebanon": "LB",
-    "Libya": "LY",
-    "Lithuania": "LT",
-    "Liechtenstein": "LI",
-    "Luxembourg": "LU",
-    "Mauritius": "MU",
-    "Mauritania": "MR",
-    "Madagascar": "MG",
-    "Malawi": "MW",
-    "Malaysia": "MY",
-    "Mali": "ML",
-    "Maldives": "MV",
-    "Malta": "MT",
-    "Morocco": "MA",
-    "Marshall Islands": "MH",
-    "Mexico": "MX",
-    "Mozambique": "MZ",
-    "Monaco": "MC",
-    "Mongolia": "MN",
-    "Myanmar": "MM",
-    "Namibia": "NA",
-    "Nauru": "NR",
-    "Nepal": "NP",
-    "Niger": "NE",
-    "Nigeria": "NG",
-    "Netherlands": "NL",
-    "Nicaragua": "NI",
-    "Niue": "NU",
-    "New Zealand": "NZ",
-    "Norway": "NO",
-    "Tanzania, United Republic of": "TZ",
-    "United Arab Emirates": "AE",
-    "Oman": "OM",
-    "Cook Islands": "CK",
-    "Pakistan": "PK",
-    "Panama": "PA",
-    "Papua New Guinea": "PG",
-    "Paraguay": "PY",
-    "Peru": "PE",
-    "Poland": "PL",
-    "Portugal": "PT",
-    "Korea, Republic of": "KR",
-    "Moldova, Republic of": "MD",
-    "Russian Federation": "RU",
-    "Rwanda": "RW",
-    "Romania": "RO",
-    "El Salvador": "SV",
-    "Samoa": "WS",
-    "San Marino": "SM",
-    "Sao Tome and Principe": "ST",
-    "Saudi Arabia": "SA",
-    "Holy See (Vatican City State)": "VA",
-    "North Macedonia": "MK",
-    "Seychelles": "SC",
-    "Senegal": "SN",
-    "Saint Vincent and the Grenadines": "VC",
-    "Saint Kitts and Nevis": "KN",
-    "Saint Lucia": "LC",
-    "Serbia": "RS",
-    "Singapore": "SG",
-    "Syrian Arab Republic": "SY",
-    "Slovakia": "SK",
-    "Slovenia": "SI",
-    "United Kingdom": "GB",
-    "United States": "US",
-    "Solomon Islands": "SB",
-    "Somalia": "SO",
-    "Sudan": "SD",
-    "Suriname": "SR",
-    "Sierra Leone": "SL",
-    "Tajikistan": "TJ",
-    "Thailand": "TH",
-    "Timor-Leste": "TL",
-    "Togo": "TG",
-    "Tonga": "TO",
-    "Trinidad and Tobago": "TT",
-    "Tuvalu": "TV",
-    "Tunisia": "TN",
-    "Turkmenistan": "TM",
-    "Turkey": "TR",
-    "Uganda": "UG",
-    "Uzbekistan": "UZ",
-    "Ukraine": "UA",
-    "Uruguay": "UY",
-    "Fiji": "FJ",
-    "Philippines": "PH",
-    "Finland": "FI",
-    "France": "FR",
-    "Croatia": "HR",
-    "Central African Republic": "CF",
-    "Chad": "TD",
-    "Montenegro": "ME",
-    "Czech Republic": "CZ",
-    "Chile": "CL",
-    "Switzerland": "CH",
-    "Sweden": "SE",
-    "Sri Lanka": "LK",
-    "Ecuador": "EC",
-    "Equatorial Guinea": "GQ",
-    "Eritrea": "ER",
-    "Eswatini": "SZ",
-    "Estonia": "EE",
-    "Ethiopia": "ET"
+const countryCodeMap = {
+  "Australia": "AU",
+  "Austria": "AT",
+  "Azerbaijan": "AZ",
+  "Albania": "AL",
+  "Algeria": "DZ",
+  "Angola": "AO",
+  "Andorra": "AD",
+  "Antigua and Barbuda": "AG",
+  "Argentina": "AR",
+  "Armenia": "AM",
+  "Afghanistan": "AF",
+  "Bahamas": "BS",
+  "Bangladesh": "BD",
+  "Barbados": "BB",
+  "Bahrain": "BH",
+  "Belarus": "BY",
+  "Belize": "BZ",
+  "Belgium": "BE",
+  "Benin": "BJ",
+  "Bulgaria": "BG",
+  "Bolivia": "BO",
+  "Bosnia and Herzegovina": "BA",
+  "Botswana": "BW",
+  "Brazil": "BR",
+  "Brunei Darussalam": "BN",
+  "Burkina Faso": "BF",
+  "Burundi": "BI",
+  "Bhutan": "BT",
+  "Vanuatu": "VU",
+  "Hungary": "HU",
+  "Venezuela": "VE",
+  "Vietnam": "VN",
+  "Gabon": "GA",
+  "Haiti": "HT",
+  "Guyana": "GY",
+  "Gambia": "GM",
+  "Ghana": "GH",
+  "Guatemala": "GT",
+  "Guinea": "GN",
+  "Guinea-Bissau": "GW",
+  "Germany": "DE",
+  "Honduras": "HN",
+  "Grenada": "GD",
+  "Greece": "GR",
+  "Georgia": "GE",
+  "Denmark": "DK",
+  "Congo, Democratic Republic of the": "CD",
+  "Djibouti": "DJ",
+  "Dominica": "DM",
+  "Dominican Republic": "DO",
+  "Egypt": "EG",
+  "Zambia": "ZM",
+  "Zimbabwe": "ZW",
+  "Israel": "IL",
+  "India": "IN",
+  "Indonesia": "ID",
+  "Jordan": "JO",
+  "Iraq": "IQ",
+  "Iran": "IR",
+  "Ireland": "IE",
+  "Iceland": "IS",
+  "Spain": "ES",
+  "Italy": "IT",
+  "Yemen": "YE",
+  "Cabo Verde": "CV",
+  "Kazakhstan": "KZ",
+  "Cambodia": "KH",
+  "Cameroon": "CM",
+  "Canada": "CA",
+  "Qatar": "QA",
+  "Kenya": "KE",
+  "Cyprus": "CY",
+  "Kiribati": "KI",
+  "China": "CN",
+  "Colombia": "CO",
+  "Comoros": "KM",
+  "Congo": "CG",
+  "North Korea": "KP",
+  "Costa Rica": "CR",
+  "Côte d'Ivoire": "CI",
+  "Cuba": "CU",
+  "Kuwait": "KW",
+  "Kyrgyzstan": "KG",
+  "Lao People's Democratic Republic": "LA",
+  "Latvia": "LV",
+  "Lesotho": "LS",
+  "Liberia": "LR",
+  "Lebanon": "LB",
+  "Libya": "LY",
+  "Lithuania": "LT",
+  "Liechtenstein": "LI",
+  "Luxembourg": "LU",
+  "Mauritius": "MU",
+  "Mauritania": "MR",
+  "Madagascar": "MG",
+  "Malawi": "MW",
+  "Malaysia": "MY",
+  "Mali": "ML",
+  "Maldives": "MV",
+  "Malta": "MT",
+  "Morocco": "MA",
+  "Marshall Islands": "MH",
+  "Mexico": "MX",
+  "Mozambique": "MZ",
+  "Monaco": "MC",
+  "Mongolia": "MN",
+  "Myanmar": "MM",
+  "Namibia": "NA",
+  "Nauru": "NR",
+  "Nepal": "NP",
+  "Niger": "NE",
+  "Nigeria": "NG",
+  "Netherlands": "NL",
+  "Nicaragua": "NI",
+  "Niue": "NU",
+  "New Zealand": "NZ",
+  "Norway": "NO",
+  "Tanzania, United Republic of": "TZ",
+  "United Arab Emirates": "AE",
+  "Oman": "OM",
+  "Cook Islands": "CK",
+  "Pakistan": "PK",
+  "Panama": "PA",
+  "Papua New Guinea": "PG",
+  "Paraguay": "PY",
+  "Peru": "PE",
+  "Poland": "PL",
+  "Portugal": "PT",
+  "Korea, Republic of": "KR",
+  "Moldova, Republic of": "MD",
+  "Russian Federation": "RU",
+  "Rwanda": "RW",
+  "Romania": "RO",
+  "El Salvador": "SV",
+  "Samoa": "WS",
+  "San Marino": "SM",
+  "Sao Tome and Principe": "ST",
+  "Saudi Arabia": "SA",
+  "Holy See (Vatican City State)": "VA",
+  "North Macedonia": "MK",
+  "Seychelles": "SC",
+  "Senegal": "SN",
+  "Saint Vincent and the Grenadines": "VC",
+  "Saint Kitts and Nevis": "KN",
+  "Saint Lucia": "LC",
+  "Serbia": "RS",
+  "Singapore": "SG",
+  "Syrian Arab Republic": "SY",
+  "Slovakia": "SK",
+  "Slovenia": "SI",
+  "United Kingdom": "GB",
+  "United States": "US",
+  "Solomon Islands": "SB",
+  "Somalia": "SO",
+  "Sudan": "SD",
+  "Suriname": "SR",
+  "Sierra Leone": "SL",
+  "Tajikistan": "TJ",
+  "Thailand": "TH",
+  "Timor-Leste": "TL",
+  "Togo": "TG",
+  "Tonga": "TO",
+  "Trinidad and Tobago": "TT",
+  "Tuvalu": "TV",
+  "Tunisia": "TN",
+  "Turkmenistan": "TM",
+  "Turkey": "TR",
+  "Uganda": "UG",
+  "Uzbekistan": "UZ",
+  "Ukraine": "UA",
+  "Uruguay": "UY",
+  "Fiji": "FJ",
+  "Philippines": "PH",
+  "Finland": "FI",
+  "France": "FR",
+  "Croatia": "HR",
+  "Central African Republic": "CF",
+  "Chad": "TD",
+  "Montenegro": "ME",
+  "Czech Republic": "CZ",
+  "Chile": "CL",
+  "Switzerland": "CH",
+  "Sweden": "SE",
+  "Sri Lanka": "LK",
+  "Ecuador": "EC",
+  "Equatorial Guinea": "GQ",
+  "Eritrea": "ER",
+  "Eswatini": "SZ",
+  "Estonia": "EE",
+  "Ethiopia": "ET"
+};
+
+// Обработка изменения состояния меток полей
+function handleLabel(input) {
+  if (!input) return;
+  const label = input.nextElementSibling;
+
+  const updateLabelState = () => {
+    if (input.value !== '') {
+      label.classList.add('active');
+      input.classList.add('not-empty');
+    } else {
+      label.classList.remove('active');
+      input.classList.remove('not-empty');
+    }
   };
 
-  // Обработка изменения состояния меток полей
-  function handleLabel(input) {
-    if (!input) return;
-    const label = input.nextElementSibling;
+  updateLabelState();
 
-    const updateLabelState = () => {
-      if (input.value !== '') {
-        label.classList.add('active');
-        input.classList.add('not-empty');
-      } else {
-        label.classList.remove('active');
-        input.classList.remove('not-empty');
-      }
-    };
-
-    updateLabelState();
-
-    input.addEventListener('focus', () => {
-      label.classList.add('active');
-    });
-
-    input.addEventListener('blur', () => {
-      updateLabelState();
-    });
-
-    input.addEventListener('input', () => {
-      updateLabelState();
-    });
-  }
-
-  // Применение меток ко всем полям
-  [firstNameInput, lastNameInput, jobTitleInput, emailInput2, companyInput2, phoneInput, codeInput, selfAttributionInput].forEach(input => {
-    handleLabel(input);
+  input.addEventListener('focus', () => {
+    label.classList.add('active');
   });
 
-  // Обработчик для фокуса на поле ввода телефона
-  if (phoneInput) {
-    phoneInput.addEventListener('focus', () => {
-      if (phoneInput.nextElementSibling) {
-        phoneInput.nextElementSibling.classList.add('active');
-      }
-    });
-  }
+  input.addEventListener('blur', () => {
+    updateLabelState();
+  });
 
-  // Переключение отображения dropdown-меню в зависимости от выбранной страны
-  countrySelect2.addEventListener('change', function () {
-    const selectedCountry = countrySelect2.value;
-    const dropdowns = {
-      'United States': dropdownState2,
-      'Australia': dropdownAustralia,
-      'Brazil': dropdownBrazil,
-      'Canada': dropdownCanada,
-      'China': dropdownChina,
-      'Ireland': dropdownIreland,
-      'India': dropdownIndia,
-      'Italy': dropdownItaly,
-      'Mexico': dropdownMexico
-    };
+  input.addEventListener('input', () => {
+    updateLabelState();
+  });
+}
 
-    Object.values(dropdowns).forEach(dropdown => {
-      if (dropdown) {
-        dropdown.style.display = 'none';
-      }
-    });
+// Применение меток ко всем полям
+[firstNameInput, lastNameInput, jobTitleInput, emailInput2, companyInput2, phoneInput, codeInput, selfAttributionInput].forEach(input => {
+  handleLabel(input);
+});
 
-    if (dropdowns[selectedCountry]) {
-      dropdowns[selectedCountry].style.display = 'block';
-    } else {
-      Object.values(dropdowns).forEach(dropdown => {
-        if (dropdown) {
-          dropdown.style.display = 'none';
-        }
-      });
+// Обработчик для фокуса на поле ввода телефона
+if (phoneInput) {
+  phoneInput.addEventListener('focus', () => {
+    if (phoneInput.nextElementSibling) {
+      phoneInput.nextElementSibling.classList.add('active');
+    }
+  });
+}
+
+// Переключение отображения dropdown-меню в зависимости от выбранной страны
+countrySelect2.addEventListener('change', function () {
+  const selectedCountry = countrySelect2.value;
+  const dropdowns = {
+    'United States': dropdownState2,
+    'Australia': dropdownAustralia,
+    'Brazil': dropdownBrazil,
+    'Canada': dropdownCanada,
+    'China': dropdownChina,
+    'Ireland': dropdownIreland,
+    'India': dropdownIndia,
+    'Italy': dropdownItaly,
+    'Mexico': dropdownMexico
+  };
+
+  Object.values(dropdowns).forEach(dropdown => {
+    if (dropdown) {
+      dropdown.style.display = 'none';
     }
   });
 
-  // Инициализация селекторов для выбора страны и штатов
-  $('#country-2').selectpicker();
-  $('#state-2, #states-australia, #states-brazil, #states-canada, #states-china, #states-ireland, #states-india, #states-italy, #states-mexico').selectpicker();
+  if (dropdowns[selectedCountry]) {
+    dropdowns[selectedCountry].style.display = 'block';
+  }
+});
 
-  $('#country-2').on('shown.bs.select', function () {
-    const selectpicker = $(this).data('selectpicker');
-    selectpicker.$menuInner[0].scrollTop = 0;
-  });
+// Инициализация селекторов для выбора страны и штатов
+$('#country-2').selectpicker();
+$('#state-2, #states-australia, #states-brazil, #states-canada, #states-china, #states-ireland, #states-india, #states-italy, #states-mexico').selectpicker();
 
-  $('#state-2, #states-australia, #states-brazil, #states-canada, #states-china, #states-ireland, #states-india, #states-italy, #states-mexico').on('shown.bs.select', function () {
-    const selectpicker = $(this).data('selectpicker');
-    selectpicker.$menuInner[0].scrollTop = 0;
-  });
+$('#country-2').on('shown.bs.select', function () {
+  const selectpicker = $(this).data('selectpicker');
+  selectpicker.$menuInner[0].scrollTop = 0;
+});
 
-  // Инициализация intlTelInput
-  const iti = window.intlTelInput(phoneInput, {
-    utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
-    autoPlaceholder: "aggressive",
-    separateDialCode: true,
-    initialCountry: "auto",
-    geoIpLookup: function (success, failure) {
-      fetch('https://faas-nyc1-2ef2e6cc.doserverless.co/api/v1/web/fn-3627560b-2163-4a62-81db-3a3b5da17d5a/ip/info')
-        .then(response => response.json())
-        .then(data => {
+$('#state-2, #states-australia, #states-brazil, #states-canada, #states-china, #states-ireland, #states-india, #states-italy, #states-mexico').on('shown.bs.select', function () {
+  const selectpicker = $(this).data('selectpicker');
+  selectpicker.$menuInner[0].scrollTop = 0;
+});
+
+// Инициализация intlTelInput
+const iti = window.intlTelInput(phoneInput, {
+  utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
+  autoPlaceholder: "aggressive",
+  separateDialCode: true,
+  initialCountry: "auto",
+  geoIpLookup: function (success, failure) {
+    fetch('https://faas-nyc1-2ef2e6cc.doserverless.co/api/v1/web/fn-3627560b-2163-4a62-81db-3a3b5da17d5a/ip/info')
+      .then(response => response.json())
+      .then(data => {
         if (data && data.iso_code && data.country) {
           // Устанавливаем страну для intlTelInput
           success(data.iso_code);
@@ -1180,238 +1174,241 @@
           failure();
         }
       })
-        .catch(error => {
+      .catch(error => {
         console.error('Error while getting IP data:', error);
         failure();
       });
-    }
-  });
+  }
+});
 
-  let isFormInitialized = false;
 
-  let isCheckboxInteracted = false; // Флаг для отслеживания взаимодействия с чекбоксом
+let isFormInitialized = false;
+let isSubmitting = false; // Глобальный флаг для предотвращения мультиотправки формы
+let isCheckboxInteracted = false; // Флаг для отслеживания взаимодействия с чекбоксом
 
-  // Функция для обновления состояния класса error у текста чекбокса
-  function updateCheckboxErrorClass() {
-    const checkbox = $('#agreement');
-    const label = checkbox.closest('.checkbox-field').find('.checkbox-text'); // Обращение к классу .checkbox-text
+// Функция для обновления состояния класса error у текста чекбокса
+function updateCheckboxErrorClass() {
+  const checkbox = $('#agreement');
+  const label = checkbox.closest('.checkbox-field').find('.checkbox-text'); // Обращение к классу .checkbox-text
 
-    // Проверяем состояние только после взаимодействия
-    if (isCheckboxInteracted) {
-      if (checkbox.is(':checked')) {
-        label.removeClass('error'); // Удаляем класс error, если чекбокс отмечен
-      } else {
-        label.addClass('error'); // Добавляем класс error, если чекбокс не отмечен
-      }
+  // Проверяем состояние только после взаимодействия
+  if (isCheckboxInteracted) {
+    if (checkbox.is(':checked')) {
+      label.removeClass('error'); // Удаляем класс error, если чекбокс отмечен
+    } else {
+      label.addClass('error'); // Добавляем класс error, если чекбокс не отмечен
     }
   }
+}
 
-  // Обработчик изменения состояния чекбокса
-  $('#agreement').on('change', function () {
-    isCheckboxInteracted = true; // Отмечаем, что было взаимодействие
-    updateCheckboxErrorClass(); // Обновляем класс error при изменении состояния чекбокса
-  });
+// Обработчик изменения состояния чекбокса
+$('#agreement').on('change', function () {
+  isCheckboxInteracted = true; // Отмечаем, что было взаимодействие
+  updateCheckboxErrorClass(); // Обновляем класс error при изменении состояния чекбокса
+  updateSubmitButtonState(); // Обновляем состояние кнопки при изменении чекбокса
+});
 
-  // Изначально сбрасываем класс error и состояние чекбокса при загрузке страницы
-  $(document).ready(function () {
-    const checkbox = $('#agreement');
-    const label = checkbox.closest('.checkbox-field').find('.checkbox-text');
+// Изначально сбрасываем класс error и состояние чекбокса при загрузке страницы
+$(document).ready(function () {
+  const checkbox = $('#agreement');
+  const label = checkbox.closest('.checkbox-field').find('.checkbox-text');
 
-    // Удаляем класс error при загрузке страницы
-    label.removeClass('error');
+  // Удаляем класс error при загрузке страницы
+  label.removeClass('error');
 
-    // Проверяем состояние чекбокса после загрузки страницы и сброса
-    resetCheckbox(); // Сбрасываем состояние чекбокса
-    updateCheckboxErrorClass(); // Проверяем и обновляем класс error (если чекбокс был сброшен)
-  });
+  // Проверяем состояние чекбокса после загрузки страницы и сброса
+  resetCheckbox(); // Сбрасываем состояние чекбокса
+  updateCheckboxErrorClass(); // Проверяем и обновляем класс error (если чекбокс был сброшен)
+  updateSubmitButtonState(); // Обновляем состояние кнопки при инициализации страницы
+});
 
-  $('#code').mask('000000');
+$('#code').mask('000000');
 
-  // Инициализация валидации формы code-form
-  const validatorCode = $('#code-form').validate({
-    onfocusout: function (element) {
-      if ($(element).data('modified')) {
-        $(element).valid(); // Проверка поля при потере фокуса
-      }
-    },
-    onkeyup: function (element) {
-      $(element).data('modified', true);
-      $(element).valid(); // Проверка поля при вводе данных
-    },
-    onclick: function (element) {
-      if (isFormInitialized) {
-        $(element).valid(); // Проверка поля при клике (например, для чекбоксов)
-      }
-    },
-    rules: {
-      code: {
-        required: true,
-        noSpacesOnly: true,
-        minlength: 6,
-      }
-    },
-    messages: {
-      code: {
-        required: "This field is required",
-      }
-    },
-    errorPlacement: function (error, element) {
-      if ($(element).data('modified')) {
-        error.appendTo(element.closest(".field-row"));
-      }
-    },
-    highlight: function (element) {
-      if ($(element).data('modified')) {
-        $(element).css('border', '1px solid #c50006'); // Добавляем красную границу при ошибке
-      }
-    },
-    unhighlight: function (element) {
-      $(element).css('border', ''); // Убираем границу, если ошибок нет
-    },
-    ignoreTitle: true,
-    onfocusin: function (element) {
-      isFormInitialized = true; // Начало валидации при первом взаимодействии
-      $(element).data("interacted", true); // Помечаем поле как взаимодействующее
+// Инициализация валидации формы code-form
+const validatorCode = $('#code-form').validate({
+  onfocusout: function (element) {
+    if ($(element).data('modified')) {
+      $(element).valid(); // Проверка поля при потере фокуса
     }
-  });
-
-  // Инициализация валидации формы main-form-2
-  const validator = $('#main-form-2').validate({
-    onfocusout: function (element) {
-      if ($(element).data('modified')) {
-        $(element).valid(); // Проверка поля при потере фокуса
-      }
-    },
-    onkeyup: function (element) {
-      $(element).data('modified', true);
-      $(element).valid(); // Проверка поля при вводе данных
-    },
-    onclick: function (element) {
-      if (isFormInitialized) {
-        $(element).valid(); // Проверка поля при клике (например, для чекбоксов)
-      }
-    },
-    rules: {
-      firstname: {
-        required: true,
-        maxlength: 50,
-        noSpacesOnly: true
-      },
-      lastname: {
-        required: true,
-        maxlength: 50,
-        noSpacesOnly: true
-      },
-      email: {
-        required: true,
-        maxlength: 50,
-        email: true,
-        corporate: true,
-        validEmailChars: true
-      },
-      job_title: {
-        required: true,
-        maxlength: 50,
-        noSpacesOnly: true
-      },
-      company: {
-        required: true,
-        maxlength: 50,
-        noSpacesOnly: true
-      },
-      phone: {
-        phoneCustom: true
-      },
-      'self-attribution': {
-          maxlength: 50
-        },
-      agreement: {
-        required: function (element) {
-          const selectedCountry = $('#country-2').val();
-          return selectedCountry !== 'United States' && $(element).is(':visible');
-        }
-      }
-    },
-    messages: {
-      firstname: {
-        required: "This field is required",
-        maxlength: "Firstname must be at most 50 characters"
-      },
-      lastname: {
-        required: "This field is required",
-        maxlength: "Lastname must be at most 50 characters"
-      },
-      email: {
-        required: "This field is required",
-        maxlength: "Email must be at most 50 characters",
-        email: "Invalid email address",
-        corporate: "Please enter a valid corporate email address (e.g., yourname@company.com). Personal email addresses (e.g., Gmail, Yahoo) are not accepted."
-      },
-      job_title: {
-        required: "This field is required",
-        maxlength: "Job title must be at most 50 characters"
-      },
-      company: {
-        required: "This field is required",
-        maxlength: "Company must be at most 50 characters"
-      },
-      phone: {
-        phoneCustom: "Phone number is invalid. Please add your country code, area code and phone number. Your phone number can contain numbers, spaces and these special characters: ( ) - # +",
-      },
-      'self-attribution': {
-          maxlength: "This field should contain no more than 50 characters"
-        }
-    },
-    errorPlacement: function (error, element) {
-      if ($(element).data('modified')) {
-        error.appendTo(element.closest(".field-row"));
-      }
-    },
-    highlight: function (element) {
-      if ($(element).data('modified')) {
-        $(element).css('border', '1px solid #c50006'); // Добавляем красную границу при ошибке
-      }
-    },
-    unhighlight: function (element) {
-      $(element).css('border', ''); // Убираем границу, если ошибок нет
-    },
-    ignoreTitle: true,
-    onfocusin: function (element) {
-      isFormInitialized = true; // Начало валидации при первом взаимодействии
-      $(element).data("interacted", true); // Помечаем поле как взаимодействующее
+  },
+  onkeyup: function (element) {
+    $(element).data('modified', true);
+    $(element).valid(); // Проверка поля при вводе данных
+  },
+  onclick: function (element) {
+    if (isFormInitialized) {
+      $(element).valid(); // Проверка поля при клике (например, для чекбоксов)
     }
-  });
-
-  // Кастомный метод для проверки телефона
-  $.validator.addMethod("phoneCustom", function (value, element) {
-    return iti.isValidNumber(); // Используем метод валидации intlTelInput
-  }, "Phone number is invalid. Please add your country code, area code and phone number. Your phone number can contain numbers, spaces and these special characters: ( ) - # +");
-
-  // Кастомный метод для проверки корпоративного email
-  $.validator.addMethod("corporate", function (value, element) {
-    return !/@(gmail\.com|yahoo\.com|hotmail\.com|outlook\.com|mail\.ru)$/i.test(value);
-  }, "Please enter a valid corporate email address (e.g., yourname@company.com). Personal email addresses (e.g., Gmail, Yahoo) are not accepted.");
-
-  // Кастомный метод для проверки допустимых символов в email
-  $.validator.addMethod("validEmailChars", function (value, element) {
-    // Разрешаем только буквы, цифры, @, ., -, _
-    return this.optional(element) || /^[a-zA-Z0-9@.\-_]+$/.test(value);
-  }, "Please use only valid characters in the email field (letters, numbers, @, ., -, _).");
-
-  // Кастомный метод для проверки на только пробелы
-  $.validator.addMethod("noSpacesOnly", function (value, element) {
-    // Проверяем, чтобы поле не содержало только пробелы
-    return this.optional(element) || value.trim().length > 0;
-  }, "This field cannot contain only spaces.");
-
-  // Функция сброса состояния чекбокса
-  function resetCheckbox() {
-    const checkbox = $('#agreement');
-    checkbox.prop('checked', false).removeAttr('checked'); // Сбросить чекбокс
-    checkbox.parent().find('.w-checkbox-input').removeClass('w--redirected-checked'); // Убираем визуальное выделение
+  },
+  rules: {
+    code: {
+      required: true,
+      noSpacesOnly: true,
+      minlength: 6,
+    }
+  },
+  messages: {
+    code: {
+      required: "This field is required",
+    }
+  },
+  errorPlacement: function (error, element) {
+    if ($(element).data('modified')) {
+      error.appendTo(element.closest(".field-row"));
+    }
+  },
+  highlight: function (element) {
+    if ($(element).data('modified')) {
+      $(element).css('border', '1px solid #c50006'); // Добавляем красную границу при ошибке
+    }
+  },
+  unhighlight: function (element) {
+    $(element).css('border', ''); // Убираем границу, если ошибок нет
+  },
+  ignoreTitle: true,
+  onfocusin: function (element) {
+    isFormInitialized = true; // Начало валидации при первом взаимодействии
+    $(element).data("interacted", true); // Помечаем поле как взаимодействующее
   }
+});
 
-  function updateSubmitButtonState() {
+// Инициализация валидации формы main-form-2
+const validator = $('#main-form-2').validate({
+  onfocusout: function (element) {
+    if ($(element).data('modified')) {
+      $(element).valid(); // Проверка поля при потере фокуса
+    }
+  },
+  onkeyup: function (element) {
+    $(element).data('modified', true);
+    $(element).valid(); // Проверка поля при вводе данных
+  },
+  onclick: function (element) {
+    if (isFormInitialized) {
+      $(element).valid(); // Проверка поля при клике (например, для чекбоксов)
+    }
+  },
+  rules: {
+    firstname: {
+      required: true,
+      maxlength: 50,
+      noSpacesOnly: true
+    },
+    lastname: {
+      required: true,
+      maxlength: 50,
+      noSpacesOnly: true
+    },
+    email: {
+      required: true,
+      maxlength: 50,
+      email: true,
+      corporate: true,
+      validEmailChars: true
+    },
+    job_title: {
+      required: true,
+      maxlength: 50,
+      noSpacesOnly: true
+    },
+    company: {
+      required: true,
+      maxlength: 50,
+      noSpacesOnly: true
+    },
+    phone: {
+      phoneCustom: true
+    },
+    'self-attribution': {
+      maxlength: 50
+    },
+    agreement: {
+      required: function (element) {
+        const selectedCountry = $('#country-2').val();
+        return selectedCountry !== 'United States' && $(element).is(':visible');
+      }
+    }
+  },
+  messages: {
+    firstname: {
+      required: "This field is required",
+      maxlength: "Firstname must be at most 50 characters"
+    },
+    lastname: {
+      required: "This field is required",
+      maxlength: "Lastname must be at most 50 characters"
+    },
+    email: {
+      required: "This field is required",
+      maxlength: "Email must be at most 50 characters",
+      email: "Invalid email address",
+      corporate: "Please enter a valid corporate email address (e.g., yourname@company.com). Personal email addresses (e.g., Gmail, Yahoo) are not accepted."
+    },
+    job_title: {
+      required: "This field is required",
+      maxlength: "Job title must be at most 50 characters"
+    },
+    company: {
+      required: "This field is required",
+      maxlength: "Company must be at most 50 characters"
+    },
+    phone: {
+      phoneCustom: "Phone number is invalid. Please add your country code, area code and phone number. Your phone number can contain numbers, spaces and these special characters: ( ) - # +",
+    },
+    'self-attribution': {
+      maxlength: "This field should contain no more than 50 characters"
+    }
+  },
+  errorPlacement: function (error, element) {
+    if ($(element).data('modified')) {
+      error.appendTo(element.closest(".field-row"));
+    }
+  },
+  highlight: function (element) {
+    if ($(element).data('modified')) {
+      $(element).css('border', '1px solid #c50006'); // Добавляем красную границу при ошибке
+    }
+  },
+  unhighlight: function (element) {
+    $(element).css('border', ''); // Убираем границу, если ошибок нет
+  },
+  ignoreTitle: true,
+  onfocusin: function (element) {
+    isFormInitialized = true; // Начало валидации при первом взаимодействии
+    $(element).data("interacted", true); // Помечаем поле как взаимодействующее
+  }
+});
+
+// Кастомный метод для проверки телефона
+$.validator.addMethod("phoneCustom", function (value, element) {
+  return iti.isValidNumber(); // Используем метод валидации intlTelInput
+}, "Phone number is invalid. Please add your country code, area code and phone number. Your phone number can contain numbers, spaces and these special characters: ( ) - # +");
+
+// Кастомный метод для проверки корпоративного email
+$.validator.addMethod("corporate", function (value, element) {
+  return !/@(gmail\.com|yahoo\.com|hotmail\.com|outlook\.com|mail\.ru)$/i.test(value);
+}, "Please enter a valid corporate email address (e.g., yourname@company.com). Personal email addresses (e.g., Gmail, Yahoo) are not accepted.");
+
+// Кастомный метод для проверки допустимых символов в email
+$.validator.addMethod("validEmailChars", function (value, element) {
+  // Разрешаем только буквы, цифры, @, ., -, _
+  return this.optional(element) || /^[a-zA-Z0-9@.\-_]+$/.test(value);
+}, "Please use only valid characters in the email field (letters, numbers, @, ., -, _).");
+
+// Кастомный метод для проверки на только пробелы
+$.validator.addMethod("noSpacesOnly", function (value, element) {
+  // Проверяем, чтобы поле не содержало только пробелы
+  return this.optional(element) || value.trim().length > 0;
+}, "This field cannot contain only spaces.");
+
+// Функция сброса состояния чекбокса
+function resetCheckbox() {
+  const checkbox = $('#agreement');
+  checkbox.prop('checked', false).removeAttr('checked'); // Сбросить чекбокс
+  checkbox.parent().find('.w-checkbox-input').removeClass('w--redirected-checked'); // Убираем визуальное выделение
+}
+
+function updateSubmitButtonState() {
   const isFormValid = $('#main-form-2').valid();
   const selectedCountry = $('#country-2').val();
   const isCheckboxChecked = $('#agreement').prop('checked');
@@ -1435,8 +1432,8 @@
     }
   });
 
-  const isCodeFormValid = $('#code-form').valid(); // Исправлено
-  document.querySelectorAll('#submit-code-violet, #submit-code').forEach(btn => {
+  const isCodeFormValid = $('#code-form').valid();
+  submitCode.forEach(btn => {
     if (isCodeFormValid) {
       btn.removeAttribute('disabled');
     } else {
@@ -1445,401 +1442,340 @@
   });
 }
 
-  // Функция переключения элементов для конкретной страны
-  function toggleCountrySpecificElements(selectedCountry) {
-    resetCheckbox(); // Сбрасываем чекбокс при смене страны
+// Функция переключения элементов для конкретной страны
+function toggleCountrySpecificElements(selectedCountry) {
+  resetCheckbox(); // Сбрасываем чекбокс при смене страны
 
+  if (selectedCountry === 'United States') {
+    document.querySelector('.form-message').style.display = 'none';
+    document.querySelector('.form-message_usa').style.display = 'block';
+    $('#agreement').prop('checked', true).parent().hide(); // Установить и скрыть чекбокс
+  } else {
+    document.querySelector('.form-message').style.display = 'block';
+    document.querySelector('.form-message_usa').style.display = 'none';
+    $('#agreement').parent().show(); // Показать чекбокс
+  }
+
+  setTimeout(() => {
+    updateSubmitButtonState(); // Обновляем состояние кнопки после изменения страны
+  }, 50);
+}
+
+// Обновляем состояние кнопки при изменении формы
+$('#main-form-2, #code-form').on('input change', function () {
+  updateSubmitButtonState();
+});
+
+// Изначально деактивируем кнопку отправки
+submitButtons.forEach(btn => btn.setAttribute('disabled', 'disabled'));
+submitCode.forEach(btn => btn.setAttribute('disabled', 'disabled'));
+
+// Функция добавления placeholder для поиска
+function addPlaceholder() {
+  const searchInputs = document.querySelectorAll('.form-control[type="search"]');
+  searchInputs.forEach(function (searchInput) {
+    if (searchInput && !searchInput.getAttribute('placeholder')) {
+      searchInput.setAttribute('placeholder', 'Search');
+    }
+  });
+}
+
+addPlaceholder();
+
+const observer = new MutationObserver((mutationsList) => {
+  for (let mutation of mutationsList) {
+    if (mutation.type === 'childList') {
+      addPlaceholder();
+    }
+  }
+});
+
+observer.observe(document.body, { childList: true, subtree: true });
+
+// Обработчик изменения страны
+$('#country-2').on('change', function () {
+  toggleCountrySpecificElements(this.value);
+  iti.setCountry(countryCodeMap[this.value]);
+  $(this).valid();
+});
+
+// Основные переменные для кнопок отправки форм
+const submitButton2 = document.getElementById('submit-2');
+const submit2Button = document.getElementById('submit-code');
+
+// Основная форма
+if (form2) {
+  form2.addEventListener('submit', async function (event) {
+    event.preventDefault();
+
+    if (!$(this).valid()) return;
+
+    if (isSubmitting) return;
+
+    isSubmitting = true;
+    if (submitButton2) submitButton2.setAttribute('disabled', 'disabled');
+
+    const formData = new FormData(form2);
+    const leadTypeValue = form2.querySelector('input[name="lead_type"]:checked')?.value;
+    const selectedCountry = form2.querySelector('select[name="country"]').value;
+
+    let stateValue = '';
     if (selectedCountry === 'United States') {
-      document.querySelector('.form-message').style.display = 'none';
-      document.querySelector('.form-message_usa').style.display = 'block';
-      $('#agreement').prop('checked', true).parent().hide(); // Установить и скрыть чекбокс
-    } else {
-      document.querySelector('.form-message').style.display = 'block';
-      document.querySelector('.form-message_usa').style.display = 'none';
-      $('#agreement').parent().show(); // Показать чекбокс
+      stateValue = form2.querySelector('#state-2').value;
+    } else if (selectedCountry === 'Australia') {
+      stateValue = form2.querySelector('#states-australia').value;
+    } else if (selectedCountry === 'Brazil') {
+      stateValue = form2.querySelector('#states-brazil').value;
+    } else if (selectedCountry === 'Canada') {
+      stateValue = form2.querySelector('#states-canada').value;
+    } else if (selectedCountry === 'China') {
+      stateValue = form2.querySelector('#states-china').value;
+    } else if (selectedCountry === 'Ireland') {
+      stateValue = form2.querySelector('#states-ireland').value;
+    } else if (selectedCountry === 'India') {
+      stateValue = form2.querySelector('#states-india').value;
+    } else if (selectedCountry === 'Italy') {
+      stateValue = form2.querySelector('#states-italy').value;
+    } else if (selectedCountry === 'Mexico') {
+      stateValue = form2.querySelector('#states-mexico').value;
     }
 
-    setTimeout(() => {
-      updateSubmitButtonState(); // Обновляем состояние кнопки после изменения страны
-    }, 50);
-  }
+    const urlParams = new URLSearchParams(window.location.search);
+    const utmCampaign = urlParams.get('utm_campaign') || '';
+    const utmContent = urlParams.get('utm_content') || '';
+    const utmMedium = urlParams.get('utm_medium') || '';
+    const utmSource = urlParams.get('utm_source') || '';
+    const utmTerm = urlParams.get('utm_term') || '';
 
-  // Обработчик изменения состояния чекбокса
-  $('#agreement').on('change', function () {
-    updateSubmitButtonState(); // Обновляем состояние кнопки
-  });
-
-  // Обновляем состояние кнопки при изменении формы
-  $('#main-form-2, #code-form').on('input change', function (event) {
-    updateSubmitButtonState();
-  });
-
-  // Изначально деактивируем кнопку отправки
-  $('#submit, #submit-2').attr('disabled', 'disabled');
-  $('#submit-code-violet, #submit-code').attr('disabled', 'disabled');
-
-  // Функция добавления placeholder для поиска
-  function addPlaceholder() {
-    const searchInputs = document.querySelectorAll('.form-control[type="search"]');
-    searchInputs.forEach(function (searchInput) {
-      if (searchInput && !searchInput.getAttribute('placeholder')) {
-        searchInput.setAttribute('placeholder', 'Search');
+    const data = {
+      firstname: formData.get('firstname'),
+      lastname: formData.get('lastname'),
+      email: formData.get('email'),
+      job_title: formData.get('job_title'),
+      company: formData.get('company'),
+      phone: iti.getNumber(),
+      lead_type: leadTypeValue,
+      country: formData.get('country'),
+      state: stateValue || null,
+      self_attribution: formData.get('self-attribution'),
+      href: window.location.href,
+      page: window.location.pathname.substring(1),
+      ss_anonymous_id: window.segmentstream?.anonymousId?.() ?? '',
+      cookie: {
+        _ga: getCookieValue('_ga'),
+        c_of__ga: getCookieValue('c_of__ga'),
+        c_of_utm_campaign: utmCampaign,
+        c_of_utm_content: utmContent,
+        c_of_utm_medium: utmMedium,
+        c_of_utm_source: utmSource,
+        c_of_utm_term: utmTerm
       }
-    });
-  }
+    };
 
-  addPlaceholder();
-
-  const observer = new MutationObserver((mutationsList, observer) => {
-    for (let mutation of mutationsList) {
-      if (mutation.type === 'childList') {
-        addPlaceholder();
-      }
-    }
-  });
-
-  observer.observe(document.body, { childList: true, subtree: true });
-
-  // Обработчик изменения страны
-  $('#country-2').on('change', function () {
-    toggleCountrySpecificElements(this.value);
-    iti.setCountry(countryCodeMap[this.value]);
-    $(this).valid();
-  });
-
-  const form = document.getElementById('main-form-2');
-  const successMessage = document.querySelector('.success-message');
-  const formFields = document.getElementById('main-form-2');
-  let isSubmitting = false;
-
-  function generateUserId() {
-    return 'user_' + Math.random().toString(36).substr(2, 9);
-  }
-
-  function getCookieValue(name) {
-    const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
-    if (match) return match[2];
-    return null;
-  }
-
-  // Проверка cookies и localStorage
-  function checkCookiesAndStorage() {
-    const cookies = document.cookie.split(';').reduce((acc, cookie) => {
-      const [name, value] = cookie.trim().split('=');
-      acc[name] = value;
-      return acc;
-    }, {});
-  }
-
-  checkCookiesAndStorage();
-
-  // 1. ОБРАБОТЧИК ОТПРАВКИ ОСНОВНОЙ ФОРМЫ
-    if (form) {
-      form.addEventListener('submit', async function(event) {
-        event.preventDefault();
-        
-        if (!$(this).valid()) return;
-        
-        if (isSubmitting) return;
-
-        isSubmitting = true;
-        submitButtons.forEach(btn => btn.setAttribute('disabled', 'disabled'));
-
-        const formData = new FormData(form);
-        // Проверка наличия значения в поле Full Name
-        const fullName = formData.get('Full-Name');
-        const { firstName, lastName } = splitFullName(fullName);
-
-        const leadTypeValue = form.querySelector('input[name="lead_type"]:checked')?.value;
-        const selectedCountry = form.querySelector('select[name="country"]').value;
-
-        let stateValue = '';
-        if (selectedCountry === 'United States') stateValue = form.querySelector('#state').value;
-        else if (selectedCountry === 'Australia') stateValue = form.querySelector('#states-australia').value;
-        else if (selectedCountry === 'Brazil') stateValue = form.querySelector('#states-brazil').value;
-        else if (selectedCountry === 'Canada') stateValue = form.querySelector('#states-canada').value;
-        else if (selectedCountry === 'China') stateValue = form.querySelector('#states-china').value;
-        else if (selectedCountry === 'Ireland') stateValue = form.querySelector('#states-ireland').value;
-        else if (selectedCountry === 'India') stateValue = form.querySelector('#states-india').value;
-        else if (selectedCountry === 'Italy') stateValue = form.querySelector('#states-italy').value;
-        else if (selectedCountry === 'Mexico') stateValue = form.querySelector('#states-mexico').value;
-
-        const urlParams = new URLSearchParams(window.location.search);
-
-        // Формируем данные для отправки (поле phone удалено)
-        const data = {
-          'firstname': firstName,
-          'lastname': lastName,
-          email: formData.get('email'),
-          company: formData.get('company'),
-          lead_type: leadTypeValue,
-          country: formData.get('country'),
-          state: stateValue || null,
-          href: window.location.href,
-          page: window.location.pathname.substring(1),
-          ss_anonymous_id: window.segmentstream?.anonymousId?.() ?? '',
-          cookie: {
-            _ga: getCookieValue('_ga'),
-            c_of__ga: getCookieValue('c_of__ga'),
-            c_of_utm_campaign: urlParams.get('utm_campaign') || '',
-            c_of_utm_content: urlParams.get('utm_content') || '',
-            c_of_utm_medium: urlParams.get('utm_medium') || '',
-            c_of_utm_source: urlParams.get('utm_source') || '',
-            c_of_utm_term: urlParams.get('utm_term') || ''
-          }
-        };
-
-        if (selectedCountry !== 'United States' && !stateValue) {
-          delete data.state;
-        }
-
-        try {
-          let userId = getCookieValue('user_id') || generateUserId();
-          document.cookie = `user_id=${userId}; path=/; max-age=31536000`;
-
-          const responseData = await submitFormToVerifiedWebflow(data, userId);
-          console.log('Form submitted successfully.', responseData);
-
-          if (responseData.success === true) {
-            mainFormContainer.style.display = 'flex';
-            codeFormContainer.style.display = 'none';
-            if (formFields) formFields.style.display = 'none';
-            if (successMessage) successMessage.style.display = 'block';
-
-            const leadId = userId;
-            const roleValue = data.lead_type.charAt(0).toUpperCase() + data.lead_type.slice(1).toLowerCase();
-
-            if (window.dataLayer) {
-              window.dataLayer.push({
-                'event': 'lead2fa',
-                'role': roleValue,
-                'type': '',
-                'email': data.email,
-                'lead_id': leadId
-              });
-            } else {
-              console.warn('dataLayer не определен');
-            }
-          } else {
-            if (responseData.errors) {
-              $('#main-form').validate().showErrors({
-                'email': responseData.errors.email ? responseData.errors.email[0] : 'Invalid email.'
-              });
-              mainFormContainer.style.display = 'flex';
-              codeFormContainer.style.display = 'none';
-              throw new Error('Form validation failed.');
-            }
-            codeFormContainer.style.display = 'block';
-            mainFormContainer.style.display = 'none';
-            emailDisplay.textContent = data.email.trim();
-            throw new Error('Code verification required.');
-          }
-        } catch (error) {
-          console.error('Error:', error.message);
-          if (successMessage) successMessage.style.display = 'none';
-          if (formFields) formFields.style.display = 'flex';
-        } finally {
-          isSubmitting = false;
-          updateSubmitButtonState();
-        }
-      });
+    if (selectedCountry !== 'United States' && !stateValue) {
+      delete data.state;
     }
 
-    const pathSegments = window.location.pathname.split('/').filter(Boolean);
-    const pathLocale = pathSegments[0] || '';
-    const allowedLocales = ['en', 'de', 'fr', 'es', 'it', 'pt'];
-    const localeHeader = allowedLocales.includes(pathLocale) ? pathLocale : 'en';
+    try {
+      let userId = getCookieValue('user_id') || generateUserId();
+      const responseData = await submitFormToVerifiedWebflow(data, userId);
 
-    // 2. ФУНКЦИЯ отправки данных
-    async function submitFormToVerifiedWebflow(data, userId) {
-      try {
-        const headers = {
-          'Content-Type': 'application/json',
-          'locale': localeHeader
-        };
+      console.log('Form submitted successfully.', responseData);
 
-        if (userId) {
-          headers['user_id'] = userId;
-        }
-
-        const response = await fetch('https://of-web-api.objectfirst.com/api/application/verified-webflow', {
-          method: 'POST',
-          headers: headers,
-          body: JSON.stringify(data),
-          credentials: 'include',
-        });
-        const responseData = await response.json();
-        if (!response.ok) {
-          if (responseData.errors && responseData.errors.email) {
-            $('#main-form').validate().showErrors({
-              'email': responseData.errors.email[0]
-            });
-            if (formFields) formFields.style.display = 'none';
-            if (successMessage) successMessage.style.display = 'block';
-          }
-          throw new Error('Server error: ' + JSON.stringify(responseData));
-        }
-        return responseData;
-      } catch (error) {
-        console.error('Error:', error);
-        throw error;
-      }
-    }
-
-    // 3. ОБРАБОТЧИК ФОРМЫ ДЛЯ КОДА
-    formCode.addEventListener('submit', async function (event) {
-      event.preventDefault();
-      if (isSubmitting || !$(formCode).valid()) return;
-
-      isSubmitting = true;
-      submitButtonCode.setAttribute('disabled', 'disabled');
-
-      const code = codeInput.value.trim();
-      const email = document.getElementById('email').value.trim();
-
-      try {
-        const userId = getCookieValue('user_id'); 
-
-        const headers = {
-          'Content-Type': 'application/json'
-        };
-        // Добавляем заголовок user_id, если он есть в cookie
-        if (userId) {
-          headers['user_id'] = userId;
-        }
-
-        const response = await fetch('https://of-web-api.objectfirst.com/api/application/webflow/verify', {
-          method: 'POST',
-          headers: headers,
-          body: JSON.stringify({ email, code }),
-          credentials: 'include',
-        });
-        const result = await response.json();
-        if (!response.ok) {
-          $(formCode).validate().showErrors({ 'code': result.message || 'Invalid code.' });
-          return;
-        }
-
-        codeFormContainer.style.display = 'none';
+      if (responseData.success === true) {
+        // Email уже подтверждён → заявка финализировалась
         mainFormContainer.style.display = 'flex';
+        codeFormContainer.style.display = 'none';
+        if (form2) form2.style.display = 'none';
         if (successMessage) successMessage.style.display = 'block';
-        if (formFields) formFields.style.display = 'none';
 
-        const leadTypeValue = document.querySelector('input[name="lead_type"]:checked')?.value || '';
-        const roleValue = leadTypeValue ? leadTypeValue.charAt(0).toUpperCase() + leadTypeValue.slice(1).toLowerCase() : '';
+        document.cookie = `user_id=${userId}; path=/; max-age=31536000`;
+
         const leadId = userId;
+        const roleValue = data.lead_type.charAt(0).toUpperCase() + data.lead_type.slice(1).toLowerCase();
 
         if (window.dataLayer) {
           window.dataLayer.push({
             'event': 'lead2fa',
             'role': roleValue,
             'type': '',
-            'email': email,
+            'email': data.email,
+            'phone': data.phone,
             'lead_id': leadId
           });
         } else {
           console.warn('dataLayer не определен');
         }
-      } catch (error) {
-        console.error('Error submitting email form:', error);
-      } finally {
-        isSubmitting = false;
-        submitButtonCode.removeAttribute('disabled');
-      }
-    });
-
-    // 4. ПОВТОРНАЯ ОТПРАВКА КОДА
-    const resendCodeButton = document.getElementById('resend-code');
-    if (resendCodeButton) {
-      resendCodeButton.addEventListener('click', async function (event) {
-        event.preventDefault();
-
-        // Получаем данные из основной формы
-        const mainForm = document.getElementById('main-form');
-        if (!mainForm) {
-          alert('Error: Main form not found.');
-          return;
-        }
-        const formData = new FormData(mainForm);
-        const email = formData.get('email');
-
-        // Проверка наличия значения в поле Full Name
-        const fullName = formData.get('Full-Name');
-        const { firstName, lastName } = splitFullName(fullName);
-
-        if (!email) {
-          alert('Email is missing. Please fill in the email field in the previous step.');
-          return;
-        }
-
-        // Блокируем кнопку на время отправки
-        resendCodeButton.disabled = true;
-        resendCodeButton.textContent = 'Please wait...';
-        setTimeout(() => {
-          resendCodeButton.disabled = false;
-          resendCodeButton.textContent = 'Resend Code';
-        }, 30000); // Тайм-аут 30 секунд
-
-        // Собираем ВСЕ данные из формы, а не только email
-        const leadTypeValue = formData.get('lead_type') || '';
-        const selectedCountry = formData.get('country');
-        let stateValue = '';
-        if (selectedCountry === 'United States') stateValue = mainForm.querySelector('#state')?.value;
-        else if (selectedCountry === 'Australia') stateValue = mainForm.querySelector('#states-australia')?.value;
-        else if (selectedCountry === 'Brazil') stateValue = mainForm.querySelector('#states-brazil')?.value;
-        else if (selectedCountry === 'Canada') stateValue = mainForm.querySelector('#states-canada')?.value;
-        else if (selectedCountry === 'China') stateValue = mainForm.querySelector('#states-china')?.value;
-        else if (selectedCountry === 'Ireland') stateValue = mainForm.querySelector('#states-ireland')?.value;
-        else if (selectedCountry === 'India') stateValue = mainForm.querySelector('#states-india')?.value;
-        else if (selectedCountry === 'Italy') stateValue = mainForm.querySelector('#states-italy')?.value;
-        else if (selectedCountry === 'Mexico') stateValue = mainForm.querySelector('#states-mexico')?.value;
-
-        const dataToSend = {
-          'firstname': firstName,
-          'lastname': lastName,
-          email: email,
-          company: formData.get('company'),
-          lead_type: leadTypeValue,
-          country: selectedCountry,
-          state: stateValue || null,
-          href: window.location.href,
-          page: window.location.pathname.substring(1),
-        };
-
-        if (selectedCountry !== 'United States' && !stateValue) {
-          delete dataToSend.state;
-        }
-
-        try {
-          // Отправляем ПОЛНЫЕ данные, как при первой отправке
-          const userId = getCookieValue('user_id');
-
-          const headers = {
-            'Content-Type': 'application/json',
-            'locale': localeHeader
-          };
-          // Добавляем заголовок, если userId существует
-          if (userId) {
-            headers['user_id'] = userId;
-          }
-          const response = await fetch('https://of-web-api.objectfirst.com/api/application/verified-webflow', {
-            method: 'POST',
-            headers: headers,
-            body: JSON.stringify(dataToSend),
-            credentials: 'include',
+      } else {
+        // success === false → email не подтверждён, сервер отправил код, создал «черновик»
+        if (responseData.errors) {
+          $('#main-form-2').validate().showErrors({
+            'email': responseData.errors.email ? responseData.errors.email[0] : 'Invalid email.'
           });
 
-          const result = await response.json();
-
-          if (response.ok) {
-            alert('A new confirmation code has been sent to your email.');
-          } else {
-            console.error('Error resending code:', result);
-            alert(result.message || 'Failed to resend the code. Please try again.');
-          }
-        } catch (error) {
-          console.error('Error:', error);
-          alert('An error occurred while resending the code. Please try again later.');
+          mainFormContainer.style.display = 'flex';
+          codeFormContainer.style.display = 'none';
+          throw new Error('Form validation failed.');
         }
-      });
+        // Если нет errors, но success: false → показываем форму кода
+        codeFormContainer.style.display = 'block';
+        mainFormContainer.style.display = 'none';
+
+        emailDisplay.textContent = data.email.trim();
+
+        throw new Error('Code verification required.');
+      }
+    } catch (error) {
+      console.error('Error:', error.message);
+      if (successMessage) successMessage.style.display = 'none';
+      if (form2) form2.style.display = 'flex';
+    } finally {
+      isSubmitting = false;
+      if (submitButton2) submitButton2.removeAttribute('disabled');
     }
+  });
+}
+
+const pathSegments = window.location.pathname
+  .split('/')
+  .filter(Boolean);
+const pathLocale = pathSegments[0] || '';
+const allowedLocales = ['en', 'de', 'fr', 'es', 'it', 'pt'];
+const localeHeader = allowedLocales.includes(pathLocale) ? pathLocale : 'en';
+
+// Функция отправки данных на API
+async function submitFormToVerifiedWebflow(data, userId) {
+  try {
+    const headers = {
+      'Content-Type': 'application/json',
+      'locale': localeHeader
+    };
+
+    if (userId) {
+      headers['user_id'] = userId;
+    }
+
+    const response = await fetch('https://of-web-api.objectfirst.com/api/application/verified-webflow', {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(data),
+      credentials: 'include',
+    });
+
+    const responseData = await response.json();
+
+    if (!response.ok) {
+      if (responseData.errors && responseData.errors.email) {
+        $('#main-form-2').validate().showErrors({
+          'email': responseData.errors.email[0]
+        });
+        if (form2) form2.style.display = 'flex';
+        if (successMessage) successMessage.style.display = 'none';
+      }
+      throw new Error('Server error: ' + JSON.stringify(responseData));
+    }
+
+    return responseData;
+  } catch (error) {
+    console.error('Error:', error);
+    throw error;
+  }
+}
+
+// Форма для кода
+if (formCode) {
+  formCode.addEventListener('submit', async function (event) {
+    event.preventDefault();
+
+    if (isSubmitting) return;
+    if (!$(formCode).valid()) return;
+
+    isSubmitting = true;
+    if (submit2Button) submit2Button.setAttribute('disabled', 'disabled');
+
+    const code = codeInput.value.trim();
+    const email = emailDisplay.textContent.trim() || emailInput2.value.trim();
+
+    try {
+      const userId = getCookieValue('user_id');
+
+      const headers = {
+        'Content-Type': 'application/json'
+      };
+      if (userId) {
+        headers['user_id'] = userId;
+      }
+
+      const response = await fetch('https://of-web-api.objectfirst.com/api/application/webflow/verify', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ email, code }),
+        credentials: 'include',
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        if (result.message) {
+          $(formCode).validate().showErrors({ code: result.message });
+        }
+        throw new Error('Code submission failed');
+      }
+
+      codeFormContainer.style.display = 'none';
+      mainFormContainer.style.display = 'flex';
+
+      if (successMessage) successMessage.style.display = 'block';
+      if (form2) form2.style.display = 'none';
+
+    } catch (error) {
+      console.error('Error submitting code form:', error);
+    } finally {
+      isSubmitting = false;
+      if (submit2Button) submit2Button.removeAttribute('disabled');
+    }
+  });
+}
+
+// Кнопка повторной отправки кода
+const resendCodeButton = document.getElementById('resend-code');
+if (resendCodeButton) {
+  resendCodeButton.addEventListener('click', async function (event) {
+    event.preventDefault();
+
+    const email = emailInput2.value.trim();
+    if (!email) {
+      alert('Email is missing. Please fill in the email field in the previous step.');
+      return;
+    }
+
+    resendCodeButton.disabled = true;
+    resendCodeButton.textContent = 'Please wait...';
+
+    setTimeout(() => {
+      resendCodeButton.disabled = false;
+      resendCodeButton.textContent = 'Resend Code';
+    }, 30000);
+
+    try {
+      const response = await fetch('https://of-web-api.objectfirst.com/api/application/verified-webflow', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+        credentials: 'include',
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        alert('A new confirmation code has been sent to your email.');
+      } else {
+        console.error('Error resending code:', result);
+        alert(result.message || 'Failed to resend the code. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('An error occurred while resending the code. Please try again later.');
+    }
+  });
+});
