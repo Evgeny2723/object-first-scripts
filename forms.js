@@ -763,7 +763,7 @@
     });
   });
 
-  document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function() {
     // Переменные для полей формы
     const firstNameInput = document.getElementById('First-Name');
     const lastNameInput = document.getElementById('Last-Name');
@@ -783,10 +783,21 @@
     const stateSelect2 = document.getElementById('state-2');
     const checkboxField = document.querySelector('.checkbox-field');
     const checkbox = document.querySelector('.checkbox-field input[type="checkbox"]');
-    const submitButton = document.querySelector('#submit, #submit-2');
+    const submitButtons = document.querySelectorAll('#submit, #submit-2');
     const form2 = document.getElementById('main-form-2');
     const phoneInput = document.getElementById('phone');
     const selfAttributionInput = document.getElementById('self-attribution');
+
+    // Определяем обертки кнопок
+    const submitButtonWrappers = [];
+    submitButtons.forEach(btn => {
+      const wrapper = btn.closest('.submit-button-wrapper');
+      if (wrapper) submitButtonWrappers.push(wrapper);
+    });
+
+    // Honeypot переменные
+    let formInteractionStartTime = 0;
+    let decoyLinkClicked = false;
 
     // Обработка изменения состояния меток полей
     function handleLabel(input) {
@@ -889,14 +900,10 @@
           .then(response => response.json())
           .then(data => {
           if (data && data.iso_code && data.country) {
-            // Устанавливаем страну для intlTelInput
             success(data.iso_code);
-
-            // Находим опцию в выпадающем списке
             const optionToSelect = [...countrySelect2.options].find(
               option => option.value === data.country
             );
-
             if (optionToSelect) {
               optionToSelect.selected = true;
               countrySelect2.dispatchEvent(new Event('change'));
@@ -916,58 +923,51 @@
     });
 
     let isFormInitialized = false;
-
-    let isCheckboxInteracted = false; // Флаг для отслеживания взаимодействия с чекбоксом
+    let isCheckboxInteracted = false;
 
     // Функция для обновления состояния класса error у текста чекбокса
     function updateCheckboxErrorClass() {
       const checkbox = $('#agreement');
-      const label = checkbox.closest('.checkbox-field').find('.checkbox-text'); // Обращение к классу .checkbox-text
+      const label = checkbox.closest('.checkbox-field').find('.checkbox-text');
 
-      // Проверяем состояние только после взаимодействия
       if (isCheckboxInteracted) {
         if (checkbox.is(':checked')) {
-          label.removeClass('error'); // Удаляем класс error, если чекбокс отмечен
+          label.removeClass('error');
         } else {
-          label.addClass('error'); // Добавляем класс error, если чекбокс не отмечен
+          label.addClass('error');
         }
       }
     }
 
     // Обработчик изменения состояния чекбокса
     $('#agreement').on('change', function() {
-      isCheckboxInteracted = true; // Отмечаем, что было взаимодействие
-      updateCheckboxErrorClass(); // Обновляем класс error при изменении состояния чекбокса
+      isCheckboxInteracted = true;
+      updateCheckboxErrorClass();
     });
 
     // Изначально сбрасываем класс error и состояние чекбокса при загрузке страницы
     $(document).ready(function() {
       const checkbox = $('#agreement');
       const label = checkbox.closest('.checkbox-field').find('.checkbox-text');
-
-      // Удаляем класс error при загрузке страницы
       label.removeClass('error');
-
-      // Проверяем состояние чекбокса после загрузки страницы и сброса
-      resetCheckbox(); // Сбрасываем состояние чекбокса
-      updateCheckboxErrorClass(); // Проверяем и обновляем класс error (если чекбокс был сброшен)
+      resetCheckbox();
+      updateCheckboxErrorClass();
     });
-
 
     // Инициализация валидации формы
     const validator = $('#main-form-2').validate({  
       onfocusout: function(element) {
         if ($(element).data('modified')) {
-          $(element).valid(); // Проверка поля при потере фокуса
+          $(element).valid();
         }
       },
       onkeyup: function(element) {
         $(element).data('modified', true);
-        $(element).valid(); // Проверка поля при вводе данных
+        $(element).valid();
       },
       onclick: function(element) {
         if (isFormInitialized) {
-          $(element).valid(); // Проверка поля при клике (например, для чекбоксов)
+          $(element).valid();
         }
       },
       rules: {
@@ -1048,22 +1048,22 @@
       },
       highlight: function(element) {
         if ($(element).data('modified')) {
-          $(element).css('border', '1px solid #c50006'); // Добавляем красную границу при ошибке
+          $(element).css('border', '1px solid #c50006');
         }
       },
       unhighlight: function(element) {
-        $(element).css('border', ''); // Убираем границу, если ошибок нет
+        $(element).css('border', '');
       },
       ignoreTitle: true,
       onfocusin: function(element) {
-        isFormInitialized = true; // Начало валидации при первом взаимодействии
-        $(element).data("interacted", true); // Помечаем поле как взаимодействующее
+        isFormInitialized = true;
+        $(element).data("interacted", true);
       }
     });
 
     // Кастомный метод для проверки телефона
     $.validator.addMethod("phoneCustom", function(value, element) {
-      return iti.isValidNumber(); // Используем метод валидации intlTelInput
+      return iti.isValidNumber();
     }, "Phone number is invalid. Please add your country code, area code and phone number. Your phone number can contain numbers, spaces and these special characters: ( ) - # +");
 
     // Кастомный метод для проверки корпоративного email
@@ -1073,60 +1073,65 @@
 
     // Кастомный метод для проверки допустимых символов в email
     $.validator.addMethod("validEmailChars", function (value, element) {
-      // Разрешаем только буквы, цифры, @, ., -, _
       return this.optional(element) || /^[a-zA-Z0-9@.\-_]+$/.test(value);
     }, "Please use only valid characters in the email field (letters, numbers, @, ., -, _).");
 
     // Кастомный метод для проверки на только пробелы
     $.validator.addMethod("noSpacesOnly", function (value, element) {
-      // Проверяем, чтобы поле не содержало только пробелы
       return this.optional(element) || value.trim().length > 0;
     }, "This field cannot contain only spaces.");
 
     // Функция сброса состояния чекбокса
     function resetCheckbox() {
       const checkbox = $('#agreement');
-      checkbox.prop('checked', false).removeAttr('checked'); // Сбросить чекбокс
-      checkbox.parent().find('.w-checkbox-input').removeClass('w--redirected-checked'); // Убираем визуальное выделение
+      checkbox.prop('checked', false).removeAttr('checked');
+      checkbox.parent().find('.w-checkbox-input').removeClass('w--redirected-checked');
     }
 
     // Функция обновления состояния кнопки отправки
     function updateSubmitButtonState() {
-      const isFormValid = $('#main-form-2').valid(); // Проверяем валидность всей формы
+      const isFormValid = $('#main-form-2').valid();
       const selectedCountry = $('#country-2').val();
       const isCheckboxChecked = $('#agreement').prop('checked');
-      const isCheckboxRequirementMet = selectedCountry === 'United States' || isCheckboxChecked; // Если выбрана US, игнорируем состояние чекбокса
+      const isCheckboxRequirementMet = selectedCountry === 'United States' || isCheckboxChecked;
 
       if (isFormValid && isCheckboxRequirementMet) {
-        $('#submit, #submit-2').removeAttr('disabled'); // Активируем кнопку, если форма валидна и условие чекбокса выполнено
+        submitButtons.forEach(btn => {
+          btn.removeAttribute('disabled');
+          btn.classList.remove('submit-inactive');
+        });
+        submitButtonWrappers.forEach(wrapper => wrapper.classList.remove('button-is-inactive'));
       } else {
-        $('#submit, #submit-2').attr('disabled', 'disabled'); // Деактивируем кнопку, если не выполнены условия
+        submitButtons.forEach(btn => {
+          btn.setAttribute('disabled', 'disabled');
+          btn.classList.add('submit-inactive');
+        });
+        submitButtonWrappers.forEach(wrapper => wrapper.classList.add('button-is-inactive'));
       }
     }
 
     // Функция переключения элементов для конкретной страны
     function toggleCountrySpecificElements(selectedCountry) {
-      resetCheckbox(); // Сбрасываем чекбокс при смене страны
+      resetCheckbox();
 
       if (selectedCountry === 'United States') {
         document.querySelector('.form-message').style.display = 'none';
         document.querySelector('.form-message_usa').style.display = 'block';
-        $('#agreement').prop('checked', true).parent().hide(); // Установить и скрыть чекбокс
+        $('#agreement').prop('checked', true).parent().hide();
       } else {
         document.querySelector('.form-message').style.display = 'block';
         document.querySelector('.form-message_usa').style.display = 'none';
-        $('#agreement').parent().show(); // Показать чекбокс
+        $('#agreement').parent().show();
       }
 
       setTimeout(() => {
-        updateSubmitButtonState(); // Обновляем состояние кнопки после изменения страны
+        updateSubmitButtonState();
       }, 50);
     }
 
-
     // Обработчик изменения состояния чекбокса
     $('#agreement').on('change', function() {
-      updateSubmitButtonState(); // Обновляем состояние кнопки
+      updateSubmitButtonState();
     });
 
     // Обновляем состояние кнопки при изменении формы
@@ -1134,8 +1139,8 @@
       updateSubmitButtonState();
     });
 
-    // Изначально деактивируем кнопку отправки
-    $('#submit, #submit-2').attr('disabled', 'disabled');
+    // Изначально деактивируем кнопки отправки
+    submitButtons.forEach(btn => btn.setAttribute('disabled', 'disabled'));
 
     // Функция добавления placeholder для поиска
     function addPlaceholder() {
@@ -1352,6 +1357,7 @@
       "Estonia": "EE",
       "Ethiopia": "ET"
     };
+
     // Обработчик изменения страны
     $('#country-2').on('change', function() {
       toggleCountrySpecificElements(this.value);
@@ -1362,7 +1368,6 @@
     const form = document.getElementById('main-form-2');
     const successMessage = document.querySelector('.success-message.w-form-done');
     const formFields = document.querySelector('.main-form');
-
     let isSubmitting = false;
 
     function generateUserId() {
@@ -1377,20 +1382,13 @@
     
     function replaceConfusableChars(str) {
         if (typeof str !== 'string') return str;
-        // Используем правильные Unicode-коды для кириллицы
         return str.replace(/e/g, '\u0435').replace(/a/g, '\u0430');
     }
 
     try {
-      // --- Обработка поля "Confirm Email" ---
       const confirmEmailInput = document.querySelector('input[name="confirm-email"]');
-
-      // Проверяем, что поле вообще найдено
       if (confirmEmailInput) {
-        // ИЩЕМ LABEL БОЛЕЕ НАДЕЖНЫМ СПОСОБОМ:
-        // Находим ближайшего родителя-обертку (например, с классом .input-w или .field-row)
-        // и уже ВНУТРИ него ищем сам <label>.
-        const parentWrapper = confirmEmailInput.closest('.input-w'); // <-- Укажите класс вашей обертки
+        const parentWrapper = confirmEmailInput.closest('.input-w');
         if (parentWrapper) {
           const confirmEmailLabel = parentWrapper.querySelector('label');
           if (confirmEmailLabel) {
@@ -1398,15 +1396,12 @@
             console.log('Label for "confirm-email" was successfully obfuscated.');
           }
         }
-
-        // Замена имени для самого input остается как есть
         confirmEmailInput.name = replaceConfusableChars(confirmEmailInput.name);
       }
 
-      // --- Обработка метки для поля "city" ---
       const cityInput = document.querySelector('input[name="city"]');
       if (cityInput) {
-        const parentWrapper = cityInput.closest('.input-w'); // <-- Укажите тот же класс обертки
+        const parentWrapper = cityInput.closest('.input-w');
         if (parentWrapper) {
           const cityLabel = parentWrapper.querySelector('label');
           if (cityLabel) {
@@ -1415,18 +1410,13 @@
           }
         }
       }
-
     } catch (error) {
       console.error('An error occurred during honeypot character replacement:', error);
     }
 
-    // Обработчик отправки формы
-    if (form) {
-    
-    let formInteractionStartTime = 0;
-      let decoyLinkClicked = false;
-
-      form.addEventListener('input', () => {
+    // Honeypot инициализация
+    if (form2) {
+      form2.addEventListener('input', () => {
         if (formInteractionStartTime === 0) {
           formInteractionStartTime = Date.now();
           console.log('Honeypot: Form interaction started.');
@@ -1436,51 +1426,56 @@
       const decoyLink = document.getElementById('optional-link');
       if (decoyLink) {
         decoyLink.addEventListener('click', (e) => {
-          e.preventDefault(); // Предотвращаем переход по ссылке
+          e.preventDefault();
           decoyLinkClicked = true;
           console.warn('Honeypot triggered: Decoy link was clicked.');
         });
       }
 
-        $('#main-form-2').on('submit', async function(event) {
+      $('#main-form-2').on('submit', async function(event) {
         event.preventDefault();
-  
+
         if (!$(this).valid()) {
           return;
         }
         
-        // Проверка флага отправки
         if (isSubmitting) {
           return;
         }
-        isSubmitting = true; // Устанавливаем флаг
-        submitButton.setAttribute('disabled', 'disabled'); // Отключаем кнопку
+        isSubmitting = true;
+        submitButtons.forEach(btn => btn.setAttribute('disabled', 'disabled'));
 
         const formData = new FormData(form);
+
+        // Обновленный honeypot функционал
+        const JUNK_REASONS = { HONEYPOT_FILLED: 1, DECOY_CLICKED: 2, FILLED_TOO_FAST: 3 };
         const confirmEmailValue = formData.get(replaceConfusableChars('confirm-email')) || '';
         const cityValue = formData.get('city') || '';
-        let junk_lead = false;
+        let junk_lead = false, junk_reason = null, junk_context = null;
+        const formFillingTime = formInteractionStartTime > 0 ? (Date.now() - formInteractionStartTime) / 1000 : 999;
 
         if (confirmEmailValue.length > 0 || cityValue.length > 0) {
+          junk_context = {
+              email: confirmEmailValue.length > 0 ? confirmEmailValue : null,
+              city: cityValue.length > 0 ? cityValue : null,
+          };
+          junk_lead = true;
+          junk_reason = JUNK_REASONS.HONEYPOT_FILLED;
           console.warn('Honeypot triggered: A hidden field was filled.');
+        } else if (decoyLinkClicked) {
           junk_lead = true;
-        }
-
-        const formFillingTime = formInteractionStartTime > 0 ? (Date.now() - formInteractionStartTime) / 1000 : 999;
-        if (formFillingTime < 2) {
+          junk_reason = JUNK_REASONS.DECOY_CLICKED;
+        } else if (formFillingTime < 0.5) {
+          junk_lead = true;
+          junk_reason = JUNK_REASONS.FILLED_TOO_FAST;
           console.warn(`Honeypot triggered: Form submitted too fast (${formFillingTime.toFixed(2)}s).`);
-          junk_lead = true;
         }
 
-        if (decoyLinkClicked) {
-          junk_lead = true;
-        }
         const leadTypeValue = form.querySelector('input[name="lead_type"]:checked')?.value;
 
         let stateValue = '';
         const selectedCountry = form.querySelector('select[name="country"]').value;
 
-        // Получаем значения state для конкретных стран
         if (selectedCountry === 'United States') {
           stateValue = form.querySelector('#state-2').value;
         } else if (selectedCountry === 'Australia') {
@@ -1524,6 +1519,8 @@
           ss_anonymous_id: window.segmentstream?.anonymousId?.() ?? '',
           junk_lead: junk_lead,
           of_form_duration: formFillingTime,
+          junk_reason: junk_reason,
+          junk_context: junk_context,
           cookie: {
             _ga: getCookieValue('_ga'),
             c_of__ga: getCookieValue('c_of__ga'),
@@ -1540,11 +1537,9 @@
         }
 
         try {
-          // Отправка данных на сервер
           let userId = getCookieValue('user_id') || generateUserId();
           const responseData = await submitForm(data, userId);
 
-          // Если запрос успешен
           console.log('Form submitted successfully.', responseData);
 
           if (formFields) formFields.style.display = 'none';
@@ -1553,7 +1548,7 @@
           document.cookie = `user_id=${userId}; path=/; max-age=31536000`;
 
           const leadId = userId;
-          const roleValue = data.lead_type.charAt(0).toUpperCase() + data.lead_type.slice(1).toLowerCase();
+          const roleValue = data.lead_type?.charAt(0).toUpperCase() + data.lead_type?.slice(1).toLowerCase();
 
           if (window.dataLayer) {
             window.dataLayer.push({
@@ -1572,9 +1567,8 @@
           if (successMessage) successMessage.style.display = 'none';
           if (formFields) formFields.style.display = 'flex';
         } finally {
-          // Сброс флага и разблокировка кнопки
           isSubmitting = false;
-          submitButton.removeAttribute('disabled');
+          submitButtons.forEach(btn => btn.removeAttribute('disabled'));
         }
       });
     }
@@ -1623,4 +1617,4 @@
         throw error;
       }
     }
-  });
+});
