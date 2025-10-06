@@ -1426,6 +1426,7 @@
       btn.classList.add('submit-inactive');
     }
   });
+
   submitButtonWrappers.forEach(wrapper => {
     if (isMainButtonEnabled) {
       wrapper.classList.remove('button-is-inactive');
@@ -1434,7 +1435,7 @@
     }
   });
 
-  const isCodeFormValid = $('#code-form').valid && $('#code-form').valid();
+  const isCodeFormValid = $('#code-form').valid(); // Исправлено
   document.querySelectorAll('#submit-code-violet, #submit-code').forEach(btn => {
     if (isCodeFormValid) {
       btn.removeAttribute('disabled');
@@ -1537,14 +1538,10 @@
     form.addEventListener('submit', async function (event) {
       event.preventDefault();
 
-      if (!$(this).valid()) return;
-
-      if (isSubmitting) return;
+      if (!$(this).valid() || isSubmitting) return;
 
       isSubmitting = true;
-      if (submitButtons) {
-        submitButtons.setAttribute('disabled', 'disabled');
-      }
+      submitButtons.forEach(btn => btn.setAttribute('disabled', 'disabled'));
 
       const formData = new FormData(form);
       const leadTypeValue = form.querySelector('input[name="lead_type"]:checked')?.value;
@@ -1644,7 +1641,6 @@
           }
 
         } else {
-          // success === false → email не подтверждён, сервер отправил код, создал «черновик»
           if (responseData.errors) {
             $('#main-form-2').validate().showErrors({
               'email': responseData.errors.email ? responseData.errors.email[0] : 'Invalid email.'
@@ -1671,9 +1667,7 @@
         if (formFields) formFields.style.display = 'flex';
       } finally {
         isSubmitting = false;
-        if (submitButtons) {
-          submitButtons.setAttribute('disabled', 'disabled');
-        }
+        updateSubmitButtonState();
       }
     });
   }
