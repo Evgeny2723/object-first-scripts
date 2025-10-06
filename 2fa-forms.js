@@ -854,7 +854,7 @@
   const stateSelect2 = document.getElementById('state-2');
   const checkboxField = document.querySelector('.checkbox-field');
   const checkbox = document.querySelector('.checkbox-field input[type="checkbox"]');
-  const submitButton = document.querySelectorAll('#submit, #submit-2');
+  const submitButtons = document.querySelectorAll('#submit, #submit-2');
   const submitCode = document.querySelector('#submit-code-violet, #submit-code');
   const form2 = document.getElementById('main-form-2');
   const formCode = document.getElementById('code-form');
@@ -1542,8 +1542,8 @@
       if (isSubmitting) return;
 
       isSubmitting = true;
-      if (submitButton) {
-        submitButton.setAttribute('disabled', 'disabled');
+      if (submitButtons) {
+        submitButtons.setAttribute('disabled', 'disabled');
       }
 
       const formData = new FormData(form);
@@ -1671,8 +1671,8 @@
         if (formFields) formFields.style.display = 'flex';
       } finally {
         isSubmitting = false;
-        if (submitButton) {
-          submitButton.setAttribute('disabled', 'disabled');
+        if (submitButtons) {
+          submitButtons.setAttribute('disabled', 'disabled');
         }
       }
     });
