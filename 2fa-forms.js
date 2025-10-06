@@ -864,6 +864,12 @@
   const emailDisplay = document.getElementById('email-display');
   const selfAttributionInput = document.getElementById('self-attribution');
 
+  const submitButtonWrappers = [];
+    submitButtons.forEach(btn => {
+      const wrapper = btn.closest('.submit-button-wrapper');
+      if (wrapper) submitButtonWrappers.push(wrapper);
+    });
+
   codeFormContainer.style.display = 'none';
 
   const countryCodeMap = {
@@ -1410,27 +1416,30 @@
     checkbox.parent().find('.w-checkbox-input').removeClass('w--redirected-checked'); // Убираем визуальное выделение
   }
 
-  // Функция обновления состояния кнопки отправки
-  function updateSubmitButtonState() {
-    const isFormValid = $('#main-form-2').valid(); // Проверяем валидность всей формы
-    const isFormCodeValid = $('#code-form').valid();
-    const selectedCountry = $('#country-2').val();
-    const isCheckboxChecked = $('#agreement').prop('checked');
-    const isCheckboxRequirementMet = selectedCountry === 'United States' || isCheckboxChecked; // Если выбрана US, игнорируем состояние чекбокса
+function updateSubmitButtonState() {
+  // --- Логика для основной кнопки отправки ---
+  const isFormValid = $('#main-form-2').valid();
+  const selectedCountry = $('#country-2').val();
+  const isCheckboxChecked = $('#agreement').prop('checked');
+  const isMainButtonEnabled = isFormValid && (selectedCountry === 'United States' || isCheckboxChecked);
 
-    // Функция для управления состоянием кнопки
-    function toggleSubmitButton(buttonSelector, isValid) {
-      if (isValid) {
-        $(buttonSelector).removeAttr('disabled'); // Активируем кнопку
-      } else {
-        $(buttonSelector).attr('disabled', 'disabled'); // Деактивируем кнопку
-      }
-    }
+  // Обновляем основную кнопку (или кнопки)
+  $('#submit, #submit-2').prop('disabled', !isMainButtonEnabled);
 
-    // Использование функции для всех кнопок
-    toggleSubmitButton('#submit, #submit-2', isFormValid && isCheckboxRequirementMet);
-    toggleSubmitButton('#submit-code-violet, #submit-code', isFormCodeValid);
+  // Обновляем CSS классы для основной кнопки и её обёртки
+  $('#submit, #submit-2').toggleClass('submit-inactive', !isMainButtonEnabled);
+  // Предполагается, что переменная submitButtonWrapper определена глобально
+  if (typeof submitButtonWrapper !== 'undefined' && submitButtonWrapper) {
+      $(submitButtonWrapper).toggleClass('button-is-inactive', !isMainButtonEnabled);
   }
+
+
+  // --- Логика для кнопки отправки кода ---
+  const isCodeFormValid = $('#code-form').valid();
+
+  // Обновляем кнопку кода (или кнопки)
+  $('#submit-code-violet, #submit-code').prop('disabled', !isCodeFormValid);
+}
 
   // Функция переключения элементов для конкретной страны
   function toggleCountrySpecificElements(selectedCountry) {
