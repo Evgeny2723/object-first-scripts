@@ -787,7 +787,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const form2 = document.getElementById('main-form-2');
     const phoneInput = document.getElementById('phone');
     const selfAttributionInput = document.getElementById('self-attribution');
-  const submitButtonWrapper = document.querySelector('.submit-button-wrapper');
+
+    // Определяем обертки кнопок
+    const submitButtonWrappers = [];
+    submitButtons.forEach(btn => {
+      const wrapper = btn.closest('.submit-button-wrapper');
+      if (wrapper) submitButtonWrappers.push(wrapper);
+    });
 
     // Honeypot переменные
     let formInteractionStartTime = 0;
@@ -1082,25 +1088,27 @@ document.addEventListener('DOMContentLoaded', function() {
       checkbox.parent().find('.w-checkbox-input').removeClass('w--redirected-checked');
     }
 
-      function updateSubmitButtonState() {
-    const isFormValid = $('#main-form-2').valid();
-    const selectedCountry = $('#country-2').val();
-    const isCheckboxChecked = $('#agreement').prop('checked');
-    const isCheckboxRequirementMet = selectedCountry === 'United States' || isCheckboxChecked;
-    if (isFormValid && isCheckboxRequirementMet) {
-      submitButtons.forEach(btn => {
-        btn.removeAttribute('disabled');
-        btn.classList.remove('submit-inactive');
-      });
-      if (submitButtonWrapper) submitButtonWrapper.classList.remove('button-is-inactive');
-    } else {
-      submitButtons.forEach(btn => {
-        btn.setAttribute('disabled', 'disabled');
-        btn.classList.add('submit-inactive');
-      });
-      if (submitButtonWrapper) submitButtonWrapper.classList.add('button-is-inactive');
+    // Функция обновления состояния кнопки отправки
+    function updateSubmitButtonState() {
+      const isFormValid = $('#main-form-2').valid();
+      const selectedCountry = $('#country-2').val();
+      const isCheckboxChecked = $('#agreement').prop('checked');
+      const isCheckboxRequirementMet = selectedCountry === 'United States' || isCheckboxChecked;
+
+      if (isFormValid && isCheckboxRequirementMet) {
+        submitButtons.forEach(btn => {
+          btn.removeAttribute('disabled');
+          btn.classList.remove('submit-inactive');
+        });
+        submitButtonWrappers.forEach(wrapper => wrapper.classList.remove('button-is-inactive'));
+      } else {
+        submitButtons.forEach(btn => {
+          btn.setAttribute('disabled', 'disabled');
+          btn.classList.add('submit-inactive');
+        });
+        submitButtonWrappers.forEach(wrapper => wrapper.classList.add('button-is-inactive'));
+      }
     }
-  }
 
     // Функция переключения элементов для конкретной страны
     function toggleCountrySpecificElements(selectedCountry) {
