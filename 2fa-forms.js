@@ -1499,6 +1499,27 @@ $('#country-2').on('change', function () {
   $(this).valid();
 });
 
+function generateUserId() {
+      return 'user_' + Math.random().toString(36).substr(2, 9);
+    }
+
+    function getCookieValue(name) {
+      const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+      if (match) return match[2];
+      return null;
+    }
+
+    // Проверка cookies и localStorage
+    function checkCookiesAndStorage() {
+      const cookies = document.cookie.split(';').reduce((acc, cookie) => {
+        const [name, value] = cookie.trim().split('=');
+        acc[name] = value;
+        return acc;
+      }, {});
+    }
+
+    checkCookiesAndStorage();
+
 // Основные переменные для кнопок отправки форм
 const submitButton2 = document.getElementById('submit-2');
 const submit2Button = document.getElementById('submit-code');
