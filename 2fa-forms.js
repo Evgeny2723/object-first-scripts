@@ -1702,20 +1702,14 @@
 
       // Проверяем HTTP статус
       if (!response.ok) {
-        if (responseData.errors && responseData.errors.email) {
-          $('#main-form-2').validate().showErrors({
-            'email': responseData.errors.email[0]
-          });
-          if (formFields) formFields.style.display = 'none';
-          if (successMessage) successMessage.style.display = 'block';
-        }
-        throw new Error('Server error: ' + JSON.stringify(responseData));
-      }
+      // НЕ НУЖНО обрабатывать UI здесь. Просто передаем ошибку дальше.
+      throw new Error(JSON.stringify(responseData)); // Передаем данные об ошибке
+    }
 
       return responseData;
     } catch (error) {
-      console.error('Error:', error);
-      throw error;
+      console.error('Error in submitFormToVerifiedWebflow:', error.message);
+    throw error;
     }
   }
 
