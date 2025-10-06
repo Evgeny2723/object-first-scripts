@@ -1534,319 +1534,313 @@
   checkCookiesAndStorage();
 
   // 1. ОБРАБОТЧИК ОТПРАВКИ ОСНОВНОЙ ФОРМЫ
-  if (form) {
-    form.addEventListener('submit', async function (event) {
-      event.preventDefault();
-
-      if (!$(this).valid() || isSubmitting) return;
-
-      isSubmitting = true;
-      submitButtons.forEach(btn => btn.setAttribute('disabled', 'disabled'));
-
-      const formData = new FormData(form);
-      const leadTypeValue = form.querySelector('input[name="lead_type"]:checked')?.value;
-      const selectedCountry = form.querySelector('select[name="country"]').value;
-
-      // Если у вас есть логика получения stateValue:
-      let stateValue = '';
-      if (selectedCountry === 'United States') {
-        stateValue = form.querySelector('#state-2').value;
-      } else if (selectedCountry === 'Australia') {
-        stateValue = form.querySelector('#states-australia').value;
-      } else if (selectedCountry === 'Brazil') {
-        stateValue = form.querySelector('#states-brazil').value;
-      } else if (selectedCountry === 'Canada') {
-        stateValue = form.querySelector('#states-canada').value;
-      } else if (selectedCountry === 'China') {
-        stateValue = form.querySelector('#states-china').value;
-      } else if (selectedCountry === 'Ireland') {
-        stateValue = form.querySelector('#states-ireland').value;
-      } else if (selectedCountry === 'India') {
-        stateValue = form.querySelector('#states-india').value;
-      } else if (selectedCountry === 'Italy') {
-        stateValue = form.querySelector('#states-italy').value;
-      } else if (selectedCountry === 'Mexico') {
-        stateValue = form.querySelector('#states-mexico').value;
-      }
-
-      const urlParams = new URLSearchParams(window.location.search);
-      const utmCampaign = urlParams.get('utm_campaign') || '';
-      const utmContent = urlParams.get('utm_content') || '';
-      const utmMedium = urlParams.get('utm_medium') || '';
-      const utmSource = urlParams.get('utm_source') || '';
-      const utmTerm = urlParams.get('utm_term') || '';
-
-      // Формируем данные для отправки
-      const data = {
-        firstname: formData.get('firstname'),
-        lastname: formData.get('lastname'),
-        email: formData.get('email'),
-        job_title: formData.get('job_title'),
-        company: formData.get('company'),
-        phone: iti.getNumber(),
-        lead_type: leadTypeValue,
-        country: formData.get('country'),
-        state: stateValue || null,
-        self_attribution: formData.get('self-attribution'),
-        href: window.location.href,
-        page: window.location.pathname.substring(1),
-        ss_anonymous_id: window.segmentstream?.anonymousId?.() ?? '',
-        cookie: {
-          _ga: getCookieValue('_ga'),
-          c_of__ga: getCookieValue('c_of__ga'),
-          c_of_utm_campaign: utmCampaign,
-          c_of_utm_content: utmContent,
-          c_of_utm_medium: utmMedium,
-          c_of_utm_source: utmSource,
-          c_of_utm_term: utmTerm
-        }
-      };
-
-      if (selectedCountry !== 'United States' && !stateValue) {
-        delete data.state;
-      }
-
-      try {
-        // Отправка данных на наш API verified-webflow
-        let userId = getCookieValue('user_id') || generateUserId();
-        document.cookie = `user_id=${userId}; path=/; max-age=31536000`;
+    if (form) {
+      form.addEventListener('submit', async function(event) {
+        event.preventDefault();
         
-        const responseData = await submitFormToVerifiedWebflow(data, userId);
+        if (!$(this).valid()) return;
+        
+        if (isSubmitting) return;
 
-        console.log('Form submitted successfully.', responseData);
+        isSubmitting = true;
+        submitButton.setAttribute('disabled', 'disabled');
 
-        if (responseData.success === true) {
-          // Email уже подтверждён → заявка финализировалась
-          mainFormContainer.style.display = 'flex';
-          codeFormContainer.style.display = 'none';
+        const formData = new FormData(form);
+        // Проверка наличия значения в поле Full Name
+        const fullName = formData.get('Full-Name');
+        const { firstName, lastName } = splitFullName(fullName);
 
-          // Показать успех
-          if (formFields) formFields.style.display = 'none';
-          if (successMessage) successMessage.style.display = 'block';
+        const leadTypeValue = form.querySelector('input[name="lead_type"]:checked')?.value;
+        const selectedCountry = form.querySelector('select[name="country"]').value;
 
-          const leadId = userId;
-          const roleValue = data.lead_type.charAt(0).toUpperCase() + data.lead_type.slice(1).toLowerCase();
+        let stateValue = '';
+        if (selectedCountry === 'United States') stateValue = form.querySelector('#state').value;
+        else if (selectedCountry === 'Australia') stateValue = form.querySelector('#states-australia').value;
+        else if (selectedCountry === 'Brazil') stateValue = form.querySelector('#states-brazil').value;
+        else if (selectedCountry === 'Canada') stateValue = form.querySelector('#states-canada').value;
+        else if (selectedCountry === 'China') stateValue = form.querySelector('#states-china').value;
+        else if (selectedCountry === 'Ireland') stateValue = form.querySelector('#states-ireland').value;
+        else if (selectedCountry === 'India') stateValue = form.querySelector('#states-india').value;
+        else if (selectedCountry === 'Italy') stateValue = form.querySelector('#states-italy').value;
+        else if (selectedCountry === 'Mexico') stateValue = form.querySelector('#states-mexico').value;
 
-          if (window.dataLayer) {
-            window.dataLayer.push({
-              'event': 'lead2fa',
-              'role': roleValue,
-              'type': '',
-              'email': data.email,
-              'phone': data.phone,
-              'lead_id': leadId
-            });
-          } else {
-            console.warn('dataLayer не определен');
+        const urlParams = new URLSearchParams(window.location.search);
+
+        // Формируем данные для отправки (поле phone удалено)
+        const data = {
+          'firstname': firstName,
+          'lastname': lastName,
+          email: formData.get('email'),
+          company: formData.get('company'),
+          lead_type: leadTypeValue,
+          country: formData.get('country'),
+          state: stateValue || null,
+          href: window.location.href,
+          page: window.location.pathname.substring(1),
+          ss_anonymous_id: window.segmentstream?.anonymousId?.() ?? '',
+          cookie: {
+            _ga: getCookieValue('_ga'),
+            c_of__ga: getCookieValue('c_of__ga'),
+            c_of_utm_campaign: urlParams.get('utm_campaign') || '',
+            c_of_utm_content: urlParams.get('utm_content') || '',
+            c_of_utm_medium: urlParams.get('utm_medium') || '',
+            c_of_utm_source: urlParams.get('utm_source') || '',
+            c_of_utm_term: urlParams.get('utm_term') || ''
           }
+        };
 
-        } else {
-          if (responseData.errors) {
-            $('#main-form-2').validate().showErrors({
-              'email': responseData.errors.email ? responseData.errors.email[0] : 'Invalid email.'
-            });
+        if (selectedCountry !== 'United States' && !stateValue) {
+          delete data.state;
+        }
 
+        try {
+          let userId = getCookieValue('user_id') || generateUserId();
+          document.cookie = `user_id=${userId}; path=/; max-age=31536000`;
+
+          const responseData = await submitFormToVerifiedWebflow(data, userId);
+          console.log('Form submitted successfully.', responseData);
+
+          if (responseData.success === true) {
             mainFormContainer.style.display = 'flex';
             codeFormContainer.style.display = 'none';
-            throw new Error('Form validation failed.');
+            if (formFields) formFields.style.display = 'none';
+            if (successMessage) successMessage.style.display = 'block';
+
+            const leadId = userId;
+            const roleValue = data.lead_type.charAt(0).toUpperCase() + data.lead_type.slice(1).toLowerCase();
+
+            if (window.dataLayer) {
+              window.dataLayer.push({
+                'event': 'lead2fa',
+                'role': roleValue,
+                'type': '',
+                'email': data.email,
+                'lead_id': leadId
+              });
+            } else {
+              console.warn('dataLayer не определен');
+            }
+          } else {
+            if (responseData.errors) {
+              $('#main-form').validate().showErrors({
+                'email': responseData.errors.email ? responseData.errors.email[0] : 'Invalid email.'
+              });
+              mainFormContainer.style.display = 'flex';
+              codeFormContainer.style.display = 'none';
+              throw new Error('Form validation failed.');
+            }
+            codeFormContainer.style.display = 'block';
+            mainFormContainer.style.display = 'none';
+            emailDisplay.textContent = data.email.trim();
+            throw new Error('Code verification required.');
           }
+        } catch (error) {
+          console.error('Error:', error.message);
+          if (successMessage) successMessage.style.display = 'none';
+          if (formFields) formFields.style.display = 'flex';
+        } finally {
+          isSubmitting = false;
+          submitButton.removeAttribute('disabled');
+        }
+      });
+    }
 
-          // Если нет errors, но success: false → показываем форму кода
-          codeFormContainer.style.display = 'block';
-          mainFormContainer.style.display = 'none';
+    const pathSegments = window.location.pathname.split('/').filter(Boolean);
+    const pathLocale = pathSegments[0] || '';
+    const allowedLocales = ['en', 'de', 'fr', 'es', 'it', 'pt'];
+    const localeHeader = allowedLocales.includes(pathLocale) ? pathLocale : 'en';
 
-          // Показываем введённый email
-          emailDisplay.textContent = data.email.trim();
+    // 2. ФУНКЦИЯ отправки данных
+    async function submitFormToVerifiedWebflow(data, userId) {
+      try {
+        const headers = {
+          'Content-Type': 'application/json',
+          'locale': localeHeader
+        };
 
-          throw new Error('Code verification required.');
+        if (userId) {
+          headers['user_id'] = userId;
         }
 
-      } catch (error) {
-        console.error('Error:', error.message);
-        if (successMessage) successMessage.style.display = 'none';
-        if (formFields) formFields.style.display = 'flex';
-      } finally {
-        isSubmitting = false;
-        updateSubmitButtonState();
-      }
-    });
-  }
-
-  const pathSegments = window.location.pathname
-  .split('/')
-  .filter(Boolean)
-  const pathLocale = pathSegments[0] || '';
-  const allowedLocales = ['en', 'de', 'fr', 'es', 'it', 'pt'];
-  const localeHeader = allowedLocales.includes(pathLocale) ? pathLocale : 'en';
-
-  // 2. ФУНКЦИЯ отправки данных на https://api2-prod.objectfirst.app/api/application/verified-webflow
-  async function submitFormToVerifiedWebflow(data, userId) {
-    try {
-      const headers = {
-        'Content-Type': 'application/json',
-        'locale': localeHeader
-      };
-
-      if (userId) {
-        headers['user_id'] = userId;
-      }
-
-      const response = await fetch('https://of-web-api.objectfirst.com/api/application/verified-webflow', {
-        method: 'POST',
-        headers: headers,
-        body: JSON.stringify(data),
-        credentials: 'include',
-      });
-
-      const responseData = await response.json();
-
-      // Проверяем HTTP статус
-      if (!response.ok) {
-      // НЕ НУЖНО обрабатывать UI здесь. Просто передаем ошибку дальше.
-      throw new Error(JSON.stringify(responseData)); // Передаем данные об ошибке
-    }
-
-      return responseData;
-    } catch (error) {
-      console.error('Error in submitFormToVerifiedWebflow:', error.message);
-    throw error;
-    }
-  }
-
-  // 3. ОБРАБОТЧИК ФОРМЫ ДЛЯ КОДА
-  formCode.addEventListener('submit', async function (event) {
-    event.preventDefault();
-
-    if (isSubmitting) return;
-    if (!$(formCode).valid()) return;
-
-    isSubmitting = true;
-    if (submitCode) {
-      submitCode.setAttribute('disabled', 'disabled');
-    }
-
-    const code = codeInput.value.trim();
-    const email = document.getElementById('email-2').value.trim();
-
-    try {
-      // Отправляем код на /api/application/webflow/verify
-      const userId = getCookieValue('user_id'); 
-
-      const headers = {
-        'Content-Type': 'application/json'
-      };
-      if (userId) {
-        headers['user_id'] = userId;
-      }
-
-      const response = await fetch('https://of-web-api.objectfirst.com/api/application/webflow/verify', {
-        method: 'POST',
-        headers: headers,
-        body: JSON.stringify({ email, code }),
-        credentials: 'include',
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        // Если код неверен, сервер присылает message
-        $(formCode).validate().showErrors({ code: result.message || 'Invalid code.' });
-        return;
-      }
-
-      // Код верен → сервер «финализирует» черновую заявку
-      codeFormContainer.style.display = 'none';
-      mainFormContainer.style.display = 'flex';
-
-      if (successMessage) successMessage.style.display = 'block';
-      if (formFields) formFields.style.display = 'none';
-
-      const leadTypeValue = document.querySelector('input[name="lead_type"]:checked')?.value || '';
-      const roleValue = leadTypeValue
-      ? leadTypeValue.charAt(0).toUpperCase() + leadTypeValue.slice(1).toLowerCase()
-      : '';
-      const phoneNumber = iti.getNumber();
-      const leadId = getCookieValue('userId') || '';
-
-      if (window.dataLayer) {
-        window.dataLayer.push({
-          'event': 'lead2fa',
-          'role': roleValue,
-          'type': '',
-          'email': email,
-          'phone': phoneNumber,
-          'lead_id': leadId
-        });
-      } else {
-        console.warn('dataLayer не определен');
-      }
-
-    } catch (error) {
-      console.error('Error submitting email form:', error);
-    } finally {
-      isSubmitting = false;
-      if (submitCode) {
-        submitCode.removeAttribute('disabled');
-      }
-    }
-  });
-
-  // ПОВТОРНАЯ ОТПРАВКА КОДА
-  const resendCodeButton = document.getElementById('resend-code');
-  if (resendCodeButton) {
-    resendCodeButton.addEventListener('click', async function (event) {
-      event.preventDefault();
-
-      const mainForm = document.getElementById('main-form-2');
-      if (!mainForm) {
-        alert('Error: Main form #2 not found.');
-        return;
-      }
-      const formData = new FormData(mainForm);
-      const email = formData.get('email');
-
-      if (!email) {
-        alert('Email is missing. Please fill in the email field in the previous step.');
-        return;
-      }
-
-      resendCodeButton.disabled = true;
-      resendCodeButton.textContent = 'Please wait...';
-      setTimeout(() => {
-        resendCodeButton.disabled = false;
-        resendCodeButton.textContent = 'Resend Code';
-      }, 30000);
-
-      const dataToSend = {
-        firstname: formData.get('firstname'),
-        lastname: formData.get('lastname'),
-        email: email,
-        job_title: formData.get('job_title'),
-        company: formData.get('company'),
-        phone: iti.getNumber(),
-        lead_type: formData.get('lead_type') || '',
-        country: formData.get('country'),
-      };
-
-      try {
         const response = await fetch('https://of-web-api.objectfirst.com/api/application/verified-webflow', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'locale': localeHeader },
-          body: JSON.stringify(dataToSend),
+          headers: headers,
+          body: JSON.stringify(data),
           credentials: 'include',
         });
-
-        const result = await response.json();
-
-        if (response.ok) {
-          alert('A new confirmation code has been sent to your email.');
-        } else {
-          console.error('Error resending code:', result);
-          alert(result.message || 'Failed to resend the code. Please try again.');
+        const responseData = await response.json();
+        if (!response.ok) {
+          if (responseData.errors && responseData.errors.email) {
+            $('#main-form').validate().showErrors({
+              'email': responseData.errors.email[0]
+            });
+            if (formFields) formFields.style.display = 'none';
+            if (successMessage) successMessage.style.display = 'block';
+          }
+          throw new Error('Server error: ' + JSON.stringify(responseData));
         }
+        return responseData;
       } catch (error) {
         console.error('Error:', error);
-        alert('An error occurred while resending the code. Please try again later.');
+        throw error;
+      }
+    }
+
+    // 3. ОБРАБОТЧИК ФОРМЫ ДЛЯ КОДА
+    formCode.addEventListener('submit', async function (event) {
+      event.preventDefault();
+      if (isSubmitting || !$(formCode).valid()) return;
+
+      isSubmitting = true;
+      submitButtonCode.setAttribute('disabled', 'disabled');
+
+      const code = codeInput.value.trim();
+      const email = document.getElementById('email').value.trim();
+
+      try {
+        const userId = getCookieValue('user_id'); 
+
+        const headers = {
+          'Content-Type': 'application/json'
+        };
+        // Добавляем заголовок user_id, если он есть в cookie
+        if (userId) {
+          headers['user_id'] = userId;
+        }
+
+        const response = await fetch('https://of-web-api.objectfirst.com/api/application/webflow/verify', {
+          method: 'POST',
+          headers: headers,
+          body: JSON.stringify({ email, code }),
+          credentials: 'include',
+        });
+        const result = await response.json();
+        if (!response.ok) {
+          $(formCode).validate().showErrors({ 'code': result.message || 'Invalid code.' });
+          return;
+        }
+
+        codeFormContainer.style.display = 'none';
+        mainFormContainer.style.display = 'flex';
+        if (successMessage) successMessage.style.display = 'block';
+        if (formFields) formFields.style.display = 'none';
+
+        const leadTypeValue = document.querySelector('input[name="lead_type"]:checked')?.value || '';
+        const roleValue = leadTypeValue ? leadTypeValue.charAt(0).toUpperCase() + leadTypeValue.slice(1).toLowerCase() : '';
+        const leadId = userId;
+
+        if (window.dataLayer) {
+          window.dataLayer.push({
+            'event': 'lead2fa',
+            'role': roleValue,
+            'type': '',
+            'email': email,
+            'lead_id': leadId
+          });
+        } else {
+          console.warn('dataLayer не определен');
+        }
+      } catch (error) {
+        console.error('Error submitting email form:', error);
+      } finally {
+        isSubmitting = false;
+        submitButtonCode.removeAttribute('disabled');
       }
     });
-  }
+
+    // 4. ПОВТОРНАЯ ОТПРАВКА КОДА
+    const resendCodeButton = document.getElementById('resend-code');
+    if (resendCodeButton) {
+      resendCodeButton.addEventListener('click', async function (event) {
+        event.preventDefault();
+
+        // Получаем данные из основной формы
+        const mainForm = document.getElementById('main-form');
+        if (!mainForm) {
+          alert('Error: Main form not found.');
+          return;
+        }
+        const formData = new FormData(mainForm);
+        const email = formData.get('email');
+
+        // Проверка наличия значения в поле Full Name
+        const fullName = formData.get('Full-Name');
+        const { firstName, lastName } = splitFullName(fullName);
+
+        if (!email) {
+          alert('Email is missing. Please fill in the email field in the previous step.');
+          return;
+        }
+
+        // Блокируем кнопку на время отправки
+        resendCodeButton.disabled = true;
+        resendCodeButton.textContent = 'Please wait...';
+        setTimeout(() => {
+          resendCodeButton.disabled = false;
+          resendCodeButton.textContent = 'Resend Code';
+        }, 30000); // Тайм-аут 30 секунд
+
+        // Собираем ВСЕ данные из формы, а не только email
+        const leadTypeValue = formData.get('lead_type') || '';
+        const selectedCountry = formData.get('country');
+        let stateValue = '';
+        if (selectedCountry === 'United States') stateValue = mainForm.querySelector('#state')?.value;
+        else if (selectedCountry === 'Australia') stateValue = mainForm.querySelector('#states-australia')?.value;
+        else if (selectedCountry === 'Brazil') stateValue = mainForm.querySelector('#states-brazil')?.value;
+        else if (selectedCountry === 'Canada') stateValue = mainForm.querySelector('#states-canada')?.value;
+        else if (selectedCountry === 'China') stateValue = mainForm.querySelector('#states-china')?.value;
+        else if (selectedCountry === 'Ireland') stateValue = mainForm.querySelector('#states-ireland')?.value;
+        else if (selectedCountry === 'India') stateValue = mainForm.querySelector('#states-india')?.value;
+        else if (selectedCountry === 'Italy') stateValue = mainForm.querySelector('#states-italy')?.value;
+        else if (selectedCountry === 'Mexico') stateValue = mainForm.querySelector('#states-mexico')?.value;
+
+        const dataToSend = {
+          'firstname': firstName,
+          'lastname': lastName,
+          email: email,
+          company: formData.get('company'),
+          lead_type: leadTypeValue,
+          country: selectedCountry,
+          state: stateValue || null,
+          href: window.location.href,
+          page: window.location.pathname.substring(1),
+        };
+
+        if (selectedCountry !== 'United States' && !stateValue) {
+          delete dataToSend.state;
+        }
+
+        try {
+          // Отправляем ПОЛНЫЕ данные, как при первой отправке
+          const userId = getCookieValue('user_id');
+
+          const headers = {
+            'Content-Type': 'application/json',
+            'locale': localeHeader
+          };
+          // Добавляем заголовок, если userId существует
+          if (userId) {
+            headers['user_id'] = userId;
+          }
+          const response = await fetch('https://of-web-api.objectfirst.com/api/application/verified-webflow', {
+            method: 'POST',
+            headers: headers,
+            body: JSON.stringify(dataToSend),
+            credentials: 'include',
+          });
+
+          const result = await response.json();
+
+          if (response.ok) {
+            alert('A new confirmation code has been sent to your email.');
+          } else {
+            console.error('Error resending code:', result);
+            alert(result.message || 'Failed to resend the code. Please try again.');
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          alert('An error occurred while resending the code. Please try again later.');
+        }
+      });
+    }
+  });
