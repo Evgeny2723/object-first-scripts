@@ -26,6 +26,9 @@ document.addEventListener('DOMContentLoaded', function() {
     let iti = null;
     let isCheckboxInteracted = false;
 
+    submitButton?.setAttribute('disabled', 'disabled');
+    submitButtonWrapper?.classList.add('button-is-inactive');
+
     // ---- HONEYPOT ----
     let formInteractionStartTime = 0;
     let decoyLinkClicked = false;
@@ -73,7 +76,7 @@ document.addEventListener('DOMContentLoaded', function() {
           fetch('https://faas-nyc1-2ef2e6cc.doserverless.co/api/v1/web/fn-3627560b-2163-4a62-81db-3a3b5da17d5a/ip/info')
             .then(r => r.json()).then(data => {
               if (data && data.iso_code) success(data.iso_code); else failure();
-              if (countrySelect && data && data.country && !countrySelect.value) {
+              if (countrySelect && data && data.country) {
                  $(countrySelect).val(data.country).selectpicker('refresh').trigger('change');
               }
             }).catch(failure);
