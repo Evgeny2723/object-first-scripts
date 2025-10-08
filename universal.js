@@ -25,6 +25,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let isSubmitting = false;
     let iti = null;
     let isCheckboxInteracted = false;
+    let hasUserInteracted = false;
 
     submitButton?.setAttribute('disabled', 'disabled');
     submitButtonWrapper?.classList.add('button-is-inactive');
@@ -167,7 +168,12 @@ document.addEventListener('DOMContentLoaded', function() {
         'phone': { required: true, phoneCustom: true },
         'agreement': { required: () => countrySelect && countrySelect.value !== 'United States' }
       },
-      invalidHandler: () => { isCheckboxInteracted = true; updateCheckboxErrorClass(); }
+      invalidHandler: () => {
+        if (hasUserInteracted) {
+          isCheckboxInteracted = true;
+          updateCheckboxErrorClass();
+        }
+      }
     });
     
     // Обновление состояния кнопки при любом изменении
@@ -185,6 +191,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // ---- ОТПРАВКА ФОРМЫ ----
     form.addEventListener('submit', function(event) {
       event.preventDefault();
+      hasUserInteracted = true;
       $form.find('input, select').data('interacted', true);
       isCheckboxInteracted = true;
       updateCheckboxErrorClass();
