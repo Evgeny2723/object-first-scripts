@@ -152,12 +152,20 @@ document.addEventListener('DOMContentLoaded', function() {
     $.validator.addMethod("phoneCustom", (v) => !v.trim() || (iti && iti.isValidNumber()), "Phone number is invalid.");
 
     const validator = $form.validate({
-      onfocusin: (element) => $(element).data("interacted", true),
-      onfocusout: (element) => $(element).data('interacted') && $(element).valid(),
-      onkeyup: (element) => $(element).data('interacted') && $(element).valid(),
-      errorPlacement: (error, element) => { if ($(element).data('interacted')) { error.appendTo(element.closest(".field-row, .w-full, .iti")); } },
-      highlight: (element) => { if ($(element).data('interacted')) { $(element).addClass('has-error'); } },
-      unhighlight: (element) => $(element).removeClass('has-error'),
+      onfocusout: function(element) {
+          if ($(element).data('modified')) {
+            $(element).valid();
+          }
+        },
+        onkeyup: function(element) {
+          $(element).data('modified', true);
+          $(element).valid();
+        },
+        onclick: function(element) {
+          if (isFormInitialized) {
+            $(element).valid();
+          }
+        },
       rules: {
         'Full-Name': { required: true, maxlength: 100, normalizer: v => v.trim() },
         'First-Name': { required: true, maxlength: 50, normalizer: v => v.trim() },
@@ -168,6 +176,24 @@ document.addEventListener('DOMContentLoaded', function() {
         'phone': { required: true, phoneCustom: true },
         'agreement': { required: () => countrySelect && countrySelect.value !== 'United States' }
       },
+      errorPlacement: function (error, element) {
+          if ($(element).data('modified')) {
+            error.appendTo(element.closest(".field-row"));
+          }
+        },
+        highlight: function(element) {
+          if ($(element).data('modified')) {
+            $(element).css('border', '1px solid #c50006');
+          }
+        },
+        unhighlight: function(element) {
+          $(element).css('border', '');
+        },
+        ignoreTitle: true,
+        onfocusin: function(element) {
+          isFormInitialized = true;
+          $(element).data("interacted", true);
+        },
       invalidHandler: () => {
         if (hasUserInteracted) {
           isCheckboxInteracted = true;
