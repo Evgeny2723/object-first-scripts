@@ -266,7 +266,7 @@ document.addEventListener('DOMContentLoaded', function() {
           sessionStorage.setItem('videoUnlocked', 'true');
       }
 
-      form.submit();
+      HTMLFormElement.prototype.submit.call(form);
     });
   });
 });
