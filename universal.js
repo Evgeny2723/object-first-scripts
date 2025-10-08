@@ -199,6 +199,52 @@ document.addEventListener('DOMContentLoaded', function() {
           isCheckboxInteracted = true;
           updateCheckboxErrorClass();
         }
+      },
+      submitHandler: function(form) {
+        submitButton?.setAttribute('disabled', 'disabled');
+
+        let firstName = '', lastName = '';
+        if (fullNameInput) {
+          const nameParts = fullNameInput.value.trim().split(/\s+/);
+          firstName = nameParts.shift() || '';
+          lastName = nameParts.join(' ') || firstName;
+        } else {
+          firstName = firstNameInput?.value.trim() || '';
+          lastName = lastNameInput?.value.trim() || '';
+        }
+        
+        let stateValue = '';
+        const visibleStateSelect = $form.find('div[class*="states-"][style*="block"] select, div[class*="dropdown-state"][style*="block"] select').first();
+        if(visibleStateSelect.length) { stateValue = visibleStateSelect.val(); }
+
+        const formFillingTime = formInteractionStartTime > 0 ? (Date.now() - formInteractionStartTime) / 1000 : 999;
+        let junk_lead = false, junk_reason = null;
+        if (new FormData(form).get(replaceConfusableChars('confirm-email')) || decoyLinkClicked || formFillingTime < 0.5) {
+          junk_lead = true; junk_reason = decoyLinkClicked ? 2 : (formFillingTime < 0.5 ? 3 : 1);
+        }
+
+        const dataToSubmit = {
+          'firstname': firstName, 'lastname': lastName, 'state': stateValue || null,
+          'full_phone_number': iti ? iti.getNumber() : (phoneInput ? phoneInput.value.trim() : ''),
+          'href': window.location.href, 'page': window.location.pathname.substring(1),
+          'ss_anonymous_id': window.segmentstream?.anonymousId?.() ?? '', 'junk_lead': junk_lead,
+          'of_form_duration': formFillingTime, 'junk_reason': junk_reason
+        };
+
+        for (const key in dataToSubmit) {
+            let input = form.querySelector(`input[type="hidden"][name="${key}"]`);
+            if (!input) { input = document.createElement('input'); input.type = 'hidden'; input.name = key; form.appendChild(input); }
+            input.value = dataToSubmit[key];
+        }
+
+        if (form.hasAttribute('data-unlock-video')) {
+            const unlockTarget = document.querySelector(form.getAttribute('data-unlock-video'));
+            if (unlockTarget) unlockTarget.classList.remove('is-locked');
+            sessionStorage.setItem('videoUnlocked', 'true');
+        }
+
+        // Эта команда позволяет Webflow завершить свою AJAX-отправку
+        form.submit();
       }
     });
     
@@ -214,59 +260,5 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // ---- ОТПРАВКА ФОРМЫ ----
-    form.addEventListener('submit', function(event) {
-      event.preventDefault();
-      hasUserInteracted = true;
-      $form.find('input, select').data('interacted', true);
-      isCheckboxInteracted = true;
-      updateCheckboxErrorClass();
-      
-      if (isSubmitting || !$form.valid()) { return; }
-      isSubmitting = true;
-      submitButton?.setAttribute('disabled', 'disabled');
-
-      let firstName = '', lastName = '';
-      if (fullNameInput) {
-        const nameParts = fullNameInput.value.trim().split(/\s+/);
-        firstName = nameParts.shift() || '';
-        lastName = nameParts.join(' ') || firstName;
-      } else {
-        firstName = firstNameInput?.value.trim() || '';
-        lastName = lastNameInput?.value.trim() || '';
-      }
-      
-      let stateValue = '';
-      const visibleStateSelect = $form.find('div[class*="states-"][style*="block"] select, div[class*="dropdown-state"][style*="block"] select').first();
-      if(visibleStateSelect.length) { stateValue = visibleStateSelect.val(); }
-
-      const formFillingTime = formInteractionStartTime > 0 ? (Date.now() - formInteractionStartTime) / 1000 : 999;
-      let junk_lead = false, junk_reason = null;
-      if (new FormData(form).get(replaceConfusableChars('confirm-email')) || decoyLinkClicked || formFillingTime < 0.5) {
-        junk_lead = true; junk_reason = decoyLinkClicked ? 2 : (formFillingTime < 0.5 ? 3 : 1);
-      }
-
-      const dataToSubmit = {
-        'firstname': firstName, 'lastname': lastName, 'state': stateValue || null,
-        'full_phone_number': iti ? iti.getNumber() : (phoneInput ? phoneInput.value.trim() : ''),
-        'href': window.location.href, 'page': window.location.pathname.substring(1),
-        'ss_anonymous_id': window.segmentstream?.anonymousId?.() ?? '', 'junk_lead': junk_lead,
-        'of_form_duration': formFillingTime, 'junk_reason': junk_reason
-      };
-
-      for (const key in dataToSubmit) {
-          let input = form.querySelector(`input[type="hidden"][name="${key}"]`);
-          if (!input) { input = document.createElement('input'); input.type = 'hidden'; input.name = key; form.appendChild(input); }
-          input.value = dataToSubmit[key];
-      }
-
-      if (form.hasAttribute('data-unlock-video')) {
-          const unlockTarget = document.querySelector(form.getAttribute('data-unlock-video'));
-          if (unlockTarget) unlockTarget.classList.remove('is-locked');
-          sessionStorage.setItem('videoUnlocked', 'true');
-      }
-
-      HTMLFormElement.prototype.submit.call(form);
-    });
   });
 });
