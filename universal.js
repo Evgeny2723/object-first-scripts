@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const countrySelect = form.querySelector('#country, #country-2');
     const phoneInput = form.querySelector('#phone');
     const selfAttributionInput = form.querySelector('#self-attribution');
-    const submitButton = form.querySelector('.form-submit, #submit, #submit-2');
+    const submitButton = form.querySelector('#submit, #submit-2');
     const checkbox = form.querySelector('#agreement');
     const successMessage = form.querySelector('.w-form-done, #success-message');
     const submitButtonWrapper = submitButton ? submitButton.closest('.submit-button-wrapper') : null;
