@@ -217,78 +217,117 @@ document.addEventListener('DOMContentLoaded', function() {
           updateCheckboxErrorClass();
         }
       },
-      submitHandler: function(form) {
-        submitButton?.setAttribute('disabled', 'disabled');
-
-        let firstName = '', lastName = '';
-        if (fullNameInput) {
-          const nameParts = fullNameInput.value.trim().split(/\s+/);
-          firstName = nameParts.shift() || '';
-          lastName = nameParts.join(' ') || firstName;
-        } else {
-          firstName = firstNameInput?.value.trim() || '';
-          lastName = lastNameInput?.value.trim() || '';
-        }
-        
-        let stateValue = '';
-        const visibleStateSelect = $form.find('div[class*="states-"][style*="block"] select, div[class*="dropdown-state"][style*="block"] select').first();
-        if(visibleStateSelect.length) { stateValue = visibleStateSelect.val(); }
-
-        const formFillingTime = formInteractionStartTime > 0 ? (Date.now() - formInteractionStartTime) / 1000 : 999;
-        let junk_lead = false, junk_reason = null, junk_context = null;
-
-        const confirmEmailValue = new FormData(form).get(replaceConfusableChars('confirm-email')) || '';
-        const cityValue = form.querySelector('[name="city"]')?.value || '';
-
-        if (confirmEmailValue.length > 0 || cityValue.length > 0) {
-            junk_lead = true;
-            junk_reason = 1;
-            junk_context = JSON.stringify({ email: confirmEmailValue || null, city: cityValue || null });
-        } else if (decoyLinkClicked) {
-            junk_lead = true;
-            junk_reason = 2;
-        } else if (formFillingTime < 0.5) {
-            junk_lead = true;
-            junk_reason = 3;
-        }
-
-        const dataToSubmit = {
-          'firstname': firstName, 'lastname': lastName, 'state': stateValue || null,
-          'full_phone_number': iti ? iti.getNumber() : (phoneInput ? phoneInput.value.trim() : ''),
-          'href': window.location.href, 'page': window.location.pathname.substring(1),
-          'ss_anonymous_id': window.segmentstream?.anonymousId?.() ?? '', 'junk_lead': junk_lead,
-          'of_form_duration': formFillingTime, 'junk_reason': junk_reason, 'junk_context': junk_context
-        };
-
-        for (const key in dataToSubmit) {
-            let input = form.querySelector(`input[type="hidden"][name="${key}"]`);
-            if (!input) { input = document.createElement('input'); input.type = 'hidden'; input.name = key; form.appendChild(input); }
-            input.value = dataToSubmit[key];
-        }
-
-        if (form.hasAttribute('data-unlock-video')) {
-            const unlockTarget = document.querySelector(form.getAttribute('data-unlock-video'));
-            if (unlockTarget) unlockTarget.classList.remove('is-locked');
-            sessionStorage.setItem('videoUnlocked', 'true');
-        }
-
-        HTMLFormElement.prototype.submit.call(form);
-      }
     });
     
-    // Обновление состояния кнопки при любом изменении
     $form.on('input change keyup', () => {
-        const isFormValid = $form.valid();
-        if (isFormValid) {
-            submitButton?.removeAttribute('disabled');
-            submitButton?.classList.remove('submit-inactive');
-            submitButtonWrapper?.classList.remove('button-is-inactive');
-        } else {
-            submitButton?.setAttribute('disabled', 'disabled');
-            submitButton?.classList.add('submit-inactive');
-            submitButtonWrapper?.classList.add('button-is-inactive');
-        }
+        setTimeout(() => {
+            const isFormValid = $form.valid();
+            if (isFormValid) {
+                submitButton?.removeAttribute('disabled');
+                submitButton?.classList.remove('submit-inactive');
+                submitButtonWrapper?.classList.remove('button-is-inactive');
+            } else {
+                submitButton?.setAttribute('disabled', 'disabled');
+                submitButton?.classList.add('submit-inactive');
+                submitButtonWrapper?.classList.add('button-is-inactive');
+            }
+        }, 100);
+    });
+
+    // ---- НОВЫЙ ОБРАБОТЧИК ОТПРАВКИ ----
+    form.addEventListener('submit', function(event) {
+      // 1. Проверяем валидность. Если форма не валидна, останавливаем отправку.
+      if (!$form.valid()) {
+        event.preventDefault();
+        
+        // Помечаем все поля как "проверенные", чтобы показать ошибки
+        hasUserInteracted = true;
+        $form.find('input, select').data('interacted', true);
+        isCheckboxInteracted = true;
+        updateCheckboxErrorClass();
+        validator.focusInvalid();
+        return;
+      }
+      
+      // 2. Если форма валидна, мы НЕ останавливаем отправку.
+      // Скрипт продолжает работу, добавляет скрытые поля, и событие "submit"
+      // "всплывает" дальше, где его перехватывает уже сам Webflow.
+
+      submitButton?.setAttribute('disabled', 'disabled');
+
+      let firstName = '', lastName = '';
+      if (fullNameInput) {
+        const nameParts = fullNameInput.value.trim().split(/\s+/);
+        firstName = nameParts.shift() || '';
+        lastName = nameParts.join(' ') || firstName;
+      } else {
+        firstName = firstNameInput?.value.trim() || '';
+        lastName = lastNameInput?.value.trim() || '';
+      }
+      
+      let stateValue = '';
+      const visibleStateSelect = $form.find('div[class*="states-"][style*="block"] select, div[class*="dropdown-state"][style*="block"] select').first();
+      if(visibleStateSelect.length) { stateValue = visibleStateSelect.val(); }
+
+      const formFillingTime = formInteractionStartTime > 0 ? (Date.now() - formInteractionStartTime) / 1000 : 999;
+      
+      let junk_lead = false, junk_reason = null, junk_context = null;
+      const confirmEmailValue = new FormData(form).get(replaceConfusableChars('confirm-email')) || '';
+      const cityValue = form.querySelector('[name="city"]')?.value || '';
+
+      if (confirmEmailValue.length > 0 || cityValue.length > 0) {
+          junk_lead = true; junk_reason = 1;
+          junk_context = JSON.stringify({ email: confirmEmailValue || null, city: cityValue || null });
+      } else if (decoyLinkClicked) {
+          junk_lead = true; junk_reason = 2;
+      } else if (formFillingTime < 0.5) {
+          junk_lead = true; junk_reason = 3;
+      }
+
+      const dataToSubmit = {
+        'firstname': firstName, 'lastname': lastName, 'state': stateValue || null,
+        'full_phone_number': iti ? iti.getNumber() : (phoneInput ? phoneInput.value.trim() : ''),
+        'href': window.location.href, 'page': window.location.pathname.substring(1),
+        'ss_anonymous_id': window.segmentstream?.anonymousId?.() ?? '', 
+        'junk_lead': junk_lead,
+        'of_form_duration': formFillingTime, 
+        'junk_reason': junk_reason,
+        'junk_context': junk_context
+      };
+
+      for (const key in dataToSubmit) {
+          let input = form.querySelector(`input[type="hidden"][name="${key}"]`);
+          if (!input) { input = document.createElement('input'); input.type = 'hidden'; input.name = key; form.appendChild(input); }
+          input.value = dataToSubmit[key] || ''; // Убедимся, что не передаем null
+      }
+
+      if (form.hasAttribute('data-unlock-video')) {
+          const unlockTarget = document.querySelector(form.getAttribute('data-unlock-video'));
+          if (unlockTarget) unlockTarget.classList.remove('is-locked');
+          sessionStorage.setItem('videoUnlocked', 'true');
+      }
     });
 
   });
+
+  function addPlaceholder() {
+    const searchInputs = document.querySelectorAll('.form-control[type="search"]');
+    searchInputs.forEach(function(searchInput) {
+      if (searchInput && !searchInput.getAttribute('placeholder')) {
+        searchInput.setAttribute('placeholder', 'Search');
+      }
+    });
+  }
+
+  addPlaceholder();
+
+  const observer = new MutationObserver((mutationsList) => {
+    for (let mutation of mutationsList) {
+      if (mutation.type === 'childList') {
+        addPlaceholder();
+      }
+    }
+  });
+
+  observer.observe(document.body, { childList: true, subtree: true });
 });
