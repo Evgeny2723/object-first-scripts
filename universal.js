@@ -153,15 +153,10 @@ document.addEventListener('DOMContentLoaded', function() {
         return !/@(gmail\.com|yahoo\.com|hotmail\.com|outlook\.com|mail\.ru)$/i.test(value);
       }, "Please enter a valid corporate email address (e.g., yourname@company.com). Personal email addresses (e.g., Gmail, Yahoo) are not accepted.");
 
-      // Кастомный метод для проверки телефона (если используется intlTelInput)
-      if (phoneInput && window.intlTelInput) {
-        const iti = window.intlTelInput(phoneInput, {
-          utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js"
-        });
-        $.validator.addMethod("phoneCustom", function(value, element) {
-          return iti.isValidNumber();
-        }, "Phone number is invalid. Please add your country code, area code and phone number. Your phone number can contain numbers, spaces and these special characters: ( ) - # +");
-      }
+      // Кастомный метод для проверки телефона
+      $.validator.addMethod("phoneCustom", function(value, element) {
+        return !value.trim() || (iti && iti.isValidNumber());
+      }, "Phone number is invalid. Please add your country code, area code and phone number. Your phone number can contain numbers, spaces and these special characters: ( ) - # +");
 
       // Кастомный метод для проверки допустимых символов в email
       $.validator.addMethod("validEmailChars", function (value, element) {
