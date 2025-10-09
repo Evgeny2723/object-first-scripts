@@ -4,6 +4,16 @@ document.addEventListener('DOMContentLoaded', function() {
     return;
   }
 
+  function getCookieValue(name) {
+    const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+    if (match) return match[2];
+    return null;
+  }
+  
+  function generateUserId() {
+    return 'user_' + Math.random().toString(36).substr(2, 9);
+  }
+
   document.querySelectorAll('.main-form[data-universal-form]').forEach(form => {
     const $form = $(form);
 
@@ -284,6 +294,9 @@ document.addEventListener('DOMContentLoaded', function() {
           junk_lead = true; junk_reason = 3;
       }
 
+      const userId = getCookieValue('user_id') || generateUserId();
+      document.cookie = `user_id=${userId}; path=/; max-age=31536000`;
+
       const dataToSubmit = {
         'firstname': firstName, 'lastname': lastName, 'state': stateValue || null,
         'full_phone_number': iti ? iti.getNumber() : (phoneInput ? phoneInput.value.trim() : ''),
@@ -292,7 +305,8 @@ document.addEventListener('DOMContentLoaded', function() {
         'junk_lead': junk_lead,
         'of_form_duration': formFillingTime, 
         'junk_reason': junk_reason,
-        'junk_context': junk_context
+        'junk_context': junk_context,
+        'user_id': userId
       };
 
       for (const key in dataToSubmit) {
