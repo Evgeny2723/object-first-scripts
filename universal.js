@@ -264,9 +264,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const isFormValid = $form.valid();
         if (isFormValid) {
             submitButton?.removeAttribute('disabled');
+            submitButton?.classList.remove('submit-inactive');
             submitButtonWrapper?.classList.remove('button-is-inactive');
         } else {
             submitButton?.setAttribute('disabled', 'disabled');
+            submitButton?.classList.add('submit-inactive');
             submitButtonWrapper?.classList.add('button-is-inactive');
         }
     });
