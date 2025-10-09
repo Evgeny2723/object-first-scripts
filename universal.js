@@ -190,10 +190,10 @@ document.addEventListener('DOMContentLoaded', function() {
         },
       rules: {
         'Full-Name': { required: true, maxlength: 50, noSpacesOnly: true },
-        'First-Name': { required: true, maxlength: 50, noSpacesOnly: true },
-        'Last-Name': { required: true, maxlength: 50, noSpacesOnly: true },
+        'firstname': { required: true, maxlength: 50, noSpacesOnly: true },
+        'lastname': { required: true, maxlength: 50, noSpacesOnly: true },
         'email': { required: true, maxlength: 50, validEmailChars: true, corporate: true },
-        'Job-title': { required: true, maxlength: 50, noSpacesOnly: true },
+        'job_title': { required: true, maxlength: 50, noSpacesOnly: true },
         'company': { required: true, maxlength: 50, noSpacesOnly: true },
         'phone': { required: true, phoneCustom: true },
         'agreement': { required: () => countrySelect && countrySelect.value !== 'United States' }
