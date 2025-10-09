@@ -324,8 +324,30 @@ document.addEventListener('DOMContentLoaded', function() {
           if (unlockTarget) unlockTarget.classList.remove('is-locked');
           sessionStorage.setItem('videoUnlocked', 'true');
       }
-    });
 
+      // --- БЛОК DATALAYER ---
+    const eventName = form.getAttribute('data-event-name') || 'demo';
+    
+    // Получаем значение из поля lead_type (предполагаем, что у него есть name="lead_type")
+    const leadTypeInput = form.querySelector('[name="lead_type"]');
+    const leadTypeValue = leadTypeInput ? leadTypeInput.value : '';
+    
+    const userEmail = emailInput ? emailInput.value : '';
+    const userPhone = iti ? iti.getNumber() : (phoneInput ? phoneInput.value : '');
+
+    if (window.dataLayer) {
+        window.dataLayer.push({
+            'event': eventName,
+            'role': leadTypeValue, // Используем значение из lead_type
+            'type': '',
+            'email': userEmail,
+            'phone': userPhone,
+            'lead_id': userId // Используем userId
+        });
+    } else {
+        console.warn('dataLayer не определен');
+    }
+    });
   });
 
   function addPlaceholder() {
