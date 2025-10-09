@@ -13,6 +13,10 @@ document.addEventListener('DOMContentLoaded', function() {
   function generateUserId() {
     return 'user_' + Math.random().toString(36).substr(2, 9);
   }
+  const userIdInput = form.querySelector('input[name="user_id"]');
+  if (userIdInput) {
+    userIdInput.value = userId;
+  }
 
   document.querySelectorAll('.main-form[data-universal-form]').forEach(form => {
     const $form = $(form);
@@ -306,7 +310,6 @@ document.addEventListener('DOMContentLoaded', function() {
         'of_form_duration': formFillingTime, 
         'junk_reason': junk_reason,
         'junk_context': junk_context,
-        'user_id': userId
       };
 
       for (const key in dataToSubmit) {
