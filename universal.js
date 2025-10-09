@@ -148,8 +148,30 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // ---- ВАЛИДАЦИЯ ----
-    $.validator.addMethod("corporate", (v) => !/@(gmail\.com|yahoo\.com|hotmail\.com|outlook\.com|mail\.ru)$/i.test(v), "Personal emails are not accepted.");
-    $.validator.addMethod("phoneCustom", (v) => !v.trim() || (iti && iti.isValidNumber()), "Phone number is invalid.");
+    // Кастомный метод для проверки корпоративного email
+      $.validator.addMethod("corporate", function(value, element) {
+        return !/@(gmail\.com|yahoo\.com|hotmail\.com|outlook\.com|mail\.ru)$/i.test(value);
+      }, "Please enter a valid corporate email address (e.g., yourname@company.com). Personal email addresses (e.g., Gmail, Yahoo) are not accepted.");
+
+      // Кастомный метод для проверки телефона (если используется intlTelInput)
+      if (phoneInput && window.intlTelInput) {
+        const iti = window.intlTelInput(phoneInput, {
+          utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js"
+        });
+        $.validator.addMethod("phoneCustom", function(value, element) {
+          return iti.isValidNumber();
+        }, "Phone number is invalid. Please add your country code, area code and phone number. Your phone number can contain numbers, spaces and these special characters: ( ) - # +");
+      }
+
+      // Кастомный метод для проверки допустимых символов в email
+      $.validator.addMethod("validEmailChars", function (value, element) {
+        return this.optional(element) || /^[a-zA-Z0-9@.\-_]+$/.test(value);
+      }, "Please use only valid characters in the email field (letters, numbers, @, ., -, _).");
+
+      // Кастомный метод для проверки на только пробелы
+      $.validator.addMethod("noSpacesOnly", function (value, element) {
+        return this.optional(element) || value.trim().length > 0;
+      }, "This field cannot contain only spaces.");
 
     const validator = $form.validate({
       onfocusout: function(element) {
@@ -167,12 +189,12 @@ document.addEventListener('DOMContentLoaded', function() {
           }
         },
       rules: {
-        'Full-Name': { required: true, maxlength: 100, normalizer: v => v.trim() },
-        'First-Name': { required: true, maxlength: 50, normalizer: v => v.trim() },
-        'Last-Name': { required: true, maxlength: 50, normalizer: v => v.trim() },
-        'email': { required: true, maxlength: 50, email: true, corporate: true, normalizer: v => v.trim() },
-        'Job-title': { required: true, maxlength: 50, normalizer: v => v.trim() },
-        'company': { required: true, maxlength: 50, normalizer: v => v.trim() },
+        'Full-Name': { required: true, maxlength: 50, noSpacesOnly: true },
+        'First-Name': { required: true, maxlength: 50, noSpacesOnly: true },
+        'Last-Name': { required: true, maxlength: 50, noSpacesOnly: true },
+        'email': { required: true, maxlength: 50, validEmailChars: true, corporate: true },
+        'Job-title': { required: true, maxlength: 50, noSpacesOnly: true },
+        'company': { required: true, maxlength: 50, noSpacesOnly: true },
         'phone': { required: true, phoneCustom: true },
         'agreement': { required: () => countrySelect && countrySelect.value !== 'United States' }
       },
