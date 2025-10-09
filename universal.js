@@ -13,10 +13,6 @@ document.addEventListener('DOMContentLoaded', function() {
   function generateUserId() {
     return 'user_' + Math.random().toString(36).substr(2, 9);
   }
-  const userIdInput = form.querySelector('input[name="user_id"]');
-  if (userIdInput) {
-    userIdInput.value = userId;
-  }
 
   document.querySelectorAll('.main-form[data-universal-form]').forEach(form => {
     const $form = $(form);
@@ -300,6 +296,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
       const userId = getCookieValue('user_id') || generateUserId();
       document.cookie = `user_id=${userId}; path=/; max-age=31536000`;
+
+      const userIdInput = form.querySelector('input[name="user_id"]');
+      if (userIdInput) {
+        userIdInput.value = userId;
+      }
 
       const dataToSubmit = {
         'firstname': firstName, 'lastname': lastName, 'state': stateValue || null,
