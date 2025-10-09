@@ -218,9 +218,21 @@ document.addEventListener('DOMContentLoaded', function() {
         if(visibleStateSelect.length) { stateValue = visibleStateSelect.val(); }
 
         const formFillingTime = formInteractionStartTime > 0 ? (Date.now() - formInteractionStartTime) / 1000 : 999;
-        let junk_lead = false, junk_reason = null;
-        if (new FormData(form).get(replaceConfusableChars('confirm-email')) || decoyLinkClicked || formFillingTime < 0.5) {
-          junk_lead = true; junk_reason = decoyLinkClicked ? 2 : (formFillingTime < 0.5 ? 3 : 1);
+        let junk_lead = false, junk_reason = null, junk_context = null;
+
+        const confirmEmailValue = new FormData(form).get(replaceConfusableChars('confirm-email')) || '';
+        const cityValue = form.querySelector('[name="city"]')?.value || '';
+
+        if (confirmEmailValue.length > 0 || cityValue.length > 0) {
+            junk_lead = true;
+            junk_reason = 1;
+            junk_context = JSON.stringify({ email: confirmEmailValue || null, city: cityValue || null });
+        } else if (decoyLinkClicked) {
+            junk_lead = true;
+            junk_reason = 2;
+        } else if (formFillingTime < 0.5) {
+            junk_lead = true;
+            junk_reason = 3;
         }
 
         const dataToSubmit = {
@@ -228,7 +240,7 @@ document.addEventListener('DOMContentLoaded', function() {
           'full_phone_number': iti ? iti.getNumber() : (phoneInput ? phoneInput.value.trim() : ''),
           'href': window.location.href, 'page': window.location.pathname.substring(1),
           'ss_anonymous_id': window.segmentstream?.anonymousId?.() ?? '', 'junk_lead': junk_lead,
-          'of_form_duration': formFillingTime, 'junk_reason': junk_reason
+          'of_form_duration': formFillingTime, 'junk_reason': junk_reason, 'junk_context': junk_context
         };
 
         for (const key in dataToSubmit) {
@@ -243,8 +255,7 @@ document.addEventListener('DOMContentLoaded', function() {
             sessionStorage.setItem('videoUnlocked', 'true');
         }
 
-        // Эта команда позволяет Webflow завершить свою AJAX-отправку
-        form.submit();
+        HTMLFormElement.prototype.submit.call(form);
       }
     });
     
