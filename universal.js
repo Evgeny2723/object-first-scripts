@@ -4,6 +4,12 @@ document.addEventListener('DOMContentLoaded', function() {
     return;
   }
 
+  // ====== КОНФИГУРАЦИЯ N8N (НОВОЕ) ======
+  const N8N_CONFIG = {
+    webhookUrl: '', // Вставьте сюда ваш URL из n8n, например: 'https://your-instance.app.n8n.cloud/webhook-test/webflow-form'
+    productionUrl: '' // Production URL после активации workflow
+  };
+
   function getCookieValue(name) {
     const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
     if (match) return match[2];
@@ -16,6 +22,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
   document.querySelectorAll('.main-form[data-universal-form]').forEach(form => {
     const $form = $(form);
+
+    // ====== УСТАНОВКА ACTION ДЛЯ N8N (НОВОЕ) ======
+    if (N8N_CONFIG.webhookUrl) {
+      form.action = N8N_CONFIG.webhookUrl;
+      console.log('Form action set to n8n:', N8N_CONFIG.webhookUrl);
+    }
 
     // ---- ЭЛЕМЕНТЫ ФОРМЫ ----
     const fullNameInput = form.querySelector('#Full-Name');
@@ -30,12 +42,14 @@ document.addEventListener('DOMContentLoaded', function() {
     const submitButton = form.querySelector('#submit, #submit-2');
     const checkbox = form.querySelector('#agreement');
     const successMessage = form.querySelector('.w-form-done, #success-message');
+    const errorMessage = form.querySelector('.w-form-fail'); // ДОБАВЛЕНО для обработки ошибок
     const submitButtonWrapper = submitButton ? submitButton.closest('.submit-button-wrapper') : null;
 
     let isSubmitting = false;
     let iti = null;
     let isCheckboxInteracted = false;
     let hasUserInteracted = false;
+    let isFormInitialized = false; // ДОБАВЛЕНО
 
     submitButton?.setAttribute('disabled', 'disabled');
     submitButtonWrapper?.classList.add('button-is-inactive');
@@ -164,9 +178,9 @@ document.addEventListener('DOMContentLoaded', function() {
       }, "Please enter a valid corporate email address (e.g., yourname@company.com). Personal email addresses (e.g., Gmail, Yahoo) are not accepted.");
 
       // Кастомный метод для проверки телефона
-      $.validator.addMethod("phoneCustom", function(value, element) {
-        return !value.trim() || (iti && iti.isValidNumber());
-      }, "Phone number is invalid. Please add your country code, area code and phone number. Your phone number can contain numbers, spaces and these special characters: ( ) - # +");
+      $.validator.addMethod("phoneCustom", function(value, element) {
+        return !value.trim() || (iti && iti.isValidNumber());
+      }, "Phone number is invalid. Please add your country code, area code and phone number. Your phone number can contain numbers, spaces and these special characters: ( ) - # +");
 
       // Кастомный метод для проверки допустимых символов в email
       $.validator.addMethod("validEmailChars", function (value, element) {
@@ -244,7 +258,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 100);
     });
 
-    // ---- НОВЫЙ ОБРАБОТЧИК ОТПРАВКИ ----
+    // ---- ОБРАБОТЧИК ОТПРАВКИ (БЕЗ ИЗМЕНЕНИЙ) ----
     form.addEventListener('submit', function(event) {
       // 1. Проверяем валидность. Если форма не валидна, останавливаем отправку.
       if (!$form.valid()) {
@@ -264,6 +278,11 @@ document.addEventListener('DOMContentLoaded', function() {
       // "всплывает" дальше, где его перехватывает уже сам Webflow.
 
       submitButton?.setAttribute('disabled', 'disabled');
+      
+      // ДОБАВЛЕНО: Индикатор загрузки для n8n
+      if (submitButtonWrapper) {
+        submitButtonWrapper.classList.add('is-loading');
+      }
 
       let firstName = '', lastName = '';
       if (fullNameInput) {
@@ -350,6 +369,170 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 
+  // ====== ОБРАБОТЧИКИ N8N (НОВОЕ) ======
+  
+  // Обработчик AJAX ответов от n8n
+  $(document).ajaxComplete(function(event, xhr, settings) {
+    // Проверяем, что это ответ от n8n
+    if (settings.url && (
+      settings.url.includes('n8n.cloud/webhook') || 
+      settings.url.includes(N8N_CONFIG.webhookUrl) ||
+      settings.url.includes(N8N_CONFIG.productionUrl)
+    )) {
+      console.log('n8n response received:', xhr.status, xhr.responseText);
+      
+      // Находим активную форму
+      const activeForm = document.querySelector('.main-form[data-universal-form]:not([style*="display: none"])');
+      if (!activeForm) return;
+      
+      const $form = $(activeForm);
+      const submitButton = activeForm.querySelector('#submit, #submit-2');
+      const submitButtonWrapper = submitButton ? submitButton.closest('.submit-button-wrapper') : null;
+      const successMessage = activeForm.querySelector('.w-form-done');
+      const errorMessage = activeForm.querySelector('.w-form-fail');
+      
+      // Убираем индикатор загрузки
+      if (submitButtonWrapper) {
+        submitButtonWrapper.classList.remove('is-loading');
+      }
+      
+      try {
+        const response = JSON.parse(xhr.responseText);
+        
+        // УСПЕХ (200)
+        if (xhr.status === 200 && response.success === true) {
+          console.log('✅ Form submitted successfully');
+          // Webflow автоматически покажет success message
+          
+        // ОШИБКИ ВАЛИДАЦИИ (422, 400)
+        } else if (response.success === false && response.errors) {
+          console.log('❌ Validation errors:', response.errors);
+          
+          // Скрываем success, показываем error
+          $(successMessage).hide();
+          $(errorMessage).show();
+          
+          // Обрабатываем ошибки полей
+          handleN8nValidationErrors(activeForm, response.errors, response.message);
+          
+          // Показываем форму если она была скрыта
+          $(activeForm).show();
+          
+        // ДРУГИЕ ОШИБКИ
+        } else if (response.success === false) {
+          console.error('❌ API Error:', response);
+          
+          $(successMessage).hide();
+          $(errorMessage).show();
+          
+          if (response.message && errorMessage) {
+            const errorText = errorMessage.querySelector('.error-text, .w-form-fail > div, .w-form-fail-message');
+            if (errorText) {
+              errorText.textContent = response.message;
+            }
+          }
+          
+          $(activeForm).show();
+        }
+        
+      } catch (e) {
+        console.error('Error parsing n8n response:', e);
+      }
+      
+      // Разблокируем кнопку в любом случае
+      setTimeout(() => {
+        if (submitButton) {
+          submitButton.removeAttribute('disabled');
+          if (submitButtonWrapper) {
+            submitButtonWrapper.classList.remove('button-is-inactive');
+          }
+        }
+      }, 1000);
+    }
+  });
+
+  // Функция обработки ошибок валидации от n8n/API
+  function handleN8nValidationErrors(form, errors, generalMessage) {
+    const $form = $(form);
+    const validator = $form.data('validator');
+    const validationErrors = {};
+    
+    // Маппинг полей API на поля формы
+    const fieldMapping = {
+      'email': ['email', 'email-2'],
+      'firstname': ['First-Name', 'firstname'],
+      'lastname': ['Last-Name', 'lastname'],
+      'full_name': ['Full-Name'],
+      'company': ['company', 'company-2'],
+      'phone': ['phone'],
+      'job_title': ['Job-title', 'job_title'],
+      'country': ['country', 'country-2'],
+      'state': ['state', 'state-2']
+    };
+    
+    // Обрабатываем каждую ошибку
+    Object.keys(errors).forEach(apiField => {
+      const possibleFields = fieldMapping[apiField] || [apiField];
+      
+      for (const fieldName of possibleFields) {
+        // Ищем поле разными способами
+        const fieldElement = form.querySelector(
+          `#${fieldName}, [name="${fieldName}"], [name="${apiField}"]`
+        );
+        
+        if (fieldElement) {
+          let errorText = errors[apiField];
+          if (Array.isArray(errorText)) {
+            errorText = errorText[0];
+          }
+          
+          // Добавляем ошибку для jQuery Validate
+          const actualFieldName = fieldElement.name || fieldElement.id;
+          validationErrors[actualFieldName] = errorText;
+          
+          // Визуальное выделение
+          $(fieldElement).addClass('error');
+          $(fieldElement).css('border', '1px solid #c50006');
+          
+          // Создаем label с ошибкой если нет
+          const $fieldRow = $(fieldElement).closest('.field-row');
+          let $errorLabel = $fieldRow.find('label.error');
+          
+          if (!$errorLabel.length) {
+            $errorLabel = $('<label class="error"></label>');
+            $fieldRow.append($errorLabel);
+          }
+          
+          $errorLabel.text(errorText).show();
+          
+          break; // Нашли поле
+        }
+      }
+    });
+    
+    // Показываем ошибки через jQuery Validate
+    if (Object.keys(validationErrors).length > 0 && validator) {
+      validator.showErrors(validationErrors);
+    }
+    
+    // Общее сообщение об ошибке
+    const errorMessage = form.querySelector('.w-form-fail');
+    if (errorMessage && generalMessage) {
+      const errorText = errorMessage.querySelector('.error-text, .w-form-fail > div');
+      if (errorText) {
+        errorText.textContent = generalMessage;
+      }
+    }
+    
+    // Скроллим к первой ошибке
+    setTimeout(() => {
+      const firstError = form.querySelector('.error:not(label)');
+      if (firstError) {
+        firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }, 100);
+  }
+
   function addPlaceholder() {
     const searchInputs = document.querySelectorAll('.form-control[type="search"]');
     searchInputs.forEach(function(searchInput) {
@@ -371,3 +554,35 @@ document.addEventListener('DOMContentLoaded', function() {
 
   observer.observe(document.body, { childList: true, subtree: true });
 });
+
+// ====== CSS СТИЛИ ДЛЯ N8N ИНДИКАТОРА (НОВОЕ) ======
+if (!document.querySelector('#n8n-form-styles')) {
+  const styles = document.createElement('style');
+  styles.id = 'n8n-form-styles';
+  styles.innerHTML = `
+    .submit-button-wrapper.is-loading {
+      position: relative;
+      pointer-events: none;
+      opacity: 0.7;
+    }
+    
+    .submit-button-wrapper.is-loading::after {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      top: 50%;
+      right: 20px;
+      margin-top: -10px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: #ffffff;
+      animation: n8n-spinner 0.8s linear infinite;
+    }
+    
+    @keyframes n8n-spinner {
+      to { transform: rotate(360deg); }
+    }
+  `;
+  document.head.appendChild(styles);
+}
