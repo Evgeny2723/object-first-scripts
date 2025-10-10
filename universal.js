@@ -6,8 +6,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // ====== КОНФИГУРАЦИЯ N8N (НОВОЕ) ======
   const N8N_CONFIG = {
-    webhookUrl: '', // Вставьте сюда ваш URL из n8n, например: 'https://your-instance.app.n8n.cloud/webhook-test/webflow-form'
-    productionUrl: '' // Production URL после активации workflow
+    webhookUrl: 'https://o1-test.app.n8n.cloud/webhook-test/webflow-form', // Вставьте сюда ваш URL из n8n, например: 'https://your-instance.app.n8n.cloud/webhook-test/webflow-form'
+    productionUrl: 'https://o1-test.app.n8n.cloud/webhook/webflow-form' // Production URL после активации workflow
   };
 
   function getCookieValue(name) {
