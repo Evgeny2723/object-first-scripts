@@ -6,8 +6,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // ====== КОНФИГУРАЦИЯ N8N (НОВОЕ) ======
   const N8N_CONFIG = {
-    webhookUrl: '', // Вставьте сюда ваш URL из n8n, например: 'https://your-instance.app.n8n.cloud/webhook-test/webflow-form'
-    productionUrl: '' // Production URL после активации workflow
+    webhookUrl: 'https://o1-test.app.n8n.cloud/webhook-test/webflow-form', // Вставьте сюда ваш URL из n8n, например: 'https://your-instance.app.n8n.cloud/webhook-test/webflow-form'
+    productionUrl: 'https://o1-test.app.n8n.cloud/webhook/webflow-form' // Production URL после активации workflow
   };
 
   function getCookieValue(name) {
@@ -366,6 +366,44 @@ document.addEventListener('DOMContentLoaded', function() {
         'junk_reason': junk_reason,
         'junk_context': junk_context,
       };
+      
+      // Добавляем lead_type если есть
+      const leadTypeInput = form.querySelector('[name="lead_type"]');
+      if (leadTypeInput && leadTypeInput.value) {
+        dataToSubmit.lead_type = leadTypeInput.value;
+      }
+      
+      // Получаем все остальные поля формы
+      const allInputs = form.querySelectorAll('input:not([type="hidden"]):not([type="submit"]), select, textarea');
+      
+      // Фильтруем и добавляем только заполненные поля
+      allInputs.forEach(input => {
+        // Пропускаем поля, которые уже обработаны выше
+        const processedFields = ['firstname', 'lastname', 'Full-Name', 'First-Name', 'Last-Name', 
+                                'phone', 'country', 'state', 'email', 'email-2', 
+                                'company', 'company-2', 'Job-title', 'job_title', 'lead_type',
+                                'agreement', 'city']; // city в honeypot
+        
+        const fieldName = input.name || input.id;
+        
+        // Пропускаем обработанные поля и пустые значения
+        if (!processedFields.includes(fieldName) && input.value && input.value.trim()) {
+          // Для чекбоксов передаем только если они отмечены
+          if (input.type === 'checkbox') {
+            if (input.checked) {
+              dataToSubmit[fieldName] = true;
+            }
+          } else if (input.type === 'radio') {
+            // Для радиокнопок передаем только выбранную
+            if (input.checked) {
+              dataToSubmit[fieldName] = input.value;
+            }
+          } else {
+            // Для всех остальных полей
+            dataToSubmit[fieldName] = input.value.trim();
+          }
+        }
+      });
 
       for (const key in dataToSubmit) {
           let input = form.querySelector(`input[type="hidden"][name="${key}"]`);
