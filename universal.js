@@ -270,13 +270,26 @@ document.addEventListener('DOMContentLoaded', function() {
       }
 
       let firstName = '', lastName = '';
-      if (fullNameInput) {
+      if (fullNameInput && fullNameInput.value) {
+        // Обработка Full Name - делим на firstname и lastname
         const nameParts = fullNameInput.value.trim().split(/\s+/);
-        firstName = nameParts.shift() || '';
-        lastName = nameParts.join(' ') || firstName;
+        if (nameParts.length === 1) {
+          // Если только одно слово, ставим его и в firstname и в lastname
+          firstName = nameParts[0];
+          lastName = nameParts[0];
+        } else if (nameParts.length === 2) {
+          // Если два слова - стандартная обработка
+          firstName = nameParts[0];
+          lastName = nameParts[1];
+        } else {
+          // Если три и больше слов - первое в firstname, второе в lastname, остальное игнорируем
+          firstName = nameParts[0];
+          lastName = nameParts[1];
+        }
       } else {
-        firstName = firstNameInput?.value.trim() || '';
-        lastName = lastNameInput?.value.trim() || '';
+        // Обработка отдельных полей First Name и Last Name
+        firstName = firstNameInput?.value?.trim() || '';
+        lastName = lastNameInput?.value?.trim() || '';
       }
       
       let stateValue = '';
@@ -342,9 +355,12 @@ document.addEventListener('DOMContentLoaded', function() {
       }
 
       const dataToSubmit = {
-        'firstname': firstName, 'lastname': lastName, 'state': stateValue || null,
+        'firstname': firstName, 
+        'lastname': lastName, 
+        'state': stateValue || null,
         'full_phone_number': iti ? iti.getNumber() : (phoneInput ? phoneInput.value.trim() : ''),
-        'href': window.location.href, 'page': window.location.pathname.substring(1),
+        'href': window.location.href, 
+        'page': window.location.pathname.substring(1),
         'ss_anonymous_id': window.segmentstream?.anonymousId?.() ?? '', 
         'junk_lead': junk_lead,
         'of_form_duration': formFillingTime, 
@@ -352,10 +368,10 @@ document.addEventListener('DOMContentLoaded', function() {
         'junk_context': junk_context,
       };
       
-      // Добавляем lead_type если есть
-      let leadTypeInput = form.querySelector('[name="lead_type"]');
-      if (leadTypeInput && leadTypeInput.value) {
-        dataToSubmit.lead_type = leadTypeInput.value;
+      // Добавляем lead_type - берем только выбранную радиокнопку
+      const selectedLeadType = form.querySelector('input[name="lead_type"]:checked');
+      if (selectedLeadType && selectedLeadType.value) {
+        dataToSubmit.lead_type = selectedLeadType.value;
       }
       
       // Получаем все остальные поля формы
@@ -405,22 +421,30 @@ document.addEventListener('DOMContentLoaded', function() {
           }
         }
       });
+      
+      // Очищаем существующие hidden поля чтобы избежать дублирования
+      const existingHiddenFields = form.querySelectorAll('input[type="hidden"]:not([name="user_id"])');
+      existingHiddenFields.forEach(field => {
+        // Удаляем только те hidden поля, которые мы собираемся добавить
+        if (Object.keys(dataToSubmit).includes(field.name)) {
+          field.remove();
+        }
+      });
 
       for (const key in dataToSubmit) {
           let input = form.querySelector(`input[type="hidden"][name="${key}"]`);
           if (!input) { 
             input = document.createElement('input'); 
             input.type = 'hidden'; 
-            // Убираем квадратные скобки из имени если они есть
-            input.name = key.replace(/\[\d*\]$/, ''); 
+            input.name = key;
             form.appendChild(input); 
           }
-          // Если значение это массив, берем первый элемент
+          // Проверяем что значение не массив и не undefined
           let value = dataToSubmit[key];
           if (Array.isArray(value)) {
-            value = value[0];
+            value = value[0]; // Берем первый элемент если это массив
           }
-          input.value = value !== null && value !== undefined ? value : '';
+          input.value = value !== null && value !== undefined ? String(value) : '';
       }
 
       if (form.hasAttribute('data-unlock-video')) {
@@ -432,9 +456,8 @@ document.addEventListener('DOMContentLoaded', function() {
       // --- БЛОК DATALAYER ---
     const eventName = form.getAttribute('data-event-name') || 'demo';
     
-    // Получаем значение из поля lead_type (переиспользуем переменную если она уже есть)
-    leadTypeInput = leadTypeInput || form.querySelector('[name="lead_type"]');
-    const leadTypeValue = leadTypeInput ? leadTypeInput.value : '';
+    // Получаем значение из поля lead_type (используем уже полученное значение)
+    const leadTypeValue = dataToSubmit.lead_type || '';
     
     const userEmail = emailInput ? emailInput.value : '';
     const userPhone = iti ? iti.getNumber() : (phoneInput ? phoneInput.value : '');
