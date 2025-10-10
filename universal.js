@@ -4,12 +4,6 @@ document.addEventListener('DOMContentLoaded', function() {
     return;
   }
 
-  // ====== КОНФИГУРАЦИЯ N8N (НОВОЕ) ======
-  const N8N_CONFIG = {
-    webhookUrl: 'https://o1-test.app.n8n.cloud/webhook-test/webflow-form', // Вставьте сюда ваш URL из n8n, например: 'https://your-instance.app.n8n.cloud/webhook-test/webflow-form'
-    productionUrl: 'https://o1-test.app.n8n.cloud/webhook/webflow-form' // Production URL после активации workflow
-  };
-
   function getCookieValue(name) {
     const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
     if (match) return match[2];
@@ -22,12 +16,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
   document.querySelectorAll('.main-form[data-universal-form]').forEach(form => {
     const $form = $(form);
-
-    // ====== УСТАНОВКА ACTION ДЛЯ N8N (НОВОЕ) ======
-    if (N8N_CONFIG.webhookUrl) {
-      form.action = N8N_CONFIG.webhookUrl;
-      console.log('Form action set to n8n:', N8N_CONFIG.webhookUrl);
-    }
 
     // ---- ЭЛЕМЕНТЫ ФОРМЫ ----
     const fullNameInput = form.querySelector('#Full-Name');
@@ -42,14 +30,14 @@ document.addEventListener('DOMContentLoaded', function() {
     const submitButton = form.querySelector('#submit, #submit-2');
     const checkbox = form.querySelector('#agreement');
     const successMessage = form.querySelector('.w-form-done, #success-message');
-    const errorMessage = form.querySelector('.w-form-fail'); // ДОБАВЛЕНО для обработки ошибок
+    const errorMessage = form.querySelector('.w-form-fail');
     const submitButtonWrapper = submitButton ? submitButton.closest('.submit-button-wrapper') : null;
 
     let isSubmitting = false;
     let iti = null;
     let isCheckboxInteracted = false;
     let hasUserInteracted = false;
-    let isFormInitialized = false; // ДОБАВЛЕНО
+    let isFormInitialized = false;
 
     submitButton?.setAttribute('disabled', 'disabled');
     submitButtonWrapper?.classList.add('button-is-inactive');
@@ -258,7 +246,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 100);
     });
 
-    // ---- ОБРАБОТЧИК ОТПРАВКИ (БЕЗ ИЗМЕНЕНИЙ) ----
+    // ---- ОБРАБОТЧИК ОТПРАВКИ ----
     form.addEventListener('submit', function(event) {
       // 1. Проверяем валидность. Если форма не валидна, останавливаем отправку.
       if (!$form.valid()) {
@@ -273,13 +261,10 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
       }
       
-      // 2. Если форма валидна, мы НЕ останавливаем отправку.
-      // Скрипт продолжает работу, добавляет скрытые поля, и событие "submit"
-      // "всплывает" дальше, где его перехватывает уже сам Webflow.
-
+      // 2. Если форма валидна, продолжаем обработку
       submitButton?.setAttribute('disabled', 'disabled');
       
-      // ДОБАВЛЕНО: Индикатор загрузки для n8n
+      // Добавляем индикатор загрузки
       if (submitButtonWrapper) {
         submitButtonWrapper.classList.add('is-loading');
       }
@@ -367,7 +352,7 @@ document.addEventListener('DOMContentLoaded', function() {
         'junk_context': junk_context,
       };
       
-      // Добавляем lead_type если есть (используем let вместо const, чтобы можно было переиспользовать)
+      // Добавляем lead_type если есть
       let leadTypeInput = form.querySelector('[name="lead_type"]');
       if (leadTypeInput && leadTypeInput.value) {
         dataToSubmit.lead_type = leadTypeInput.value;
@@ -385,9 +370,13 @@ document.addEventListener('DOMContentLoaded', function() {
       allInputs.forEach(input => {
         // Пропускаем поля, которые уже обработаны выше
         const processedFields = ['firstname', 'lastname', 'Full-Name', 'First-Name', 'Last-Name', 
-                                'phone', 'country', 'state', 'email', 'email-2', 
-                                'company', 'company-2', 'Job-title', 'job_title', 'lead_type',
-                                'agreement', 'city']; // city в honeypot
+                                'phone', 'country', 'state', 'state-2', 
+                                'states-australia', 'states-brazil', 'states-canada', 
+                                'states-china', 'states-ireland', 'states-india', 
+                                'states-italy', 'states-mexico',
+                                'email', 'email-2', 'company', 'company-2', 
+                                'Job-title', 'job_title', 'lead_type',
+                                'agreement', 'city', 'self-attribution']; // city в honeypot
         
         const fieldName = input.name || input.id;
         
@@ -462,93 +451,98 @@ document.addEventListener('DOMContentLoaded', function() {
     } else {
         console.warn('dataLayer не определен');
     }
-    });
-  });
-
-  // ====== ОБРАБОТЧИКИ N8N (НОВОЕ) ======
-  
-  // Обработчик AJAX ответов от n8n
-  $(document).ajaxComplete(function(event, xhr, settings) {
-    // Проверяем, что это ответ от n8n
-    if (settings.url && (
-      settings.url.includes('n8n.cloud/webhook') || 
-      settings.url.includes(N8N_CONFIG.webhookUrl) ||
-      settings.url.includes(N8N_CONFIG.productionUrl)
-    )) {
-      console.log('n8n response received:', xhr.status, xhr.responseText);
+    
+    // Если форма отправляется на внешний API (n8n, Make.com и т.д.), перехватываем отправку
+    if (form.action && (form.action.includes('n8n.cloud') || form.action.includes('webhook') || form.action.includes('zapier'))) {
+      event.preventDefault();
+      event.stopPropagation();
       
-      // Находим активную форму
-      const activeForm = document.querySelector('.main-form[data-universal-form]:not([style*="display: none"])');
-      if (!activeForm) return;
-      
-      const $form = $(activeForm);
-      const submitButton = activeForm.querySelector('#submit, #submit-2');
-      const submitButtonWrapper = submitButton ? submitButton.closest('.submit-button-wrapper') : null;
-      const successMessage = activeForm.querySelector('.w-form-done');
-      const errorMessage = activeForm.querySelector('.w-form-fail');
-      
-      // Убираем индикатор загрузки
-      if (submitButtonWrapper) {
-        submitButtonWrapper.classList.remove('is-loading');
-      }
-      
-      try {
-        const response = JSON.parse(xhr.responseText);
-        
-        // УСПЕХ (200)
-        if (xhr.status === 200 && response.success === true) {
-          console.log('✅ Form submitted successfully');
-          // Webflow автоматически покажет success message
+      // Отправляем через AJAX
+      $.ajax({
+        url: form.action,
+        type: 'POST',
+        data: $(form).serialize(),
+        dataType: 'json',
+        success: function(response) {
+          console.log('✅ Success response:', response);
           
-        // ОШИБКИ ВАЛИДАЦИИ (422, 400)
-        } else if (response.success === false && response.errors) {
-          console.log('❌ Validation errors:', response.errors);
+          // Убираем индикатор загрузки
+          if (submitButtonWrapper) {
+            submitButtonWrapper.classList.remove('is-loading');
+          }
           
-          // Скрываем success, показываем error
-          $(successMessage).hide();
-          $(errorMessage).show();
+          if (response.success === true) {
+            // Показываем успех
+            $(successMessage).show();
+            $(errorMessage).hide();
+            $(form).hide();
+            
+            // Очищаем форму
+            setTimeout(() => {
+              form.reset();
+              $form.find('.error').removeClass('error');
+              $form.find('label.error').remove();
+            }, 500);
+          } else if (response.errors) {
+            // Обрабатываем ошибки
+            handleApiValidationErrors(form, response.errors, response.message);
+            $(successMessage).hide();
+            $(errorMessage).show();
+          }
           
-          // Обрабатываем ошибки полей
-          handleN8nValidationErrors(activeForm, response.errors, response.message);
+          // Разблокируем кнопку
+          if (submitButton) {
+            submitButton.removeAttribute('disabled');
+            if (submitButtonWrapper) {
+              submitButtonWrapper.classList.remove('button-is-inactive');
+            }
+          }
+        },
+        error: function(xhr, status, error) {
+          console.log('❌ Error response:', xhr.status, xhr.responseText);
           
-          // Показываем форму если она была скрыта
-          $(activeForm).show();
+          // Убираем индикатор загрузки
+          if (submitButtonWrapper) {
+            submitButtonWrapper.classList.remove('is-loading');
+          }
           
-        // ДРУГИЕ ОШИБКИ
-        } else if (response.success === false) {
-          console.error('❌ API Error:', response);
-          
-          $(successMessage).hide();
-          $(errorMessage).show();
-          
-          if (response.message && errorMessage) {
-            const errorText = errorMessage.querySelector('.error-text, .w-form-fail > div, .w-form-fail-message');
-            if (errorText) {
-              errorText.textContent = response.message;
+          // Пытаемся распарсить ответ
+          try {
+            const response = JSON.parse(xhr.responseText);
+            if (response.errors) {
+              handleApiValidationErrors(form, response.errors, response.message);
+            }
+          } catch (e) {
+            // Показываем общую ошибку
+            if (errorMessage) {
+              $(errorMessage).show();
+              const errorText = errorMessage.querySelector('.error-text, .w-form-fail > div');
+              if (errorText) {
+                errorText.textContent = 'An error occurred. Please try again.';
+              }
             }
           }
           
-          $(activeForm).show();
-        }
-        
-      } catch (e) {
-        console.error('Error parsing n8n response:', e);
-      }
-      
-      // Разблокируем кнопку в любом случае
-      setTimeout(() => {
-        if (submitButton) {
-          submitButton.removeAttribute('disabled');
-          if (submitButtonWrapper) {
-            submitButtonWrapper.classList.remove('button-is-inactive');
+          $(successMessage).hide();
+          $(errorMessage).show();
+          
+          // Разблокируем кнопку
+          if (submitButton) {
+            submitButton.removeAttribute('disabled');
+            if (submitButtonWrapper) {
+              submitButtonWrapper.classList.remove('button-is-inactive');
+            }
           }
         }
-      }, 1000);
+      });
+      
+      return false;
     }
+    });
   });
 
-  // Функция обработки ошибок валидации от n8n/API
-  function handleN8nValidationErrors(form, errors, generalMessage) {
+  // Функция обработки ошибок валидации от API
+  function handleApiValidationErrors(form, errors, generalMessage) {
     const $form = $(form);
     const validator = $form.data('validator');
     const validationErrors = {};
@@ -651,10 +645,10 @@ document.addEventListener('DOMContentLoaded', function() {
   observer.observe(document.body, { childList: true, subtree: true });
 });
 
-// ====== CSS СТИЛИ ДЛЯ N8N ИНДИКАТОРА (НОВОЕ) ======
-if (!document.querySelector('#n8n-form-styles')) {
+// CSS стили для индикатора загрузки
+if (!document.querySelector('#form-loading-styles')) {
   const styles = document.createElement('style');
-  styles.id = 'n8n-form-styles';
+  styles.id = 'form-loading-styles';
   styles.innerHTML = `
     .submit-button-wrapper.is-loading {
       position: relative;
@@ -673,10 +667,10 @@ if (!document.querySelector('#n8n-form-styles')) {
       border: 2px solid rgba(255, 255, 255, 0.3);
       border-radius: 50%;
       border-top-color: #ffffff;
-      animation: n8n-spinner 0.8s linear infinite;
+      animation: form-spinner 0.8s linear infinite;
     }
     
-    @keyframes n8n-spinner {
+    @keyframes form-spinner {
       to { transform: rotate(360deg); }
     }
   `;
