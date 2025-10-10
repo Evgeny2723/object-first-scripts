@@ -6,8 +6,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // ====== КОНФИГУРАЦИЯ N8N (НОВОЕ) ======
   const N8N_CONFIG = {
-    webhookUrl: 'https://o1-test.app.n8n.cloud/webhook-test/webflow-form',
-    productionUrl: 'https://o1-test.app.n8n.cloud/webhook/webflow-form'
+    webhookUrl: '', // Вставьте сюда ваш URL из n8n, например: 'https://your-instance.app.n8n.cloud/webhook-test/webflow-form'
+    productionUrl: '' // Production URL после активации workflow
   };
 
   function getCookieValue(name) {
@@ -295,8 +295,43 @@ document.addEventListener('DOMContentLoaded', function() {
       }
       
       let stateValue = '';
-      const visibleStateSelect = $form.find('div[class*="states-"][style*="block"] select, div[class*="dropdown-state"][style*="block"] select').first();
-      if(visibleStateSelect.length) { stateValue = visibleStateSelect.val(); }
+      const selectedCountry = countrySelect ? countrySelect.value : '';
+      
+      // Определяем правильный селект для штата в зависимости от страны
+      if (selectedCountry === 'United States') {
+        const stateSelect = form.querySelector('#state, #state-2');
+        stateValue = stateSelect ? stateSelect.value : '';
+      } else if (selectedCountry === 'Australia') {
+        const stateSelect = form.querySelector('#states-australia');
+        stateValue = stateSelect ? stateSelect.value : '';
+      } else if (selectedCountry === 'Brazil') {
+        const stateSelect = form.querySelector('#states-brazil');
+        stateValue = stateSelect ? stateSelect.value : '';
+      } else if (selectedCountry === 'Canada') {
+        const stateSelect = form.querySelector('#states-canada');
+        stateValue = stateSelect ? stateSelect.value : '';
+      } else if (selectedCountry === 'China') {
+        const stateSelect = form.querySelector('#states-china');
+        stateValue = stateSelect ? stateSelect.value : '';
+      } else if (selectedCountry === 'Ireland') {
+        const stateSelect = form.querySelector('#states-ireland');
+        stateValue = stateSelect ? stateSelect.value : '';
+      } else if (selectedCountry === 'India') {
+        const stateSelect = form.querySelector('#states-india');
+        stateValue = stateSelect ? stateSelect.value : '';
+      } else if (selectedCountry === 'Italy') {
+        const stateSelect = form.querySelector('#states-italy');
+        stateValue = stateSelect ? stateSelect.value : '';
+      } else if (selectedCountry === 'Mexico') {
+        const stateSelect = form.querySelector('#states-mexico');
+        stateValue = stateSelect ? stateSelect.value : '';
+      }
+      
+      // Альтернативный метод если не нашли по ID
+      if (!stateValue) {
+        const visibleStateSelect = $form.find('div[class*="states-"]:visible select, div[class*="dropdown-state"]:visible select').first();
+        if(visibleStateSelect.length) { stateValue = visibleStateSelect.val(); }
+      }
 
       const formFillingTime = formInteractionStartTime > 0 ? (Date.now() - formInteractionStartTime) / 1000 : 999;
       
