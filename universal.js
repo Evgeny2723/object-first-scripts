@@ -6,8 +6,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // ====== КОНФИГУРАЦИЯ N8N (НОВОЕ) ======
   const N8N_CONFIG = {
-    webhookUrl: 'https://o1-test.app.n8n.cloud/webhook-test/webflow-form', // Вставьте сюда ваш URL из n8n, например: 'https://your-instance.app.n8n.cloud/webhook-test/webflow-form'
-    productionUrl: 'https://o1-test.app.n8n.cloud/webhook/webflow-form' // Production URL после активации workflow
+    webhookUrl: '', // Вставьте сюда ваш URL из n8n, например: 'https://your-instance.app.n8n.cloud/webhook-test/webflow-form'
+    productionUrl: '' // Production URL после активации workflow
   };
 
   function getCookieValue(name) {
@@ -367,14 +367,19 @@ document.addEventListener('DOMContentLoaded', function() {
         'junk_context': junk_context,
       };
       
-      // Добавляем lead_type если есть
-      const leadTypeInput = form.querySelector('[name="lead_type"]');
+      // Добавляем lead_type если есть (используем let вместо const, чтобы можно было переиспользовать)
+      let leadTypeInput = form.querySelector('[name="lead_type"]');
       if (leadTypeInput && leadTypeInput.value) {
         dataToSubmit.lead_type = leadTypeInput.value;
       }
       
       // Получаем все остальные поля формы
       const allInputs = form.querySelectorAll('input:not([type="hidden"]):not([type="submit"]), select, textarea');
+      
+      // Создаем Set для отслеживания уже добавленных полей
+      const addedFields = new Set(['firstname', 'lastname', 'state', 'full_phone_number', 
+                                   'href', 'page', 'ss_anonymous_id', 'junk_lead', 
+                                   'of_form_duration', 'junk_reason', 'junk_context', 'lead_type']);
       
       // Фильтруем и добавляем только заполненные поля
       allInputs.forEach(input => {
@@ -386,29 +391,47 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const fieldName = input.name || input.id;
         
-        // Пропускаем обработанные поля и пустые значения
-        if (!processedFields.includes(fieldName) && input.value && input.value.trim()) {
+        // Пропускаем обработанные поля, пустые значения и уже добавленные
+        if (!processedFields.includes(fieldName) && 
+            !addedFields.has(fieldName) && 
+            input.value && 
+            input.value.trim()) {
+          
           // Для чекбоксов передаем только если они отмечены
           if (input.type === 'checkbox') {
             if (input.checked) {
               dataToSubmit[fieldName] = true;
+              addedFields.add(fieldName);
             }
           } else if (input.type === 'radio') {
             // Для радиокнопок передаем только выбранную
             if (input.checked) {
               dataToSubmit[fieldName] = input.value;
+              addedFields.add(fieldName);
             }
           } else {
             // Для всех остальных полей
             dataToSubmit[fieldName] = input.value.trim();
+            addedFields.add(fieldName);
           }
         }
       });
 
       for (const key in dataToSubmit) {
           let input = form.querySelector(`input[type="hidden"][name="${key}"]`);
-          if (!input) { input = document.createElement('input'); input.type = 'hidden'; input.name = key; form.appendChild(input); }
-          input.value = dataToSubmit[key] || ''; // Убедимся, что не передаем null
+          if (!input) { 
+            input = document.createElement('input'); 
+            input.type = 'hidden'; 
+            // Убираем квадратные скобки из имени если они есть
+            input.name = key.replace(/\[\d*\]$/, ''); 
+            form.appendChild(input); 
+          }
+          // Если значение это массив, берем первый элемент
+          let value = dataToSubmit[key];
+          if (Array.isArray(value)) {
+            value = value[0];
+          }
+          input.value = value !== null && value !== undefined ? value : '';
       }
 
       if (form.hasAttribute('data-unlock-video')) {
@@ -420,8 +443,8 @@ document.addEventListener('DOMContentLoaded', function() {
       // --- БЛОК DATALAYER ---
     const eventName = form.getAttribute('data-event-name') || 'demo';
     
-    // Получаем значение из поля lead_type (предполагаем, что у него есть name="lead_type")
-    const leadTypeInput = form.querySelector('[name="lead_type"]');
+    // Получаем значение из поля lead_type (переиспользуем переменную если она уже есть)
+    leadTypeInput = leadTypeInput || form.querySelector('[name="lead_type"]');
     const leadTypeValue = leadTypeInput ? leadTypeInput.value : '';
     
     const userEmail = emailInput ? emailInput.value : '';
