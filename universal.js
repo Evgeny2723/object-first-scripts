@@ -502,11 +502,11 @@ document.addEventListener('DOMContentLoaded', function() {
           // Проверяем success из ответа сервера
           if (response.success === true || response.success === 'true') {
             // Успех - показываем сообщение об успехе и скрываем форму
-            $(successMessage).show();
-            $(form).hide();
+            $(successMessage).css('display', 'block');
+            $(form).css('display', 'none');
           } else {
             // Ошибка - скрываем сообщение об успехе, оставляем форму видимой
-            $(successMessage).hide();
+            $(successMessage).css('display', 'none');
             
             // Показываем ошибки под полями
             if (response.errors) {
@@ -536,7 +536,7 @@ document.addEventListener('DOMContentLoaded', function() {
           }
           
           // Скрываем сообщение об успехе
-          $(successMessage).hide();
+          $(successMessage).css('display', 'none');
           
           // Пытаемся распарсить ответ для показа ошибок полей
           try {
