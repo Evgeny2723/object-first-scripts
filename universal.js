@@ -355,8 +355,12 @@ document.addEventListener('DOMContentLoaded', function() {
       }
 
       const dataToSubmit = {
+        'email': (emailInput || form.querySelector('[name="email"]'))?.value?.trim() || '',
         'firstname': firstName, 
-        'lastname': lastName, 
+        'lastname': lastName,
+        'company': (companyInput || form.querySelector('[name="company"]'))?.value?.trim() || '',
+        'job_title': (jobTitleInput || form.querySelector('[name="job_title"]') || form.querySelector('[name="Job-title"]'))?.value?.trim() || '',
+        'country': selectedCountry || (countrySelect || form.querySelector('[name="country"]'))?.value || '',
         'state': stateValue || null,
         'full_phone_number': iti ? iti.getNumber() : (phoneInput ? phoneInput.value.trim() : ''),
         'href': window.location.href, 
