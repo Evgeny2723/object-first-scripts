@@ -500,7 +500,7 @@ document.addEventListener('DOMContentLoaded', function() {
           }
           
           // Проверяем success из ответа сервера
-          if (response.success === true) {
+          if (response.success === true || response.success === 'true') {
             // Успех - показываем сообщение об успехе и скрываем форму
             $(successMessage).show();
             $(form).hide();
