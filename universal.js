@@ -480,13 +480,13 @@ document.addEventListener('DOMContentLoaded', function() {
       event.preventDefault();
       event.stopPropagation();
 
-      const n8nWebhookUrl = 'https://o1-test.app.n8n.cloud/webhook/webflow-form';
+      const webhookUrl = 'https://o1-test.app.n8n.cloud/webhook/webflow-form';
       
       // Отправляем через AJAX
       $.ajax({
-        url: n8nWebhookUrl,
+        url: webhookUrl,
         type: 'POST',
-        data: $(form).serialize(),
+        data: JSON.stringify(dataToSubmit),
         dataType: 'json',
         success: function(response) {
           console.log('✅ Success response:', response);
