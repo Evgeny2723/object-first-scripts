@@ -248,9 +248,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // ---- ОБРАБОТЧИК ОТПРАВКИ ----
     form.addEventListener('submit', function(event) {
-      event.preventDefault();
       // 1. Проверяем валидность. Если форма не валидна, останавливаем отправку.
       if (!$form.valid()) {
+        event.preventDefault();
         
         // Помечаем все поля как "проверенные", чтобы показать ошибки
         hasUserInteracted = true;
@@ -476,20 +476,15 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     const webhookUrl = form.getAttribute('data-webhook-url');
-  
-  if (!webhookUrl) {
-    console.error('❌ data-webhook-url не указан на форме');
+      if (webhookUrl) {
       event.preventDefault();
       event.stopPropagation();
-
-      const webhookUrl = 'https://o1-test.app.n8n.cloud/webhook-test/webflow-form';
       
       // Отправляем через AJAX
       $.ajax({
         url: webhookUrl,
         type: 'POST',
-        contentType: 'application/json',
-        data: JSON.stringify(dataToSubmit),
+        data: $(form).serialize(),
         dataType: 'json',
         success: function(response) {
           console.log('✅ Success response:', response);
