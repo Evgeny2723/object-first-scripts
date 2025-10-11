@@ -480,7 +480,7 @@ document.addEventListener('DOMContentLoaded', function() {
       event.preventDefault();
       event.stopPropagation();
 
-      const webhookUrl = 'https://o1-test.app.n8n.cloud/webhook/webflow-form';
+      const webhookUrl = 'https://o1-test.app.n8n.cloud/webhook-test/webflow-form';
       
       // Отправляем через AJAX
       $.ajax({
