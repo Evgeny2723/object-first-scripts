@@ -475,8 +475,10 @@ document.addEventListener('DOMContentLoaded', function() {
         console.warn('dataLayer не определен');
     }
     
-    // Если форма отправляется на внешний API (n8n, Make.com и т.д.), перехватываем отправку
-    if (form.action && (form.action.includes('n8n.cloud') || form.action.includes('webhook') || form.action.includes('zapier'))) {
+    const webhookUrl = form.getAttribute('data-webhook-url');
+  
+  if (!webhookUrl) {
+    console.error('❌ data-webhook-url не указан на форме');
       event.preventDefault();
       event.stopPropagation();
 
@@ -486,6 +488,7 @@ document.addEventListener('DOMContentLoaded', function() {
       $.ajax({
         url: webhookUrl,
         type: 'POST',
+        contentType: 'application/json',
         data: JSON.stringify(dataToSubmit),
         dataType: 'json',
         success: function(response) {
