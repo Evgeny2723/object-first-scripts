@@ -494,7 +494,7 @@ document.addEventListener('DOMContentLoaded', function() {
             submitButtonWrapper.classList.remove('is-loading');
           }
           
-          if (response.success === true) {
+          if (response.status === 'success') {
             // Показываем успех
             $(successMessage).show();
             $(errorMessage).hide();
