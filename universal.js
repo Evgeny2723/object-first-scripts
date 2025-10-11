@@ -504,19 +504,6 @@ document.addEventListener('DOMContentLoaded', function() {
             // Успех - показываем сообщение об успехе и скрываем форму
             $(successMessage).show();
             $(form).hide();
-            
-            // Очищаем форму
-            setTimeout(() => {
-              form.reset();
-              $form.find('.error').removeClass('error');
-              $form.find('label.error').remove();
-              if ($.fn.selectpicker) {
-                $form.find('select').selectpicker('refresh');
-              }
-              if (iti) {
-                iti.setNumber('');
-              }
-            }, 500);
           } else {
             // Ошибка - скрываем сообщение об успехе, оставляем форму видимой
             $(successMessage).hide();
