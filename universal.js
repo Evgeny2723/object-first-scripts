@@ -484,7 +484,8 @@ document.addEventListener('DOMContentLoaded', function() {
       $.ajax({
         url: webhookUrl,
         type: 'POST',
-        data: $(form).serialize(),
+        contentType: 'application/json',
+        data: JSON.stringify(dataToSubmit),
         dataType: 'json',
         success: function(response) {
           console.log('✅ Success response:', response);
