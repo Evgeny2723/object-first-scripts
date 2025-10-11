@@ -499,27 +499,25 @@ document.addEventListener('DOMContentLoaded', function() {
             submitButtonWrapper.classList.remove('is-loading');
           }
           
-          // Проверяем success из ответа сервера
           if (response.success === true || response.success === 'true') {
-            // Успех - показываем сообщение об успехе и скрываем форму
-            $(successMessage).css('display', 'block');
-            $(form).css('display', 'none');
-          } else {
-            // Ошибка - скрываем сообщение об успехе, оставляем форму видимой
-            $(successMessage).css('display', 'none');
+            // Показываем success message принудительно
+            if (successMessage) {successMessage.style.display = 'block';}
             
-            // Показываем ошибки под полями
-            if (response.errors) {
-              handleApiValidationErrors(form, response.errors, response.message);
-            }
+            // Скрываем форму
+            if (form) {form.style.display = 'none';}
             
-            // Разблокируем кнопку для повторной отправки
-            if (submitButton) {
-              submitButton.removeAttribute('disabled');
-              if (submitButtonWrapper) {
-                submitButtonWrapper.classList.remove('button-is-inactive');
+            // Очищаем форму
+            setTimeout(() => {
+              form.reset();
+              $form.find('.error').removeClass('error');
+              $form.find('label.error').remove();
+              if ($.fn.selectpicker) {
+                $form.find('select').selectpicker('refresh');
               }
-            }
+              if (iti) {
+                iti.setNumber('');
+              }
+            }, 500);
           }
         },
         error: function(xhr, status, error) {
