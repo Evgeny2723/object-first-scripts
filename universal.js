@@ -29,15 +29,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const selfAttributionInput = form.querySelector('#self-attribution');
     const submitButton = form.querySelector('#submit, #submit-2');
     const checkbox = form.querySelector('#agreement');
-    const successMessage = form.querySelector('.w-form-done, #success-message');
-    const errorMessage = form.querySelector('.w-form-fail');
+    const successMessage = form.querySelector('.w-form-done, #success-message') || 
+                       form.parentElement?.querySelector('.w-form-done, #success-message') ||
+                       form.closest('.main-form-w')?.querySelector('.w-form-done, #success-message');
     const submitButtonWrapper = submitButton ? submitButton.closest('.submit-button-wrapper') : null;
-
-    console.log('🔍 Поиск success message элемента:');
-    console.log('- Найденный элемент:', successMessage);
-    console.log('- Класс .w-form-done:', form.querySelector('.w-form-done'));
-    console.log('- ID #success-message:', form.querySelector('#success-message'));
-    console.log('- Все .w-form-done на странице:', document.querySelectorAll('.w-form-done'));
 
     let isSubmitting = false;
     let iti = null;
@@ -506,33 +501,18 @@ document.addEventListener('DOMContentLoaded', function() {
           }
           
           if (response.success === true || response.success === 'true') {
-
-            console.log('✅ Условие success выполнено!');
-            console.log('📋 successMessage:', successMessage);
-            console.log('📋 Существует ли элемент?', !!successMessage);
             
             // Показываем success message принудительно
             if (successMessage) {
-    console.log('👉 Пытаемся показать successMessage');
-    console.log('Display ДО:', successMessage.style.display);
-    console.log('Computed display ДО:', window.getComputedStyle(successMessage).display);
-    
-    successMessage.style.display = 'block';
-    successMessage.style.visibility = 'visible';
-    successMessage.style.opacity = '1';
-    
-    console.log('Display ПОСЛЕ:', successMessage.style.display);
-    console.log('Computed display ПОСЛЕ:', window.getComputedStyle(successMessage).display);
-  } else {
-    console.error('❌ successMessage элемент НЕ НАЙДЕН!');
-    console.log('Все элементы формы:', form);
-  }
-  
-  // Скрываем форму
-  if (form) {
-    console.log('👉 Скрываем форму');
-    form.style.display = 'none';
-  }
+              successMessage.style.display = 'block';
+              successMessage.style.visibility = 'visible';
+              successMessage.style.opacity = '1';
+            }
+            
+            // Скрываем форму
+            if (form) {
+              form.style.display = 'none';
+            }
             
             // Очищаем форму
             setTimeout(() => {
