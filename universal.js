@@ -492,17 +492,17 @@ document.addEventListener('DOMContentLoaded', function() {
         data: JSON.stringify(dataToSubmit),
         dataType: 'json',
         success: function(response) {
-          console.log('✅ Success response:', response);
+          console.log('✅ Ответ от сервера:', response);
           
           // Убираем индикатор загрузки
           if (submitButtonWrapper) {
             submitButtonWrapper.classList.remove('is-loading');
           }
           
-          if (response.status === 'success') {
-            // Показываем успех
+          // Проверяем success из ответа сервера
+          if (response.success === true) {
+            // Успех - показываем сообщение об успехе и скрываем форму
             $(successMessage).show();
-            $(errorMessage).hide();
             $(form).hide();
             
             // Очищаем форму
@@ -510,49 +510,57 @@ document.addEventListener('DOMContentLoaded', function() {
               form.reset();
               $form.find('.error').removeClass('error');
               $form.find('label.error').remove();
+              if ($.fn.selectpicker) {
+                $form.find('select').selectpicker('refresh');
+              }
+              if (iti) {
+                iti.setNumber('');
+              }
             }, 500);
-          } else if (response.errors) {
-            // Обрабатываем ошибки
-            handleApiValidationErrors(form, response.errors, response.message);
+          } else {
+            // Ошибка - скрываем сообщение об успехе, оставляем форму видимой
             $(successMessage).hide();
-            $(errorMessage).show();
-          }
-          
-          // Разблокируем кнопку
-          if (submitButton) {
-            submitButton.removeAttribute('disabled');
-            if (submitButtonWrapper) {
-              submitButtonWrapper.classList.remove('button-is-inactive');
+            
+            // Показываем ошибки под полями
+            if (response.errors) {
+              handleApiValidationErrors(form, response.errors, response.message);
+            }
+            
+            // Разблокируем кнопку для повторной отправки
+            if (submitButton) {
+              submitButton.removeAttribute('disabled');
+              if (submitButtonWrapper) {
+                submitButtonWrapper.classList.remove('button-is-inactive');
+              }
             }
           }
         },
         error: function(xhr, status, error) {
-          console.log('❌ Error response:', xhr.status, xhr.responseText);
+          console.log('❌ Ошибка сети/сервера:', {
+            status: xhr.status,
+            statusText: xhr.statusText,
+            responseText: xhr.responseText,
+            error: error
+          });
           
           // Убираем индикатор загрузки
           if (submitButtonWrapper) {
             submitButtonWrapper.classList.remove('is-loading');
           }
           
-          // Пытаемся распарсить ответ
+          // Скрываем сообщение об успехе
+          $(successMessage).hide();
+          
+          // Пытаемся распарсить ответ для показа ошибок полей
           try {
             const response = JSON.parse(xhr.responseText);
             if (response.errors) {
               handleApiValidationErrors(form, response.errors, response.message);
             }
           } catch (e) {
-            // Показываем общую ошибку
-            if (errorMessage) {
-              $(errorMessage).show();
-              const errorText = errorMessage.querySelector('.error-text, .w-form-fail > div');
-              if (errorText) {
-                errorText.textContent = 'An error occurred. Please try again.';
-              }
-            }
+            // Если не удалось распарсить - показываем общую ошибку
+            console.error('Сетевая ошибка или невалидный JSON:', e);
           }
-          
-          $(successMessage).hide();
-          $(errorMessage).show();
           
           // Разблокируем кнопку
           if (submitButton) {
