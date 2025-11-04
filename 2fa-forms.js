@@ -26,6 +26,14 @@
     const pEmailDisplay = document.getElementById('p-email-display');
     const selfAttributionInput = document.getElementById('p-self-attribution');
 
+    async function sha256(message) {
+      const msgBuffer = new TextEncoder().encode(message);
+      const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+      return hashHex;
+    }
+
     pCodeFormContainer.style.display = 'none';
     const countryCodeMap = {
       "Australia": "AU",
@@ -598,6 +606,7 @@
 
             const leadId = userId;
             const roleValue = data.lead_type.charAt(0).toUpperCase() + data.lead_type.slice(1).toLowerCase();
+            const ehashValue = await sha256(data.email);
 
             if (window.dataLayer) {
               window.dataLayer.push({
@@ -607,6 +616,12 @@
                 'email': data.email,
                 'lead_id': leadId
               });
+              window.dataLayer.push({
+              'event': 'lead_form_submitted',
+              'role': roleValue,
+              'email': data.email,
+              'ehash': ehashValue
+            });
             } else {
               console.warn('dataLayer не определен');
             }
@@ -718,6 +733,7 @@
         const leadTypeValue = document.querySelector('input[name="lead_type"]:checked')?.value || '';
         const roleValue = leadTypeValue ? leadTypeValue.charAt(0).toUpperCase() + leadTypeValue.slice(1).toLowerCase() : '';
         const leadId = userId;
+        const ehashValue = await sha256(email);
 
         if (window.dataLayer) {
           window.dataLayer.push({
@@ -727,6 +743,12 @@
             'email': email,
             'lead_id': leadId
           });
+          window.dataLayer.push({
+              'event': 'lead_form_submitted',
+              'role': roleValue,
+              'email': email,
+              'ehash': ehashValue
+            });
         } else {
           console.warn('dataLayer не определен');
         }
@@ -863,6 +885,14 @@
   const mainFormContainer = document.getElementById('main-form-container');
   const emailDisplay = document.getElementById('email-display');
   const selfAttributionInput = document.getElementById('self-attribution');
+
+  async function sha256(message) {
+      const msgBuffer = new TextEncoder().encode(message);
+      const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+      return hashHex;
+    }
 
   codeFormContainer.style.display = 'none';
 
@@ -1617,6 +1647,7 @@
 
           const leadId = userId;
           const roleValue = data.lead_type.charAt(0).toUpperCase() + data.lead_type.slice(1).toLowerCase();
+          const ehashValue = await sha256(data.email);
 
           if (window.dataLayer) {
             window.dataLayer.push({
@@ -1626,6 +1657,12 @@
               'email': data.email,
               'phone': data.phone,
               'lead_id': leadId
+            });
+            window.dataLayer.push({
+              'event': 'lead_form_submitted',
+              'role': roleValue,
+              'email': data.email,
+              'ehash': ehashValue
             });
           } else {
             console.warn('dataLayer не определен');
@@ -1767,6 +1804,7 @@
       : '';
       const phoneNumber = iti.getNumber();
       const leadId = getCookieValue('userId') || '';
+      const ehashValue = await sha256(email);
 
       if (window.dataLayer) {
         window.dataLayer.push({
@@ -1777,6 +1815,12 @@
           'phone': phoneNumber,
           'lead_id': leadId
         });
+        window.dataLayer.push({
+              'event': 'lead_form_submitted',
+              'role': roleValue,
+              'email': email,
+              'ehash': ehashValue
+            });
       } else {
         console.warn('dataLayer не определен');
       }
