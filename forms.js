@@ -19,6 +19,14 @@
     const selfAttributionInput = document.getElementById('p-self-attribution');
     let isSubmitting = false;
 
+    async function sha256(message) {
+      const msgBuffer = new TextEncoder().encode(message);
+      const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+      return hashHex;
+    }
+
     // --- Переменные для отслеживания Honeypot ---
     let formInteractionStartTime = 0;
     let decoyLinkClicked = false;
@@ -737,6 +745,7 @@
 
         const leadId = userId;
         const roleValue = payload.lead_type.charAt(0).toUpperCase() + payload.lead_type.slice(1).toLowerCase();
+        const ehashValue = await sha256(payload.email);
 
         if (window.dataLayer) {
           window.dataLayer.push({
@@ -746,6 +755,12 @@
             'email': payload.email,
             'lead_id': leadId
           });
+          window.dataLayer.push({
+              'event': 'lead_form_submitted',
+              'role': roleValue,
+              'email': payload.email,
+              'ehash': ehashValue
+            });
         } else {
           console.warn('dataLayer не определен');
         }
@@ -1370,6 +1385,14 @@ document.addEventListener('DOMContentLoaded', function() {
     const formFields = document.querySelector('.main-form');
     let isSubmitting = false;
 
+    async function sha256(message) {
+      const msgBuffer = new TextEncoder().encode(message);
+      const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+      return hashHex;
+    }
+
     function generateUserId() {
       return 'user_' + Math.random().toString(36).substr(2, 9);
     }
@@ -1549,6 +1572,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
           const leadId = userId;
           const roleValue = data.lead_type?.charAt(0).toUpperCase() + data.lead_type?.slice(1).toLowerCase();
+          const ehashValue = await sha256(data.email);
 
           if (window.dataLayer) {
             window.dataLayer.push({
@@ -1558,6 +1582,12 @@ document.addEventListener('DOMContentLoaded', function() {
               'email': data.email,
               'phone': data.phone,
               'lead_id': leadId
+            });
+            window.dataLayer.push({
+              'event': 'lead_form_submitted',
+              'role': roleValue,
+              'email': data.email,
+              'ehash': ehashValue
             });
           } else {
             console.warn('dataLayer не определен');
