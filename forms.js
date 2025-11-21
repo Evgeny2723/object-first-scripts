@@ -30,7 +30,6 @@
     const form = document.getElementById('main-form-2');
     const successMessage = document.querySelector('.success-message');
     const formFields = document.getElementById('main-form-2');
-    let isSubmitting = false;
 
     // --- Переменные для отслеживания Honeypot ---
     let formInteractionStartTime = 0;
