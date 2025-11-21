@@ -437,8 +437,10 @@
       function toggleSubmitButton(buttonSelector, isValid) {
         if (isValid) {
           $(buttonSelector).removeAttr('disabled');
+          $(buttonSelector).removeClass('submit-inactive');
         } else {
           $(buttonSelector).attr('disabled', 'disabled');
+          $(buttonSelector).addClass('submit-inactive');
         }
       }
 
@@ -1459,8 +1461,10 @@
     function toggleSubmitButton(buttonSelector, isValid) {
       if (isValid) {
         $(buttonSelector).removeAttr('disabled'); // Активируем кнопку
+        $(buttonSelector).removeClass('submit-inactive');
       } else {
         $(buttonSelector).attr('disabled', 'disabled'); // Деактивируем кнопку
+        $(buttonSelector).addClass('submit-inactive');
       }
     }
 
