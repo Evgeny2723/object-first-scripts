@@ -502,6 +502,18 @@
     const pFormFields = document.getElementById('p-main-form');
     let popupIsSubmitting = false;
 
+    const popupPathSegments = window.location.pathname
+    .split('/')
+    .filter(Boolean)
+    const popupPathLocale = pathSegments[0] || '';
+    const popupAllowedLocales = ['en', 'de', 'fr', 'es', 'it', 'pt'];
+    const popupLocaleHeader = popupAllowedLocales.includes(popupPathLocale) ? popupPathLocale : 'en';
+
+    let pagePath = window.location.pathname.substring(1);
+    if (popupAllowedLocales.includes(popupPathLocale)) {
+      pagePath = popupPathSegments.slice(1).join('/');
+    }
+
     // Функция для разделения полного имени на First Name и Last Name
     function splitFullName(fullName) {
       if (!fullName) {
@@ -574,7 +586,7 @@
           state: stateValue || null,
           self_attribution: formData.get('self-attribution'),
           href: window.location.href,
-          page: window.location.pathname.substring(1),
+          page: pagePath,
           ss_anonymous_id: window.segmentstream?.anonymousId?.() ?? '',
           cookie: {
             _ga: getCookieValue('_ga'),
@@ -649,11 +661,6 @@
         }
       });
     }
-
-    const popupPathSegments = window.location.pathname.split('/').filter(Boolean);
-    const popupPathLocale = popupPathSegments[0] || '';
-    const popupAllowedLocales = ['en', 'de', 'fr', 'es', 'it', 'pt'];
-    const popupLocaleHeader = popupAllowedLocales.includes(popupPathLocale) ? popupPathLocale : 'en';
 
     // 2. ФУНКЦИЯ отправки данных
     async function submitFormToVerifiedWebflow(data, userId) {
@@ -814,7 +821,7 @@
           country: selectedCountry,
           state: stateValue || null,
           href: window.location.href,
-          page: window.location.pathname.substring(1),
+          page: pagePath,
         };
 
         if (selectedCountry !== 'United States' && !stateValue) {
@@ -1529,6 +1536,18 @@
   const formFields = document.getElementById('main-form-2');
   let isSubmitting = false;
 
+const pathSegments = window.location.pathname
+    .split('/')
+    .filter(Boolean)
+    const pathLocale = pathSegments[0] || '';
+    const allowedLocales = ['en', 'de', 'fr', 'es', 'it', 'pt'];
+    const localeHeader = allowedLocales.includes(pathLocale) ? pathLocale : 'en';
+
+    let pagePath = window.location.pathname.substring(1);
+    if (allowedLocales.includes(pathLocale)) {
+      pagePath = pathSegments.slice(1).join('/');
+    }
+
   function generateUserId() {
     return 'user_' + Math.random().toString(36).substr(2, 9);
   }
@@ -1610,7 +1629,7 @@
         state: stateValue || null,
         self_attribution: formData.get('self-attribution'),
         href: window.location.href,
-        page: window.location.pathname.substring(1),
+        page: pagePath,
         ss_anonymous_id: window.segmentstream?.anonymousId?.() ?? '',
         cookie: {
           _ga: getCookieValue('_ga'),
@@ -1702,13 +1721,6 @@
       }
     });
   }
-
-  const pathSegments = window.location.pathname
-  .split('/')
-  .filter(Boolean)
-  const pathLocale = pathSegments[0] || '';
-  const allowedLocales = ['en', 'de', 'fr', 'es', 'it', 'pt'];
-  const localeHeader = allowedLocales.includes(pathLocale) ? pathLocale : 'en';
 
   // 2. ФУНКЦИЯ отправки данных на https://api2-prod.objectfirst.app/api/application/verified-webflow
   async function submitFormToVerifiedWebflow(data, userId) {
