@@ -31,18 +31,6 @@
     const successMessage = document.querySelector('.success-message');
     const formFields = document.getElementById('main-form-2');
     let isSubmitting = false;
-    
-    const pathSegments = window.location.pathname
-    .split('/')
-    .filter(Boolean)
-    const pathLocale = pathSegments[0] || '';
-    const allowedLocales = ['en', 'de', 'fr', 'es', 'it', 'pt'];
-    const localeHeader = allowedLocales.includes(pathLocale) ? pathLocale : 'en';
-
-    let pagePath = window.location.pathname.substring(1);
-    if (allowedLocales.includes(pathLocale)) {
-      pagePath = pathSegments.slice(1).join('/');
-    }
 
     // --- Переменные для отслеживания Honeypot ---
     let formInteractionStartTime = 0;
@@ -597,6 +585,18 @@
     });
 
     observer.observe(document.body, { childList: true, subtree: true });
+    
+    const pathSegments = window.location.pathname
+    .split('/')
+    .filter(Boolean)
+    const pathLocale = pathSegments[0] || '';
+    const allowedLocales = ['en', 'de', 'fr', 'es', 'it', 'pt'];
+    const localeHeader = allowedLocales.includes(pathLocale) ? pathLocale : 'en';
+
+    let pagePath = window.location.pathname.substring(1);
+    if (allowedLocales.includes(pathLocale)) {
+      pagePath = pathSegments.slice(1).join('/');
+    }
 
     function submitForm(formData, userId) {
       const url = 'https://of-web-api.objectfirst.com/api/application/webflow';
