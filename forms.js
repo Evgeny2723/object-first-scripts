@@ -27,6 +27,23 @@
       return hashHex;
     }
 
+    const form = document.getElementById('main-form-2');
+    const successMessage = document.querySelector('.success-message');
+    const formFields = document.getElementById('main-form-2');
+    let isSubmitting = false;
+    
+    const pathSegments = window.location.pathname
+    .split('/')
+    .filter(Boolean)
+    const pathLocale = pathSegments[0] || '';
+    const allowedLocales = ['en', 'de', 'fr', 'es', 'it', 'pt'];
+    const localeHeader = allowedLocales.includes(pathLocale) ? pathLocale : 'en';
+
+    let pagePath = window.location.pathname.substring(1);
+    if (allowedLocales.includes(pathLocale)) {
+      pagePath = pathSegments.slice(1).join('/');
+    }
+
     // --- Переменные для отслеживания Honeypot ---
     let formInteractionStartTime = 0;
     let decoyLinkClicked = false;
@@ -581,13 +598,6 @@
 
     observer.observe(document.body, { childList: true, subtree: true });
 
-    const pathSegments = window.location.pathname
-    .split('/')
-    .filter(Boolean);
-    const pathLocale = pathSegments[0] || '';
-    const allowedLocales = ['en', 'de', 'fr', 'es', 'it', 'pt'];
-    const localeHeader = allowedLocales.includes(pathLocale) ? pathLocale : 'en';
-
     function submitForm(formData, userId) {
       const url = 'https://of-web-api.objectfirst.com/api/application/webflow';
       const headers = {
@@ -731,7 +741,7 @@
         state: stateValue || null,
         self_attribution: formData.get('self-attribution'),
         href: window.location.href,
-        page: window.location.pathname.substring(1),
+        page: pagePath,
         ss_anonymous_id: window.segmentstream?.anonymousId?.() ?? '',
         junk_lead: junk_lead,
         of_form_duration: formFillingTime,
@@ -1385,6 +1395,23 @@ document.addEventListener('DOMContentLoaded', function() {
     const formFields = document.querySelector('.main-form');
     let isSubmitting = false;
 
+  const form = document.getElementById('main-form-2');
+    const successMessage = document.querySelector('.success-message');
+    const formFields = document.getElementById('main-form-2');
+    let isSubmitting = false;
+    
+    const pathSegments = window.location.pathname
+    .split('/')
+    .filter(Boolean)
+    const pathLocale = pathSegments[0] || '';
+    const allowedLocales = ['en', 'de', 'fr', 'es', 'it', 'pt'];
+    const localeHeader = allowedLocales.includes(pathLocale) ? pathLocale : 'en';
+
+    let pagePath = window.location.pathname.substring(1);
+    if (allowedLocales.includes(pathLocale)) {
+      pagePath = pathSegments.slice(1).join('/');
+    }
+
     async function sha256(message) {
       const msgBuffer = new TextEncoder().encode(message);
       const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
@@ -1538,7 +1565,7 @@ document.addEventListener('DOMContentLoaded', function() {
           state: stateValue || null,
           self_attribution: formData.get('self-attribution'),
           href: window.location.href,
-          page: window.location.pathname.substring(1),
+          page: pagePath,
           ss_anonymous_id: window.segmentstream?.anonymousId?.() ?? '',
           junk_lead: junk_lead,
           of_form_duration: formFillingTime,
