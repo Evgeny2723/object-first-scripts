@@ -1624,13 +1624,6 @@ document.addEventListener('DOMContentLoaded', function() {
       });
     }
 
-    const pathSegments = window.location.pathname
-    .split('/')
-    .filter(Boolean)
-    const pathLocale = pathSegments[0] || '';
-    const allowedLocales = ['en', 'de', 'fr', 'es', 'it', 'pt'];
-    const localeHeader = allowedLocales.includes(pathLocale) ? pathLocale : 'en';
-
     // Функция отправки данных на сервер
     async function submitForm(data, userId) {
       try {
