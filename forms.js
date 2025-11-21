@@ -1389,11 +1389,6 @@ document.addEventListener('DOMContentLoaded', function() {
       $(this).valid();
     });
 
-    const form = document.getElementById('main-form-2');
-    const successMessage = document.querySelector('.success-message.w-form-done');
-    const formFields = document.querySelector('.main-form');
-    let isSubmitting = false;
-
   const form = document.getElementById('main-form-2');
     const successMessage = document.querySelector('.success-message');
     const formFields = document.getElementById('main-form-2');
