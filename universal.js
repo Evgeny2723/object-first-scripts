@@ -666,7 +666,7 @@
     }
 
     // Обработчик отправки формы
-    if (mainform) {
+    if (mainForm) {
       mainForm.addEventListener('input', () => {
         if (formInteractionStartTime === 0) {
           formInteractionStartTime = Date.now();
@@ -695,7 +695,7 @@
         isSubmitting = true;
         submitButton.setAttribute('disabled', 'disabled');
 
-        const formData = new FormData(form);
+        const formData = new FormData(mainForm);
 
         // Обновленный honeypot функционал
         const JUNK_REASONS = { HONEYPOT_FILLED: 1, DECOY_CLICKED: 2, FILLED_TOO_FAST: 3 };
