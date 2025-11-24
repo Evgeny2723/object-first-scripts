@@ -378,12 +378,12 @@
         }
       },
       rules: {
-        firstname: {
+        'first-name': {
           required: true,
           maxlength: 50,
           noSpacesOnly: true
         },
-        lastname: {
+        'last-name': {
           required: true,
           maxlength: 50,
           noSpacesOnly: true
@@ -395,7 +395,7 @@
           corporate: true,
           validEmailChars: true
         },
-        job_title: {
+        'job-title': {
           required: true,
           maxlength: 50,
           noSpacesOnly: true
@@ -419,11 +419,11 @@
         }
       },
       messages: {
-        firstname: {
+        'first-name': {
           required: "This field is required",
           maxlength: "Firstname must be at most 50 characters"
         },
-        lastname: {
+        'last-name': {
           required: "This field is required",
           maxlength: "Lastname must be at most 50 characters"
         },
@@ -433,7 +433,7 @@
           email: "Invalid email address",
           corporate: "Please enter a valid corporate email address (e.g., yourname@company.com). Personal email addresses (e.g., Gmail, Yahoo) are not accepted."
         },
-        job_title: {
+        'job-title': {
           required: "This field is required",
           maxlength: "Job title must be at most 50 characters"
         },
@@ -522,17 +522,20 @@
     // Функция переключения элементов для конкретной страны
     function toggleCountrySpecificElements(selectedCountry) {
       resetCheckbox();
-
+    
+      const formMessage = document.querySelector('.form-message');
+      const formMessageUsa = document.querySelector('.form-message_usa');
+    
       if (selectedCountry === 'United States') {
-        document.querySelector('.form-message').style.display = 'none';
-        document.querySelector('.form-message_usa').style.display = 'block';
+        if (formMessage) formMessage.style.display = 'none';
+        if (formMessageUsa) formMessageUsa.style.display = 'block';
         $('#agreement').prop('checked', true).parent().hide();
       } else {
-        document.querySelector('.form-message').style.display = 'block';
-        document.querySelector('.form-message_usa').style.display = 'none';
+        if (formMessage) formMessage.style.display = 'block';
+        if (formMessageUsa) formMessageUsa.style.display = 'none';
         $('#agreement').parent().show();
       }
-
+    
       setTimeout(() => {
         updateSubmitButtonState();
       }, 50);
