@@ -3,7 +3,7 @@
     // Переменные для полей формы
     const firstNameInput = document.getElementById('first-name');
     const lastNameInput = document.getElementById('last-name');
-    const jobTitleInput = document.getElementById('Job-title');
+    const jobTitleInput = document.getElementById('job-title');
     const emailInput = document.getElementById('email');
     const companyInput = document.getElementById('company');
     const countrySelect = document.getElementById('country');
@@ -463,7 +463,6 @@
       highlight: function(element) {
         if ($(element).data('modified')) {
           $(element).css('border', '1px solid #c50006');
-          $(element).css('placeholder', '#c50006');
         }
       },
       unhighlight: function(element) {
@@ -587,7 +586,6 @@
       $(this).valid();
     });
 
-    const form = document.querySelector('form');
     const successMessage = document.querySelector('.w-form-done');
     const formFields = document.querySelector('.form');
     let isSubmitting = false;
@@ -668,8 +666,8 @@
     }
 
     // Обработчик отправки формы
-    if (form) {
-      form.addEventListener('input', () => {
+    if (mainform) {
+      mainForm.addEventListener('input', () => {
         if (formInteractionStartTime === 0) {
           formInteractionStartTime = Date.now();
           console.log('Honeypot: Form interaction started.');
@@ -685,7 +683,7 @@
         });
       }
 
-      form.addEventListener('submit', async function(event) {
+      mainForm.addEventListener('submit', async function(event) {
         event.preventDefault();
 
         if (!$(this).valid()) return;
@@ -723,29 +721,29 @@
           console.warn(`Honeypot triggered: Form submitted too fast (${formFillingTime.toFixed(2)}s).`);
         }
 
-        const leadTypeValue = form.querySelector('input[name="lead_type"]:checked')?.value;
+        const leadTypeValue = mainForm.querySelector('input[name="lead_type"]:checked')?.value;
 
         let stateValue = '';
-        const selectedCountry = form.querySelector('select[name="country"]').value;
+        const selectedCountry = mainForm.querySelector('select[name="country"]').value;
 
         if (selectedCountry === 'United States') {
-          stateValue = form.querySelector('#state').value;
+          stateValue = mainForm.querySelector('#state').value;
         } else if (selectedCountry === 'Australia') {
-          stateValue = form.querySelector('#states-australia').value;
+          stateValue = mainForm.querySelector('#states-australia').value;
         } else if (selectedCountry === 'Brazil') {
-          stateValue = form.querySelector('#states-brazil').value;
+          stateValue = mainForm.querySelector('#states-brazil').value;
         } else if (selectedCountry === 'Canada') {
-          stateValue = form.querySelector('#states-canada').value;
+          stateValue = mainForm.querySelector('#states-canada').value;
         } else if (selectedCountry === 'China') {
-          stateValue = form.querySelector('#states-china').value;
+          stateValue = mainForm.querySelector('#states-china').value;
         } else if (selectedCountry === 'Ireland') {
-          stateValue = form.querySelector('#states-ireland').value;
+          stateValue = mainForm.querySelector('#states-ireland').value;
         } else if (selectedCountry === 'India') {
-          stateValue = form.querySelector('#states-india').value;
+          stateValue = mainForm.querySelector('#states-india').value;
         } else if (selectedCountry === 'Italy') {
-          stateValue = form.querySelector('#states-italy').value;
+          stateValue = mainForm.querySelector('#states-italy').value;
         } else if (selectedCountry === 'Mexico') {
-          stateValue = form.querySelector('#states-mexico').value;
+          stateValue = mainForm.querySelector('#states-mexico').value;
         }
 
         const urlParams = new URLSearchParams(window.location.search);
