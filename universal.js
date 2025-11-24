@@ -1,4 +1,3 @@
-<script>
   document.addEventListener('DOMContentLoaded', function() {
     // Переменные для полей формы
     const firstNameInput = document.getElementById('first-name');
@@ -869,4 +868,3 @@
       }
     }
   });
-</script>
