@@ -24,26 +24,6 @@
     const selfAttributionInput = document.getElementById('self-attribution');
     const submitButtonWrapper = document.querySelector('.submit-button-wrapper');
 
-    // Анимация подсветки стрелки в выпадающих списках
-    const dropdowns = document.querySelectorAll('.dropdown.bootstrap-select.select-search.w-select');
-    const highlightColor = '#5B00B3';
-    const defaultColor = '';
-
-    dropdowns.forEach(dropdownContainer => {
-      const targetButton = dropdownContainer.querySelector('button[type="button"].dropdown-toggle');
-      const svgArrow = dropdownContainer.nextElementSibling; 
-        if (targetButton && svgArrow && svgArrow.classList.contains('select-arrow-new')) {
-              function handleMouseOver() {
-                  svgArrow.style.color = highlightColor;
-              }
-              function handleMouseOut() {
-                  svgArrow.style.color = defaultColor; 
-              }
-              targetButton.addEventListener('mouseover', handleMouseOver);
-              targetButton.addEventListener('mouseout', handleMouseOut);
-          }
-      });
-
     // Скрытие и отображение плейсхолдера
     const inputs = document.querySelectorAll('.form-input');
     inputs.forEach(input => {
@@ -331,6 +311,26 @@
       "Estonia": "EE",
       "Ethiopia": "ET"
     };
+
+    // Анимация подсветки стрелки в выпадающих списках
+    const dropdowns = document.querySelectorAll('.dropdown.bootstrap-select.select-search.w-select');
+    const highlightColor = '#5B00B3';
+    const defaultColor = '';
+
+    dropdowns.forEach(dropdownContainer => {
+      const targetButton = dropdownContainer.querySelector('button[type="button"].dropdown-toggle');
+      const svgArrow = dropdownContainer.nextElementSibling; 
+        if (targetButton && svgArrow && svgArrow.classList.contains('select-arrow-new')) {
+              function handleMouseOver() {
+                  svgArrow.style.color = highlightColor;
+              }
+              function handleMouseOut() {
+                  svgArrow.style.color = defaultColor; 
+              }
+              targetButton.addEventListener('mouseover', handleMouseOver);
+              targetButton.addEventListener('mouseout', handleMouseOut);
+          }
+      });
 
     // Инициализация intlTelInput
     const iti = window.intlTelInput(phoneInput, {
