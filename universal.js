@@ -756,10 +756,10 @@
         const utmTerm = urlParams.get('utm_term') || '';
 
         const data = {
-          firstname: formData.get('firstname'),
-          lastname: formData.get('lastname'),
+          firstname: formData.get('first-name'),
+          lastname: formData.get('last-name'),
           email: formData.get('email'),
-          job_title: formData.get('job_title'),
+          job_title: formData.get('job-title'),
           company: formData.get('company'),
           phone: iti.getNumber(),
           lead_type: leadTypeValue,
