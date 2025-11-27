@@ -775,6 +775,8 @@
         const utmSource = urlParams.get('utm_source') || '';
         const utmTerm = urlParams.get('utm_term') || '';
 
+        const ehashValue = await sha256(formData.get('email'));
+
         const data = {
           firstname: formData.get('first-name'),
           lastname: formData.get('last-name'),
@@ -793,6 +795,7 @@
           of_form_duration: formFillingTime,
           junk_reason: junk_reason,
           junk_context: junk_context,
+          ehash: ehashValue,
           cookie: {
             _ga: getCookieValue('_ga'),
             c_of__ga: getCookieValue('c_of__ga'),
@@ -820,8 +823,7 @@
           document.cookie = `user_id=${userId}; path=/; max-age=31536000`;
 
           const leadId = userId;
-          const roleValue = data.lead_type?.charAt(0).toUpperCase() + data.lead_type?.slice(1).toLowerCase();
-          const ehashValue = await sha256(data.email);
+          const roleValue = data.lead_type?.charAt(0).toUpperCase() + data.lead_type?.slice(1).toLowerCase() : 'Customer';
 
           if (window.dataLayer) {
             window.dataLayer.push({
@@ -836,7 +838,7 @@
               'event': 'lead_form_submitted',
               'role': roleValue,
               'email': data.email,
-              'ehash': ehashValue
+              'ehash': data.ehash
             });
           } else {
             console.warn('dataLayer не определен');
