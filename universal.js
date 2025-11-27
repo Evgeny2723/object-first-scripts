@@ -823,7 +823,7 @@
           document.cookie = `user_id=${userId}; path=/; max-age=31536000`;
 
           const leadId = userId;
-          const roleValue = data.lead_type?.charAt(0).toUpperCase() + data.lead_type?.slice(1).toLowerCase() : 'Customer';
+          const roleValue = data.lead_type ? (data.lead_type.charAt(0).toUpperCase() + data.lead_type.slice(1).toLowerCase()) : 'Customer';
 
           if (window.dataLayer) {
             window.dataLayer.push({
