@@ -894,27 +894,29 @@
 
         const leadTypeValue = mainForm.querySelector('input[name="lead_type"]:checked')?.value;
 
-        let stateValue = '';
-        const selectedCountry = mainForm.querySelector('select[name="country"]').value;
-
-        if (selectedCountry === 'United States') {
-          stateValue = mainForm.querySelector('#state').value;
-        } else if (selectedCountry === 'Australia') {
-          stateValue = mainForm.querySelector('#states-australia').value;
-        } else if (selectedCountry === 'Brazil') {
-          stateValue = mainForm.querySelector('#states-brazil').value;
-        } else if (selectedCountry === 'Canada') {
-          stateValue = mainForm.querySelector('#states-canada').value;
-        } else if (selectedCountry === 'China') {
-          stateValue = mainForm.querySelector('#states-china').value;
-        } else if (selectedCountry === 'Ireland') {
-          stateValue = mainForm.querySelector('#states-ireland').value;
-        } else if (selectedCountry === 'India') {
-          stateValue = mainForm.querySelector('#states-india').value;
-        } else if (selectedCountry === 'Italy') {
-          stateValue = mainForm.querySelector('#states-italy').value;
-        } else if (selectedCountry === 'Mexico') {
-          stateValue = mainForm.querySelector('#states-mexico').value;
+        if (countrySelect) {
+          let stateValue = '';
+          const selectedCountry = mainForm.querySelector('select[name="country"]').value;
+  
+          if (selectedCountry === 'United States') {
+            stateValue = mainForm.querySelector('#state').value;
+          } else if (selectedCountry === 'Australia') {
+            stateValue = mainForm.querySelector('#states-australia').value;
+          } else if (selectedCountry === 'Brazil') {
+            stateValue = mainForm.querySelector('#states-brazil').value;
+          } else if (selectedCountry === 'Canada') {
+            stateValue = mainForm.querySelector('#states-canada').value;
+          } else if (selectedCountry === 'China') {
+            stateValue = mainForm.querySelector('#states-china').value;
+          } else if (selectedCountry === 'Ireland') {
+            stateValue = mainForm.querySelector('#states-ireland').value;
+          } else if (selectedCountry === 'India') {
+            stateValue = mainForm.querySelector('#states-india').value;
+          } else if (selectedCountry === 'Italy') {
+            stateValue = mainForm.querySelector('#states-italy').value;
+          } else if (selectedCountry === 'Mexico') {
+            stateValue = mainForm.querySelector('#states-mexico').value;
+          }
         }
 
         const urlParams = new URLSearchParams(window.location.search);
