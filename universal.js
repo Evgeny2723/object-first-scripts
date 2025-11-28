@@ -30,7 +30,7 @@
     function handleLabel(input) {
       if (!input) return;
       const label = input.nextElementSibling;
-
+      if (!label) return;
       const updateLabelState = () => {
         if (input.value !== '') {
           label.classList.add('active');
@@ -40,17 +40,13 @@
           input.classList.remove('not-empty');
         }
       };
-
       updateLabelState();
-
       input.addEventListener('focus', () => {
         label.classList.add('active');
       });
-
       input.addEventListener('blur', () => {
         updateLabelState();
       });
-
       input.addEventListener('input', () => {
         updateLabelState();
       });
