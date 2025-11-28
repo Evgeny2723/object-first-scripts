@@ -106,50 +106,54 @@
     let decoyLinkClicked = false;
 
     // Переключение отображения dropdown-меню в зависимости от выбранной страны
-    countrySelect.addEventListener('change', function() {
-      const selectedCountry = countrySelect.value;
-      const dropdowns = {
-        'United States': dropdownState,
-        'Australia': dropdownAustralia,
-        'Brazil': dropdownBrazil,
-        'Canada': dropdownCanada,
-        'China': dropdownChina,
-        'Ireland': dropdownIreland,
-        'India': dropdownIndia,
-        'Italy': dropdownItaly,
-        'Mexico': dropdownMexico
-      };
-
-      Object.values(dropdowns).forEach(dropdown => {
-        if (dropdown) {
-          dropdown.style.display = 'none';
-        }
-      });
-
-      if (dropdowns[selectedCountry]) {
-        dropdowns[selectedCountry].style.display = 'block';
-      } else {
+    if (countrySelect) {
+      countrySelect.addEventListener('change', function() {
+        const selectedCountry = countrySelect.value;
+        const dropdowns = {
+          'United States': dropdownState,
+          'Australia': dropdownAustralia,
+          'Brazil': dropdownBrazil,
+          'Canada': dropdownCanada,
+          'China': dropdownChina,
+          'Ireland': dropdownIreland,
+          'India': dropdownIndia,
+          'Italy': dropdownItaly,
+          'Mexico': dropdownMexico
+        };
+  
         Object.values(dropdowns).forEach(dropdown => {
           if (dropdown) {
             dropdown.style.display = 'none';
           }
         });
-      }
-    });
+  
+        if (dropdowns[selectedCountry]) {
+          dropdowns[selectedCountry].style.display = 'block';
+        } else {
+          Object.values(dropdowns).forEach(dropdown => {
+            if (dropdown) {
+              dropdown.style.display = 'none';
+            }
+          });
+        }
+      });
+    }
 
     // Инициализация селекторов для выбора страны и штатов
-    $('#country').selectpicker();
-    $('#state, #states-australia, #states-brazil, #states-canada, #states-china, #states-ireland, #states-india, #states-italy, #states-mexico').selectpicker();
-
-    $('#country').on('shown.bs.select', function() {
-      const selectpicker = $(this).data('selectpicker');
-      selectpicker.$menuInner[0].scrollTop = 0;
-    });
-
-    $('#state, #states-australia, #states-brazil, #states-canada, #states-china, #states-ireland, #states-india, #states-italy, #states-mexico').on('shown.bs.select', function() {
-      const selectpicker = $(this).data('selectpicker');
-      selectpicker.$menuInner[0].scrollTop = 0;
-    });
+    if (countrySelect) {
+      $('#country').selectpicker();
+      $('#state, #states-australia, #states-brazil, #states-canada, #states-china, #states-ireland, #states-india, #states-italy, #states-mexico').selectpicker();
+  
+      $('#country').on('shown.bs.select', function() {
+        const selectpicker = $(this).data('selectpicker');
+        selectpicker.$menuInner[0].scrollTop = 0;
+      });
+  
+      $('#state, #states-australia, #states-brazil, #states-canada, #states-china, #states-ireland, #states-india, #states-italy, #states-mexico').on('shown.bs.select', function() {
+        const selectpicker = $(this).data('selectpicker');
+        selectpicker.$menuInner[0].scrollTop = 0;
+      });
+    }
 
     // Карта кодов стран для intlTelInput
     const countryCodeMap = {
@@ -679,13 +683,15 @@
     observer.observe(document.body, { childList: true, subtree: true });
 
     // Обработчик изменения страны
-    $('#country').on('change', function() {
-      toggleCountrySpecificElements(this.value);
-      if (iti && countryCodeMap[this.value]) {
-        iti.setCountry(countryCodeMap[this.value]);
-      }
-      $(this).valid();
-    });
+    if (countrySelect) {
+      $('#country').on('change', function() {
+        toggleCountrySpecificElements(this.value);
+        if (iti && countryCodeMap[this.value]) {
+          iti.setCountry(countryCodeMap[this.value]);
+        }
+        $(this).valid();
+      });
+    }
     
     const successMessage = document.querySelector('.w-form-done');
     const formFields = document.querySelector('form');
