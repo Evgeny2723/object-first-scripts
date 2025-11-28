@@ -605,6 +605,28 @@
     // Функция обновления состояния кнопки отправки
     function updateSubmitButtonState() {
       const isFormValid = $('form').valid();
+
+      // Проверяем, является ли форма "короткой" (только email)
+      const isSimpleEmailForm = $form.hasClass('feedback-form');
+    
+      if (isSimpleEmailForm) {
+        // Для такой формы критерий один – валиден ли email
+        const emailEl = document.getElementById('email');
+        const isEmailValid = emailEl ? $(emailEl).valid() : false;
+    
+        if (isEmailValid) {
+          $(submitButton).removeAttr('disabled');
+          $(submitButton).removeClass('submit-inactive');
+          $(submitButtonWrapper).removeClass('button-is-inactive');
+        } else {
+          $(submitButton).attr('disabled', 'disabled');
+          $(submitButton).addClass('submit-inactive');
+          $(submitButtonWrapper).addClass('button-is-inactive');
+        }
+    
+        return; // дальше общую логику не выполняем
+      }
+      
       const selectedCountry = $('#country').val();
       const isCheckboxChecked = $('#agreement').prop('checked');
       const isCheckboxRequirementMet = selectedCountry === 'United States' || isCheckboxChecked;
