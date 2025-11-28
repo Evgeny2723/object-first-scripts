@@ -369,37 +369,39 @@
       });
 
     // Инициализация intlTelInput
-    const iti = window.intlTelInput(phoneInput, {
-      utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
-      autoPlaceholder: "aggressive",
-      separateDialCode: true,
-      initialCountry: "auto",
-      geoIpLookup: function (success, failure) {
-        fetch('https://faas-nyc1-2ef2e6cc.doserverless.co/api/v1/web/fn-3627560b-2163-4a62-81db-3a3b5da17d5a/ip/info')
-          .then(response => response.json())
-          .then(data => {
-          if (data && data.iso_code && data.country) {
-            success(data.iso_code);
-            const optionToSelect = [...countrySelect.options].find(
-              option => option.value === data.country
-            );
-            if (optionToSelect) {
-              optionToSelect.selected = true;
-              countrySelect.dispatchEvent(new Event('change'));
+    if (phoneInput) {
+      const iti = window.intlTelInput(phoneInput, {
+        utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
+        autoPlaceholder: "aggressive",
+        separateDialCode: true,
+        initialCountry: "auto",
+        geoIpLookup: function (success, failure) {
+          fetch('https://faas-nyc1-2ef2e6cc.doserverless.co/api/v1/web/fn-3627560b-2163-4a62-81db-3a3b5da17d5a/ip/info')
+            .then(response => response.json())
+            .then(data => {
+            if (data && data.iso_code && data.country) {
+              success(data.iso_code);
+              const optionToSelect = [...countrySelect.options].find(
+                option => option.value === data.country
+              );
+              if (optionToSelect) {
+                optionToSelect.selected = true;
+                countrySelect.dispatchEvent(new Event('change'));
+              } else {
+                console.error('Country not found in the dropdown:', data.country);
+              }
             } else {
-              console.error('Country not found in the dropdown:', data.country);
+              console.error('Invalid data received from IP API:', data);
+              failure();
             }
-          } else {
-            console.error('Invalid data received from IP API:', data);
+          })
+            .catch(error => {
+            console.error('Error while getting IP data:', error);
             failure();
-          }
-        })
-          .catch(error => {
-          console.error('Error while getting IP data:', error);
-          failure();
-        });
-      }
-    });
+          });
+        }
+      });
+    }
 
     let isFormInitialized = false;
     let isCheckboxInteracted = false;
@@ -533,11 +535,18 @@
         }
       },
       errorPlacement: function (error, element) {
-        // Проверка, является ли элемент чекбоксом, и был ли он модифицирован
+        // Для чекбокса – как было, но с выбором контейнера
         if (element.attr("name") === "agreement" && $(element).data('modified')) {
-          error.appendTo(element.closest(".input-wrapper"));
+          const container = element.closest(".input-wrapper").length
+            ? element.closest(".input-wrapper")
+            : element.closest(".field-row");
+          error.appendTo(container);
         } else if (element.attr("name") !== "agreement" && $(element).data('modified')) {
-          error.appendTo(element.closest(".input-wrapper"));
+          // Для всех остальных полей
+          const container = element.closest(".input-wrapper").length
+            ? element.closest(".input-wrapper")
+            : element.closest(".field-row");
+          error.appendTo(container);
         }
       },
       highlight: function(element) {
@@ -557,6 +566,7 @@
 
     // Кастомный метод для проверки телефона
     $.validator.addMethod("phoneCustom", function(value, element) {
+      if (!phoneInput || !iti) return true;
       return iti.isValidNumber();
     }, "Phone number is invalid. Please add your country code, area code and phone number. Your phone number can contain numbers, spaces and these special characters: ( ) - # +");
 
@@ -665,7 +675,9 @@
     // Обработчик изменения страны
     $('#country').on('change', function() {
       toggleCountrySpecificElements(this.value);
-      iti.setCountry(countryCodeMap[this.value]);
+      if (iti) {
+        iti.setCountry(countryCodeMap[this.value]);
+      }
       $(this).valid();
     });
     
@@ -852,7 +864,7 @@
           email: formData.get('email'),
           job_title: formData.get('job-title'),
           company: formData.get('company'),
-          phone: iti.getNumber(),
+          phone: iti ? iti.getNumber() : (formData.get('phone') || ''),
           lead_type: leadTypeValue,
           country: formData.get('country'),
           state: stateValue || null,
