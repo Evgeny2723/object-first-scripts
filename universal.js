@@ -642,7 +642,6 @@
         $(submitButtonWrapper).addClass('button-is-inactive');
       }
     }
-    updateSubmitButtonState();
 
     // Функция переключения элементов для конкретной страны
     function toggleCountrySpecificElements(selectedCountry) {
@@ -683,6 +682,16 @@
 
     // Изначально деактивируем кнопку отправки
     $(submitButton).attr('disabled', 'disabled');
+    $(submitButton).addClass('submit-inactive');
+    $(submitButtonWrapper).addClass('button-is-inactive');
+
+    if ($('form').hasClass('feedback-form')) {
+         const emailEl = document.getElementById('email');
+         // Проверяем значение напрямую, чтобы не триггерить валидацию (красный текст) раньше времени
+         if (emailEl && emailEl.value.trim() !== '') {
+             updateSubmitButtonState();
+         }
+    }
 
     // Функция добавления placeholder для поиска
     function addPlaceholder() {
