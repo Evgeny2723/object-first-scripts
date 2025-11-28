@@ -642,6 +642,7 @@
         $(submitButtonWrapper).addClass('button-is-inactive');
       }
     }
+    updateSubmitButtonState();
 
     // Функция переключения элементов для конкретной страны
     function toggleCountrySpecificElements(selectedCountry) {
@@ -940,6 +941,7 @@
           lead_type: leadTypeValue,
           country: formData.get('country'),
           state: stateValue || null,
+          comments: formData.get('comments'),
           self_attribution: formData.get('self-attribution'),
           href: window.location.href,
           page: pagePath,
