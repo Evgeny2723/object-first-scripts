@@ -604,7 +604,8 @@
 
     // Функция обновления состояния кнопки отправки
     function updateSubmitButtonState() {
-      const isFormValid = $('form').valid();
+      const $form = $('form');
+      const isFormValid = $form.valid();
 
       // Проверяем, является ли форма "короткой" (только email)
       const isSimpleEmailForm = $form.hasClass('feedback-form');
