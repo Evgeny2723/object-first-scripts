@@ -894,9 +894,11 @@
 
         const leadTypeValue = mainForm.querySelector('input[name="lead_type"]:checked')?.value;
 
+        let selectedCountry = null;
+        let stateValue = '';
+
         if (countrySelect) {
-          let stateValue = '';
-          const selectedCountry = mainForm.querySelector('select[name="country"]').value;
+          selectedCountry = mainForm.querySelector('select[name="country"]').value;
   
           if (selectedCountry === 'United States') {
             stateValue = mainForm.querySelector('#state').value;
@@ -958,7 +960,7 @@
           }
         };
 
-        if (selectedCountry !== 'United States' && !stateValue) {
+        if (countrySelect && selectedCountry !== 'United States' && !stateValue) {
           delete data.state;
         }
 
