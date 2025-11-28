@@ -997,9 +997,11 @@
           const leadId = userId;
           const roleValue = data.lead_type ? (data.lead_type.charAt(0).toUpperCase() + data.lead_type.slice(1).toLowerCase()) : 'Customer';
 
+          const eventType = $('form').attr('data-event-type') || 'demo';
+
           if (window.dataLayer) {
             window.dataLayer.push({
-              'event': 'demo',
+              'event': eventType,
               'role': roleValue,
               'type': '',
               'email': data.email,
