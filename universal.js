@@ -770,6 +770,23 @@
       console.error('An error occurred during honeypot character replacement:', error);
     }
 
+    // Функция для разделения полного имени на First Name и Last Name
+    function splitFullName(fullName) {
+      if (!fullName) {
+        return { firstName: '', lastName: '' };
+      }
+      const nameParts = fullName.trim().split(' ');
+      const firstName = nameParts[0] || '';
+      const lastName = nameParts.slice(1).join(' ') || '';
+      if (nameParts.length === 1) {
+        return { firstName, lastName: firstName };
+      }
+      if (nameParts.length > 2) {
+        return { firstName, lastName: nameParts[1] || '' };
+      }
+      return { firstName, lastName };
+    }
+
     // Обработчик отправки формы
     if (mainForm) {
       mainForm.addEventListener('input', () => {
