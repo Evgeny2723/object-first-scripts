@@ -770,19 +770,22 @@
         acc[name] = value;
         return acc;
       }, {});
-
-      if (sessionStorage.getItem('videoUnlocked') === 'true') {
+    
+      // Проверяем, есть ли на странице элементы видео (блокирующие видео)
+      const hasVideoContent = blockingBlock || unlockText;
+    
+      // Если на странице есть видео И оно уже разблокировано → не показываем форму
+      if (hasVideoContent && sessionStorage.getItem('videoUnlocked') === 'true') {
         if (blockingBlock) blockingBlock.style.display = 'none';
         if (unlockText) unlockText.style.display = 'flex';
-      }
-
-      if (cookies.user_id && sessionStorage.getItem('formSubmitted') === 'true') {
         if (successMessage) successMessage.style.display = 'block';
         if (formFields) formFields.style.display = 'none';
-      } else {
-        if (successMessage) successMessage.style.display = 'none';
-        if (formFields) formFields.style.display = 'flex';
+        return;
       }
+    
+      // На страницах без видео или если видео еще не разблокировано → показываем форму
+      if (successMessage) successMessage.style.display = 'none';
+      if (formFields) formFields.style.display = 'flex';
     }
 
     checkCookiesAndStorage();
