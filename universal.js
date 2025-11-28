@@ -689,6 +689,9 @@
     
     const successMessage = document.querySelector('.w-form-done');
     const formFields = document.querySelector('form');
+    const playButton = document.querySelector('.play-button');
+    const blockingBlock = document.querySelector('.blocking-block');
+    const unlockText = document.querySelector('.unlock-text');
     let isSubmitting = false;
 
     const pathSegments = window.location.pathname
@@ -721,13 +724,26 @@
       return null;
     }
 
-    // Проверка cookies и localStorage
+    // Проверка cookies и sessionStorage
     function checkCookiesAndStorage() {
       const cookies = document.cookie.split(';').reduce((acc, cookie) => {
         const [name, value] = cookie.trim().split('=');
         acc[name] = value;
         return acc;
       }, {});
+
+      if (sessionStorage.getItem('videoUnlocked') === 'true') {
+        if (blockingBlock) blockingBlock.style.display = 'none';
+        if (unlockText) unlockText.style.display = 'flex';
+      }
+
+      if (cookies.user_id && sessionStorage.getItem('formSubmitted') === 'true') {
+        if (successMessage) successMessage.style.display = 'block';
+        if (formFields) formFields.style.display = 'none';
+      } else {
+        if (successMessage) successMessage.style.display = 'none';
+        if (formFields) formFields.style.display = 'flex';
+      }
     }
 
     checkCookiesAndStorage();
@@ -923,8 +939,13 @@
 
           if (formFields) formFields.style.display = 'none';
           if (successMessage) successMessage.style.display = 'block';
+          if (blockingBlock) blockingBlock.style.display = 'none';
+          if (unlockText) unlockText.style.display = 'flex';
 
           document.cookie = `user_id=${userId}; path=/; max-age=31536000`;
+
+          sessionStorage.setItem('formSubmitted', 'true');
+          sessionStorage.setItem('videoUnlocked', 'true');
 
           const leadId = userId;
           const roleValue = data.lead_type ? (data.lead_type.charAt(0).toUpperCase() + data.lead_type.slice(1).toLowerCase()) : 'Customer';
