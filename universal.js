@@ -688,7 +688,7 @@
     });
     
     const successMessage = document.querySelector('.w-form-done');
-    const formFields = document.querySelector('.form');
+    const formFields = document.querySelector('form');
     let isSubmitting = false;
 
     const pathSegments = window.location.pathname
