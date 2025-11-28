@@ -1,5 +1,6 @@
   document.addEventListener('DOMContentLoaded', function() {
     // Переменные для полей формы
+    const fullNameInput = document.getElementById('full-name');
     const firstNameInput = document.getElementById('first-name');
     const lastNameInput = document.getElementById('last-name');
     const jobTitleInput = document.getElementById('job-title');
@@ -23,6 +24,41 @@
     const phoneInput = document.getElementById('phone');
     const selfAttributionInput = document.getElementById('self-attribution');
     const submitButtonWrapper = document.querySelector('.submit-button-wrapper');
+
+        // Обработка изменения состояния меток полей
+    function handleLabel(input) {
+      if (!input) return;
+      const label = input.nextElementSibling;
+
+      const updateLabelState = () => {
+        if (input.value !== '') {
+          label.classList.add('active');
+          input.classList.add('not-empty');
+        } else {
+          label.classList.remove('active');
+          input.classList.remove('not-empty');
+        }
+      };
+
+      updateLabelState();
+
+      input.addEventListener('focus', () => {
+        label.classList.add('active');
+      });
+
+      input.addEventListener('blur', () => {
+        updateLabelState();
+      });
+
+      input.addEventListener('input', () => {
+        updateLabelState();
+      });
+    }
+
+    // Применение меток ко всем полям
+    [fullNameInput, firstNameInput, lastNameInput, jobTitleInput, emailInput, companyInput].forEach(input => {
+      handleLabel(input);
+    });
 
     // Скрытие и отображение плейсхолдера
     const inputs = document.querySelectorAll('.form-input');
@@ -368,9 +404,24 @@
     let isFormInitialized = false;
     let isCheckboxInteracted = false;
 
+    // Функция для обновления состояния класса error у текста чекбокса
+      function updateCheckboxErrorClass() {
+        const checkbox = $('#agreement');
+        const label = checkbox.closest('.checkbox-field').find('.checkbox-text');
+
+        if (isCheckboxInteracted) {
+          if (checkbox.is(':checked')) {
+            label.removeClass('error');
+          } else {
+            label.addClass('error');
+          }
+        }
+      }
+
     // Обработчик изменения состояния чекбокса
     $('#agreement').on('change', function() {
       isCheckboxInteracted = true;
+      updateCheckboxErrorClass();
     });
 
     // Изначально сбрасываем класс error и состояние чекбокса при загрузке страницы
@@ -379,6 +430,7 @@
       const label = checkbox.closest('.checkbox-field').find('.checkbox-text');
       label.removeClass('error');
       resetCheckbox();
+      updateCheckboxErrorClass();
     });
 
     // Инициализация валидации формы
@@ -398,6 +450,11 @@
         }
       },
       rules: {
+        'full-name': {
+          required: true,
+          maxlength: 50,
+          noSpacesOnly: true
+        },
         'first-name': {
           required: true,
           maxlength: 50,
@@ -439,6 +496,10 @@
         }
       },
       messages: {
+        'full-name': {
+          required: "This field is required",
+          maxlength: "Full name must be at most 50 characters"
+        },
         'first-name': {
           required: "This field is required",
           maxlength: "Firstname must be at most 50 characters"
@@ -607,7 +668,7 @@
       iti.setCountry(countryCodeMap[this.value]);
       $(this).valid();
     });
-
+    
     const successMessage = document.querySelector('.w-form-done');
     const formFields = document.querySelector('.form');
     let isSubmitting = false;
@@ -709,15 +770,23 @@
         event.preventDefault();
 
         if (!$(this).valid()) return;
-
-        if (isSubmitting) {
-          return;
-        }
+        if (isSubmitting) return;
 
         isSubmitting = true;
         submitButton.setAttribute('disabled', 'disabled');
 
         const formData = new FormData(mainForm);
+
+        let firstNameValue = formData.get('first-name') || '';
+        let lastNameValue  = formData.get('last-name')  || '';
+      
+        // Если оба пустые, пробуем разобрать full-name
+        if (!firstNameValue && !lastNameValue) {
+          const fullName = formData.get('full-name') || '';
+          const { firstName, lastName } = splitFullName(fullName);
+          firstNameValue = firstName;
+          lastNameValue  = lastName;
+        }
 
         // Обновленный honeypot функционал
         const JUNK_REASONS = { HONEYPOT_FILLED: 1, DECOY_CLICKED: 2, FILLED_TOO_FAST: 3 };
@@ -778,8 +847,8 @@
         const ehashValue = await sha256(formData.get('email'));
 
         const data = {
-          firstname: formData.get('first-name'),
-          lastname: formData.get('last-name'),
+          firstname: firstNameValue,
+          lastname: lastNameValue,
           email: formData.get('email'),
           job_title: formData.get('job-title'),
           company: formData.get('company'),
