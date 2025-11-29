@@ -38,15 +38,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const checkboxFields = document.querySelectorAll('.checkbox-field');
     const checkboxes = document.querySelectorAll('.checkbox-field input[type="checkbox"]');
 
-    // Правка №5: Форма ввода кода
+    // Форма ввода кода
     const formCode = document.getElementById('code-form'); 
     const codeInput = document.getElementById('code');
-    
-    // Правка №3: Скрытое поле email во второй форме
-    const emailInput2 = document.getElementById('hidden-email'); 
-    
-    // Правка №4: Кнопка отправки кода
+    const emailInput2 = document.getElementById('hidden-email');     
     const submit2Button = document.getElementById('submit-code-violet') || document.querySelector('[ms-code-submit-new="submit2"]');
+    const emailDisplay = document.getElementById('email-display');
     
     const resendCodeButton = document.getElementById('resend-code');
     const codeFormContainer = document.getElementById('code-form-container'); // Общий контейнер блока с кодом
@@ -638,7 +635,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 // ЛОГИКА ПЕРЕХОДА НА ВТОРОЙ ШАГ
                 if (formCode && codeFormContainer) {
                     if (emailInput2) {
-                        emailInput2.value = data.email; // Копируем email
+                        emailInput2.value = data.email;
+                        emailDisplay.textContent = data.email.trim();
                     }
                     if (formFields) formFields.style.display = 'none'; // Скрываем #main-form-container
                     if (codeFormContainer) codeFormContainer.style.display = 'flex'; // Показываем блок кода
