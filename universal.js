@@ -17,8 +17,8 @@
     const dropdownMexico = document.querySelector('.states-mexico');
     const dropdownState = document.querySelector('.dropdown-state');
     const stateSelect = document.getElementById('state');
-    const checkboxField = document.querySelector('.checkbox-field');
-    const checkbox = document.querySelector('.checkbox-field input[type="checkbox"]');
+    const checkboxFields = document.querySelectorAll('.checkbox-field');
+    const checkboxes = document.querySelectorAll('.checkbox-field input[type="checkbox"]');
     const submitButton = document.querySelector('[ms-code-submit-new="submit"]');
     const mainForm = document.querySelector('form');
     const phoneInput = document.getElementById('phone');
@@ -417,32 +417,32 @@
     let isCheckboxInteracted = false;
 
     // Функция для обновления состояния класса error у текста чекбокса
-      function updateCheckboxErrorClass() {
-        const checkbox = $('#agreement');
-        const label = checkbox.closest('.checkbox-field').find('.checkbox-text');
+    function updateCheckboxErrorClass() {
+        // Берем константу checkboxes и проходим по каждому элементу
+        $(checkboxes).each(function() {
+            const currentCheckbox = $(this);
+            // Ищем текст внутри родителя конкретного чекбокса
+            const label = currentCheckbox.closest('.checkbox-field').find('.checkbox-text');
 
-        if (isCheckboxInteracted) {
-          if (checkbox.is(':checked')) {
-            label.removeClass('error');
-          } else {
-            label.addClass('error');
-          }
-        }
-      }
-
-    // Обработчик изменения состояния чекбокса
-    $('#agreement').on('change', function() {
-      isCheckboxInteracted = true;
-      updateCheckboxErrorClass();
-    });
+            if (isCheckboxInteracted) {
+                if (currentCheckbox.is(':checked')) {
+                    label.removeClass('error');
+                } else {
+                    label.addClass('error');
+                }
+            }
+        });
+    }
 
     // Изначально сбрасываем класс error и состояние чекбокса при загрузке страницы
     $(document).ready(function() {
-      const checkbox = $('#agreement');
-      const label = checkbox.closest('.checkbox-field').find('.checkbox-text');
-      label.removeClass('error');
-      resetCheckbox();
-      updateCheckboxErrorClass();
+       // Сброс классов ошибки через константу
+       $(checkboxes).each(function() {
+           const label = $(this).closest('.checkbox-field').find('.checkbox-text');
+           label.removeClass('error');
+       });
+       resetCheckbox();
+       updateCheckboxErrorClass();
     });
 
     // Инициализация валидации формы
@@ -600,9 +600,11 @@
 
     // Функция сброса состояния чекбокса
     function resetCheckbox() {
-      const checkbox = $('#agreement');
-      checkbox.prop('checked', false).removeAttr('checked');
-      checkbox.parent().find('.w-checkbox-input').removeClass('w--redirected-checked');
+      const $allCheckboxes = $(checkboxes);
+      
+      $allCheckboxes.prop('checked', false).removeAttr('checked');
+      // Сбрасываем кастомные стили Webflow
+      $allCheckboxes.parent().find('.w-checkbox-input').removeClass('w--redirected-checked');
     }
 
     // Функция обновления состояния кнопки отправки
@@ -632,8 +634,10 @@
       }
       
       const selectedCountry = $('#country').val();
-      const isCheckboxChecked = $('#agreement').prop('checked');
-      const isCheckboxRequirementMet = selectedCountry === 'United States' || isCheckboxChecked;
+      const $visibleCheckboxes = $(checkboxes).filter(':visible');
+      const checkedCount = $visibleCheckboxes.filter(':checked').length;
+      const areAllCheckboxesChecked = $visibleCheckboxes.length === checkedCount;
+      const isCheckboxRequirementMet = selectedCountry === 'United States' || areAllCheckboxesChecked;
 
       if (isFormValid && isCheckboxRequirementMet) {
         $(submitButton).removeAttr('disabled');
@@ -656,11 +660,12 @@
       if (selectedCountry === 'United States') {
         if (formMessage) formMessage.style.display = 'none';
         if (formMessageUsa) formMessageUsa.style.display = 'block';
-        $('#agreement').prop('checked', true).parent().hide();
+        $(checkboxes).prop('checked', true);
+        $(checkboxFields).hide();
       } else {
         if (formMessage) formMessage.style.display = 'block';
         if (formMessageUsa) formMessageUsa.style.display = 'none';
-        $('#agreement').parent().show();
+        $(checkboxFields).show();
       }
     
       setTimeout(() => {
@@ -669,13 +674,12 @@
     }
 
     // Обработчик изменения состояния чекбокса
-    $('#agreement').on('change', function() {
+    $(checkboxes).on('change', function() {
       isCheckboxInteracted = true;
-      // Добавляем флаг 'modified' при первом взаимодействии
-      $(this).data('modified', true); 
-      // Вызываем валидацию для чекбокса, чтобы показать/скрыть ошибку
-      $(this).valid(); 
-      updateSubmitButtonState();
+      $(this).data('modified', true);
+      $(this).valid();
+      updateCheckboxErrorClass(); // Обновляем цвета текстов
+      updateSubmitButtonState();  // Обновляем кнопку
     });
 
     // Обновляем состояние кнопки при изменении формы
