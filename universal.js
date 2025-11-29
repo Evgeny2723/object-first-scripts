@@ -750,6 +750,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 // УСПЕХ ПОСЛЕ КОДА
                 if (codeFormContainer) codeFormContainer.style.display = 'none';
+                if (mainForm) codeFormContainer.style.display = 'none';mainForm
                 if (formFields) formFields.style.display = 'flex';
                 if (successMessage) successMessage.style.display = 'block';
                 if (blockingBlock) blockingBlock.style.display = 'none';
