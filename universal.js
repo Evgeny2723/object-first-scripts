@@ -878,10 +878,28 @@
       mainForm.addEventListener('submit', async function(event) {
         event.preventDefault();
 
-        const fleetManagerBetaValue = document.getElementById('checkbox-sign')?.checked ?? false;
-        const demoMessageValue = document.getElementById('comments')?.value?.trim() || '';
+        const commentsInput = document.getElementById('comments');
+        const demoMessageValue = commentsInput ? commentsInput.value.trim() : '';
 
-        const formattedComments = `Fleet Manager beta registered: ${fleetManagerBetaValue}\nDemo message: ${demoMessageValue}`;
+        let commentParts = [];
+
+        if (mainForm.querySelector('input[name="dietary_restrictions"]')) {
+            const dietaryValue = mainForm.querySelector('input[name="dietary_restrictions"]:checked')?.value;
+            commentParts.push(`Dietary restrictions: ${dietaryValue || 'None'}`);
+        }
+        const fleetCheckbox = document.getElementById('checkbox-sign');
+        if (fleetCheckbox && mainForm.contains(fleetCheckbox)) {
+             commentParts.push(`Fleet Manager beta registered: ${fleetCheckbox.checked}`);
+        }
+
+        let formattedComments = '';
+
+        if (commentParts.length > 0) {
+            commentParts.push(`Demo message: ${demoMessageValue}`);
+            formattedComments = commentParts.join('\n');
+        } else {
+            formattedComments = demoMessageValue;
+        }
 
         if (!$(this).valid()) return;
         if (isSubmitting) return;
@@ -974,7 +992,6 @@
           lead_type: leadTypeValue,
           country: formData.get('country'),
           state: stateValue || null,
-          comments: formData.get('comments'),
           self_attribution: formData.get('self-attribution'),
           href: window.location.href,
           page: pagePath,
