@@ -869,6 +869,11 @@
       mainForm.addEventListener('submit', async function(event) {
         event.preventDefault();
 
+        const fleetManagerBetaValue = document.getElementById('checkbox-sign')?.checked ?? false;
+        const demoMessageValue = document.getElementById('comments')?.value?.trim() || '';
+
+        const formattedComments = `Fleet Manager beta registered: ${fleetManagerBetaValue}\nDemo message: ${demoMessageValue}`;
+
         if (!$(this).valid()) return;
         if (isSubmitting) return;
 
@@ -965,6 +970,7 @@
           href: window.location.href,
           page: pagePath,
           ss_anonymous_id: window.segmentstream?.anonymousId?.() ?? '',
+          comments: formattedComments,
           junk_lead: junk_lead,
           of_form_duration: formFillingTime,
           junk_reason: junk_reason,
