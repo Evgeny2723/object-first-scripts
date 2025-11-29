@@ -745,7 +745,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 if (window.formDataToSubmit) {
                   let userId = getCookieValue('user_id') || generateUserId();
-                  await submitFormToVerifiedWebflow(window.formDataToSubmit, userId);
+                  await submitForm(window.formDataToSubmit, userId);
                 }
 
                 // УСПЕХ ПОСЛЕ КОДА
