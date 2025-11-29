@@ -90,7 +90,7 @@ document.addEventListener('DOMContentLoaded', function() {
         input.addEventListener('input', () => updateLabelState());
     }
 
-    [fullNameInput, firstNameInput, lastNameInput, jobTitleInput, emailInput, companyInput, selfAttributionInput].forEach(input => {
+    [fullNameInput, firstNameInput, lastNameInput, jobTitleInput, emailInput, companyInput, selfAttributionInput, codeInput].forEach(input => {
         handleLabel(input);
     });
 
@@ -281,7 +281,7 @@ document.addEventListener('DOMContentLoaded', function() {
             email: { required: "This field is required", email: "Invalid email address", corporate: "Please enter a valid corporate email address." },
             'job-title': { required: "This field is required" },
             company: { required: "This field is required" },
-            phone: { phoneCustom: "Phone number is invalid." },
+            phone: { phoneCustom: "Phone number is invalid. Please add your country code, area code and phone number. Your phone number can contain numbers, spaces and these special characters: ( ) - # +" },
             agreement: { required: "Checking this box is necessary to continue" }
         },
         // Правка №7: Обновленный errorPlacement
