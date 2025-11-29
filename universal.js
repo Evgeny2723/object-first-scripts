@@ -643,8 +643,8 @@
       const $requiredCheckboxes = $(checkboxes)
         .filter(':visible')
         .not('#checkbox-sign');
-      const checkedCount = $visibleCheckboxes.filter(':checked').length;
-      const areAllCheckboxesChecked = requiredCheckboxes.length === checkedCount;
+      const checkedCount = $requiredCheckboxes.filter(':checked').length;
+      const areAllCheckboxesChecked = $requiredCheckboxes.length === checkedCount;
       const isCheckboxRequirementMet = selectedCountry === 'United States' || areAllCheckboxesChecked;
 
       if (isFormValid && isCheckboxRequirementMet) {
