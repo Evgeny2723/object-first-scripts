@@ -421,6 +421,9 @@
         // Берем константу checkboxes и проходим по каждому элементу
         $(checkboxes).each(function() {
             const currentCheckbox = $(this);
+            if (currentCheckbox.attr('id') === 'checkbox-sign') {
+              return true; // Пропустить (continue) для необязательного чекбокса
+            }
             // Ищем текст внутри родителя конкретного чекбокса
             const label = currentCheckbox.closest('.checkbox-field').find('.checkbox-text');
 
@@ -637,9 +640,11 @@
       }
       
       const selectedCountry = $('#country').val();
-      const $visibleCheckboxes = $(checkboxes).filter(':visible');
+      const $requiredCheckboxes = $(checkboxes)
+        .filter(':visible')
+        .not('#checkbox-sign');
       const checkedCount = $visibleCheckboxes.filter(':checked').length;
-      const areAllCheckboxesChecked = $visibleCheckboxes.length === checkedCount;
+      const areAllCheckboxesChecked = requiredCheckboxes.length === checkedCount;
       const isCheckboxRequirementMet = selectedCountry === 'United States' || areAllCheckboxesChecked;
 
       if (isFormValid && isCheckboxRequirementMet) {
