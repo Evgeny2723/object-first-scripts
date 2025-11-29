@@ -231,11 +231,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Init Logic on Ready
     $(document).ready(function() {
-       // Правка №1: Маска для поля кода
-       if ($('#code').length) {
-           $('#code').mask('000000');
-       }
-       
        $(checkboxes).each(function() {
            const label = $(this).closest('.checkbox-field').find('.checkbox-text');
            label.removeClass('error');
@@ -686,6 +681,25 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // --- CODE FORM SUBMISSION (ВТОРАЯ ФОРМА) ---
     if (formCode) {
+          if (codeInput) {
+            $(codeInput).mask('000000'); // Применить маску сразу
+          }
+        
+          if (codeInput && submit2Button) {
+            function updateCodeSubmitButtonState() {
+              const codeValue = codeInput.value.trim();
+              if (codeValue.length === 6) {
+                submit2Button.removeAttribute('disabled');
+                submit2Button.classList.remove('submit-inactive');
+              } else {
+                submit2Button.setAttribute('disabled', 'disabled');
+                submit2Button.classList.add('submit-inactive');
+              }
+            }
+            updateCodeSubmitButtonState(); // Проверить состояние на старте
+            codeInput.addEventListener('input', updateCodeSubmitButtonState); // Проверять при вводе
+          }
+        
         // Валидация второй формы
         $(formCode).validate({
             rules: {
