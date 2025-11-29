@@ -414,28 +414,30 @@
     detectCountryByIP();
 
     let isFormInitialized = false;
-    let isCheckboxInteracted = false;
 
     // Функция для обновления состояния класса error у текста чекбокса
-    function updateCheckboxErrorClass() {
-        // Берем константу checkboxes и проходим по каждому элементу
-        $(checkboxes).each(function() {
-            const currentCheckbox = $(this);
+    function updateCheckboxErrorClass() {
+        $(checkboxes).each(function() {
+            const currentCheckbox = $(this);
+            
             if (currentCheckbox.attr('id') === 'checkbox-sign') {
-              return true; // Пропустить (continue) для необязательного чекбокса
-            }
-            // Ищем текст внутри родителя конкретного чекбокса
-            const label = currentCheckbox.closest('.checkbox-field').find('.checkbox-text');
-
-            if (isCheckboxInteracted) {
-                if (currentCheckbox.is(':checked')) {
-                    label.removeClass('error');
-                } else {
-                    label.addClass('error');
-                }
+                const label = currentCheckbox.closest('.checkbox-field').find('.checkbox-text');
+                label.removeClass('error');
+                return;
             }
-        });
-    }
+
+            const label = currentCheckbox.closest('.checkbox-field').find('.checkbox-text');
+            const wasInteracted = currentCheckbox.data('modified') === true;
+
+            if (wasInteracted) {
+                if (currentCheckbox.is(':checked')) {
+                    label.removeClass('error');
+                } else {
+                    label.addClass('error');
+                }
+            }
+        });
+    }
 
     // Изначально сбрасываем класс error и состояние чекбокса при загрузке страницы
     $(document).ready(function() {
@@ -683,7 +685,6 @@
 
     // Обработчик изменения состояния чекбокса
     $(checkboxes).on('change', function() {
-      isCheckboxInteracted = true;
       $(this).data('modified', true);
       $(this).valid();
       updateCheckboxErrorClass(); // Обновляем цвета текстов
