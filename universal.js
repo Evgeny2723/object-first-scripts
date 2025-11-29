@@ -505,6 +505,9 @@
             const selectedCountry = $('#country').val();
             return selectedCountry !== 'United States' && $(element).is(':visible');
           }
+        },
+        'agreement-2': {
+          required: true,
         }
       },
       messages: {
