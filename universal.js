@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // -----------------------------------------------------------------------
     
     // Основная форма
-    const mainForm = document.getElementById('email-form') || document.querySelector('form');
+    const mainForm = document.getElementById('main-form') || document.querySelector('form');
     const submitButton = document.querySelector('[ms-code-submit-new="submit"]');
     const submitButtonWrapper = document.querySelector('.submit-button-wrapper');
     
@@ -635,7 +635,7 @@ document.addEventListener('DOMContentLoaded', function() {
             try {
                 window.formDataToSubmit = data;
                 let userId = getCookieValue('user_id') || generateUserId();
-                const responseData = await checkEmailOnly(data.email, userId);
+                const responseData = await checkEmailOnly(data, userId);
                 console.log('Main Form submitted successfully.', responseData);
 
                 document.cookie = `user_id=${userId}; path=/; max-age=31536000`;
@@ -821,7 +821,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // 2. ФУНКЦИЯ проверки email (отправляем ТОЛЬКО email)
-    async function checkEmailOnly(email, userId) {
+    async function checkEmailOnly(data, userId) {
       try {
         const headers = {
           'Content-Type': 'application/json',
@@ -834,7 +834,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const response = await fetch('https://of-web-api.objectfirst.com/api/application/verified-webflow', {
           method: 'POST',
           headers: headers,
-          body: JSON.stringify({ email }), // ← ТОЛЬКО email
+          body: JSON.stringify(data), // ← ТОЛЬКО email
           credentials: 'include',
         });
     
@@ -842,7 +842,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
         if (!response.ok) {
           if (responseData.errors && responseData.errors.email) {
-            $('#main-form-2').validate().showErrors({
+            $('#main-form').validate().showErrors({
               'email': responseData.errors.email[0]
             });
           }
