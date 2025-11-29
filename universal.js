@@ -53,7 +53,7 @@
     }
 
     // Применение меток ко всем полям
-    [fullNameInput, firstNameInput, lastNameInput, jobTitleInput, emailInput, companyInput].forEach(input => {
+    [fullNameInput, firstNameInput, lastNameInput, jobTitleInput, emailInput, companyInput, selfAttributionInput].forEach(input => {
       handleLabel(input);
     });
 
