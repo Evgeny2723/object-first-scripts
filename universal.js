@@ -60,6 +60,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let iti = null;
     let isSubmitting = false;
     let isFormInitialized = false;
+    codeFormContainer.style.display = 'none';
 
     // Honeypot переменные
     let formInteractionStartTime = 0;
