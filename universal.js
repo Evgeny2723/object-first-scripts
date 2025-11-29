@@ -508,7 +508,10 @@
         },
         'agreement-2': {
           required: true,
-        }
+        },
+        'checkbox-sign': {
+          required: false,
+        }
       },
       messages: {
         'full-name': {
