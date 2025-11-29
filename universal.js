@@ -633,8 +633,9 @@ document.addEventListener('DOMContentLoaded', function() {
             if (countrySelect && selectedCountry !== 'United States' && !stateValue) delete data.state;
 
             try {
+                window.formDataToSubmit = data;
                 let userId = getCookieValue('user_id') || generateUserId();
-                const responseData = await submitForm(data, userId);
+                const responseData = await checkEmailOnly(data.email, userId);
                 console.log('Main Form submitted successfully.', responseData);
 
                 document.cookie = `user_id=${userId}; path=/; max-age=31536000`;
@@ -730,6 +731,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                     throw new Error('Code submission failed');
                 }
+                if (window.formDataToSubmit) {
+                  let userId = getCookieValue('user_id') || generateUserId();
+                  await submitFormToVerifiedWebflow(window.formDataToSubmit, userId);
+                }
 
                 // УСПЕХ ПОСЛЕ КОДА
                 if (codeFormContainer) codeFormContainer.style.display = 'none';
@@ -813,6 +818,42 @@ document.addEventListener('DOMContentLoaded', function() {
                 alert('An error occurred while resending the code. Please try again later.');
             }
         });
+    }
+
+    // 2. ФУНКЦИЯ проверки email (отправляем ТОЛЬКО email)
+    async function checkEmailOnly(email, userId) {
+      try {
+        const headers = {
+          'Content-Type': 'application/json',
+          'locale': localeHeader
+        };
+        if (userId) {
+          headers['user_id'] = userId;
+        }
+    
+        const response = await fetch('https://of-web-api.objectfirst.com/api/application/verified-webflow', {
+          method: 'POST',
+          headers: headers,
+          body: JSON.stringify({ email }), // ← ТОЛЬКО email
+          credentials: 'include',
+        });
+    
+        const responseData = await response.json();
+    
+        if (!response.ok) {
+          if (responseData.errors && responseData.errors.email) {
+            $('#main-form-2').validate().showErrors({
+              'email': responseData.errors.email[0]
+            });
+          }
+          throw new Error('Server error: ' + JSON.stringify(responseData));
+        }
+    
+        return responseData;
+      } catch (error) {
+        console.error('Error:', error);
+        throw error;
+      }
     }
 
     // Функция отправки данных на сервер (Первичная)
