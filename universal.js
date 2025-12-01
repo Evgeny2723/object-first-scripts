@@ -459,7 +459,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Валидация основной формы (Main Form)
-    const validator = $('#main-form').validate({ // Исключаем форму кода из этого валидатора
+    const validator = $('form').not('#code-form').validate({ // Исключаем форму кода из этого валидатора
       onfocusout: function(element) { if ($(element).data('modified')) $(element).valid(); },
       onkeyup: function(element) { $(element).data('modified', true); $(element).valid(); },
       onclick: function(element) { if (isFormInitialized) $(element).valid(); },
