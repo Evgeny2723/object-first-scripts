@@ -665,7 +665,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // --- ЛОГИКА ОТПРАВКИ И 2FA ---
     
     const successMessage = document.querySelector('.w-form-done');
-    const formFields = document.getElementById('#main-form'); // Для скрытия при успехе
+    const formFields = document.getElementById('main-form'); // Для скрытия при успехе
     const blockingBlock = document.querySelector('.blocking-block');
     const unlockText = document.querySelector('.unlock-text');
     let isSubmitting = false;
