@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const codeFormContainer = document.getElementById('code-form-container'); // Обертка формы кода
     const codeForm = document.getElementById('code-form'); // Сама форма кода
     const codeInput = document.getElementById('code'); // Инпут для кода
-    const submitCodeButton = document.getElementById('submit-code'); // Кнопка отправки кода
+    const submitCodeButton = document.querySelector('[ms-code-submit-new="submit-code"]'); // Кнопка отправки кода
     const emailDisplay = document.getElementById('email-display'); // Элемент для показа email
     const resendCodeButton = document.getElementById('resend-code'); // Кнопка "отправить код повторно"
     
@@ -626,8 +626,10 @@ document.addEventListener('DOMContentLoaded', function() {
     $('#code-form').on('input change', function() {
         if($(this).valid()) {
             $(submitCodeButton).removeAttr('disabled');
+            $(submitCodeButton).removeClass('submit-inactive');
         } else {
             $(submitCodeButton).attr('disabled', 'disabled');
+            $(submitCodeButton).addClass('submit-inactive');
         }
     });
 
