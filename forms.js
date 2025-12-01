@@ -334,7 +334,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const fullName = formData.get('Full-Name').trim();
             const nameParts = fullName.split(' ');
             const firstName = nameParts[0] || '';
-            const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : firstName; // Fallback same as logic
+            const lastName = nameParts[1] || firstName;
             
             // State
             let stateValue = '';
