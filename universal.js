@@ -488,7 +488,7 @@ document.addEventListener('DOMContentLoaded', function() {
         email: { required: "This field is required", maxlength: "Email must be at most 50 characters", email: "Invalid email address", corporate: "Please enter a valid corporate email address (e.g., yourname@company.com). Personal email addresses (e.g., Gmail, Yahoo) are not accepted." },
         'job-title': { required: "This field is required", maxlength: "Job title must be at most 50 characters" },
         company: { required: "This field is required", maxlength: "Company must be at most 50 characters" },
-        phone: { phoneCustom: "Phone number is invalid. Please add your country code, area code and phone number." },
+        phone: { phoneCustom: "Phone number is invalid. Please add your country code, area code and phone number. Your phone number can contain numbers, spaces and these special characters: ( ) - # +" },
         agreement: { required: "Checking this box is necessary to continue" },
         'self-attribution': { maxlength: "This field should contain no more than 50 characters" }
       },
@@ -535,11 +535,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     $.validator.addMethod("corporate", function(value, element) {
       return !/@(gmail\.com|yahoo\.com|hotmail\.com|outlook\.com|mail\.ru)$/i.test(value);
-    }, "Please enter a valid corporate email address.");
+    }, "Please enter a valid corporate email address (e.g., yourname@company.com). Personal email addresses (e.g., Gmail, Yahoo) are not accepted."");
 
     $.validator.addMethod("validEmailChars", function (value, element) {
       return this.optional(element) || /^[a-zA-Z0-9@.\-_]+$/.test(value);
-    }, "Please use only valid characters.");
+    }, "Please use only valid characters in the email field (letters, numbers, @, ., -, _).");
 
     $.validator.addMethod("noSpacesOnly", function (value, element) {
       return this.optional(element) || value.trim().length > 0;
