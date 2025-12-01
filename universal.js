@@ -916,7 +916,7 @@ document.addEventListener('DOMContentLoaded', function() {
       if (!response.ok) {
         // Обработка ошибок валидации (общая для обоих эндпоинтов)
         if (responseData.errors && responseData.errors.email) {
-          $('#main-form').validate().showErrors({ 'email': responseData.errors.email[0] });
+          $('form').validate().showErrors({ 'email': responseData.errors.email[0] });
         }
         // Для обычной формы ошибки могут приходить просто как объект, нужно смотреть структуру
         throw new Error('Server error: ' + JSON.stringify(responseData));
