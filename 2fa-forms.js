@@ -341,7 +341,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const ehash = await sha256(email);
 
                 if (window.dataLayer) {
-                    window.dataLayer.push({ 'event': 'lead2fa', 'role': role, 'email': email, 'lead_id': userId });
+                    window.dataLayer.push({ 'event': 'whitepaper', 'role': role, 'email': email, 'lead_id': userId });
                     window.dataLayer.push({ 'event': 'lead_form_submitted', 'role': role, 'email': email, 'ehash': ehash });
                 }
             } catch (err) {
@@ -411,7 +411,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
             mPhoneInput.addEventListener('focus', () => { if(mPhoneInput.nextElementSibling) mPhoneInput.nextElementSibling.classList.add('active'); });
-            $.validator.addMethod("phoneCustom", () => iti.isValidNumber(), "Invalid phone number.");
+            $.validator.addMethod("phoneCustom", () => iti.isValidNumber(), "Phone number is invalid. Please add your country code, area code and phone number. Your phone number can contain numbers, spaces and these special characters: ( ) - # +");
         }
 
         // Country Logic
