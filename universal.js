@@ -1010,7 +1010,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Функция Успешного Завершения (UI + Analytics)
     function handleSuccess(data, userId, ehashValue, specificEventName) {
         if (mainForm) mainForm.style.display = 'none';
-        if (mainFormContainer) mainFormContainer.style.display = 'none';
+        if (mainFormContainer) mainFormContainer.style.display = 'block';
         if (successMessage) successMessage.style.display = 'block';
         if (blockingBlock) blockingBlock.style.display = 'none';
         if (unlockText) unlockText.style.display = 'flex';
