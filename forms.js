@@ -296,9 +296,26 @@ document.addEventListener('DOMContentLoaded', function() {
             const isCheckboxChecked = $(pCheckbox).prop('checked');
             const isReqMet = selectedCountry === 'United States' || isCheckboxChecked;
 
-            if (isFormValid && isReqMet) $('#p-submit').removeAttr('disabled');
-            else $('#p-submit').attr('disabled', 'disabled');
+            // Находим обертку, как во второй форме
+            const pWrapper = pSubmitButton.closest('.submit-button-wrapper');
+
+            if (isFormValid && isReqMet) {
+                pSubmitButton.removeAttribute('disabled');
+                pSubmitButton.classList.remove('submit-inactive');
+                if (pWrapper) pWrapper.classList.remove('button-is-inactive');
+            } else {
+                pSubmitButton.setAttribute('disabled', 'disabled');
+                pSubmitButton.classList.add('submit-inactive');
+                if (pWrapper) pWrapper.classList.add('button-is-inactive');
+            }
         }
+
+        // === ДОБАВИТЬ ЭТО СРАЗУ ПОСЛЕ ФУНКЦИИ (Инициализация) ===
+        // Устанавливаем начальное состояние (неактивно)
+        pSubmitButton.setAttribute('disabled', 'disabled');
+        pSubmitButton.classList.add('submit-inactive');
+        const pInitialWrapper = pSubmitButton.closest('.submit-button-wrapper');
+        if (pInitialWrapper) pInitialWrapper.classList.add('button-is-inactive');
 
         $('#p-main-form').on('input change', updatePSubmitState);
         $(pCheckbox).on('change', function() {
