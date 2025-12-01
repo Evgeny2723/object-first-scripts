@@ -738,6 +738,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
       mainForm.addEventListener('submit', async function(event) {
         event.preventDefault();
+        const is2FA = mainForm.getAttribute('data-form-type') === '2fa';
+        const apiUrl = is2FA 
+            ? 'https://of-web-api.objectfirst.com/api/application/verified-webflow'
+            : 'https://of-web-api.objectfirst.com/api/application/webflow';
         
         // Сбор комментариев (Ваш код)
         const commentsInput = document.getElementById('comments');
@@ -797,7 +801,6 @@ document.addEventListener('DOMContentLoaded', function() {
           // Mapping for state selectors...
           if (selectedCountry === 'United States') stateValue = mainForm.querySelector('#state').value;
           else if (selectedCountry === 'Australia') stateValue = mainForm.querySelector('#states-australia').value;
-          // ... (Add other mappings if needed as per your original code) ...
           else if (selectedCountry === 'Brazil') stateValue = mainForm.querySelector('#states-brazil').value;
           else if (selectedCountry === 'Canada') stateValue = mainForm.querySelector('#states-canada').value;
           else if (selectedCountry === 'China') stateValue = mainForm.querySelector('#states-china').value;
@@ -847,44 +850,79 @@ document.addEventListener('DOMContentLoaded', function() {
 
         try {
           let userId = getCookieValue('user_id') || generateUserId();
-          // *** ИЗМЕНЕНИЕ: Отправляем на verified-webflow API ***
-          const responseData = await submitFormToVerifiedWebflow(data, userId);
+          
+          // 2. ОТПРАВЛЯЕМ НА НУЖНЫЙ URL
+          const responseData = await submitForm(data, userId, apiUrl);
 
           console.log('Form submitted successfully.', responseData);
           document.cookie = `user_id=${userId}; path=/; max-age=31536000`;
 
-          // --- СЦЕНАРИЙ 1: Успех сразу (2FA не нужна или уже пройдена) ---
-          if (responseData.success === true) {
-             handleSuccess(data, userId, ehashValue);
-          } 
-          // --- СЦЕНАРИЙ 2: Нужен код (2FA) ---
-          else {
-             if (responseData.errors) {
-                // Если реальная ошибка (например, невалидный email с бэкенда)
-                $('form').validate().showErrors({ 'email': responseData.errors.email ? responseData.errors.email[0] : 'Invalid email.' });
-                throw new Error('Form validation failed from server.');
-             }
+          // 3. РАЗВЕТВЛЕНИЕ ЛОГИКИ (2FA vs ОБЫЧНАЯ)
+          
+          if (is2FA) {
+              // --- Логика для формы с 2FA ---
+              
+              if (responseData.success === true) {
+                 // Email уже подтвержден ранее -> Успех
+                 handleSuccess(data, userId, ehashValue);
+              } else {
+                 // Email не подтвержден, сервер прислал success: false (но статус 200) -> Нужен код
+                 
+                 // Если вдруг есть ошибки в ответе verified-endpoint
+                 if (responseData.errors) {
+                    $('form').validate().showErrors({ 'email': responseData.errors.email ? responseData.errors.email[0] : 'Invalid email.' });
+                    throw new Error('Validation error from 2FA server.');
+                 }
+                 
+                 // Показываем форму кода
+                 if(mainFormContainer) mainFormContainer.style.display = 'none'; 
+                 if(codeFormContainer) codeFormContainer.style.display = 'block'; 
+                 if(emailDisplay) emailDisplay.textContent = data.email.trim(); 
+              }
 
-             // Успеха нет, ошибок нет = Нужен КОД
-             if(mainFormContainer) mainFormContainer.style.display = 'none'; // Скрываем главную
-             if(codeFormContainer) codeFormContainer.style.display = 'block'; // Показываем код
-             if(emailDisplay) emailDisplay.textContent = data.email.trim(); // Показываем юзеру куда ушло
-             
-             // Пробрасываем email в скрытое поле или запоминаем для формы кода
-             // В вашем HTML коде для 2FA не было скрытого input email, берем из основной формы
+          } else {
+              // --- Логика для обычной формы (стандартный endpoint) ---
+              // Если мы здесь, значит submitForm не выкинул ошибку, значит все ок (200 OK)
+              handleSuccess(data, userId, ehashValue);
           }
 
         } catch (error) {
           console.error('Error:', error.message);
           if (successMessage) successMessage.style.display = 'none';
           if (mainForm) mainForm.style.display = 'flex';
-          if (mainFormContainer) mainFormContainer.style.display = 'block';
+          if (mainFormContainer) mainFormContainer.style.display = 'flex';
           if (codeFormContainer) codeFormContainer.style.display = 'none';
         } finally {
           isSubmitting = false;
           submitButton.removeAttribute('disabled');
         }
       });
+    }
+
+    // Универсальная функция отправки (ПЕРЕИМЕНОВАНА и ИСПРАВЛЕНА)
+    async function submitForm(data, userId, url) {
+      const headers = { 'Content-Type': 'application/json', 'locale': localeHeader };
+      if (userId) headers['user_id'] = userId;
+
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify(data),
+        credentials: 'include',
+      });
+      
+      const responseData = await response.json();
+      
+      if (!response.ok) {
+        // Обработка ошибок валидации (общая для обоих эндпоинтов)
+        if (responseData.errors && responseData.errors.email) {
+          $('form').validate().showErrors({ 'email': responseData.errors.email[0] });
+        }
+        // Для обычной формы ошибки могут приходить просто как объект, нужно смотреть структуру
+        throw new Error('Server error: ' + JSON.stringify(responseData));
+      }
+      
+      return responseData;
     }
 
     // === ОБРАБОТЧИК ФОРМЫ КОДА ===
@@ -960,11 +998,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 30000);
 
             try {
-                // Используем тот же эндпоинт что и для основной отправки, чтобы триггернуть отправку письма
-                // Но нам нужно отправить минимум данных, чтобы прошла валидация на бэке, если она строгая.
-                // Обычно достаточно email для повторной отправки, если бэк умный. 
-                // Если бэк требует полные данные, придется сохранять `data` из первого шага в переменную.
-                // В вашем примере resend просто слал {email}.
                 const response = await fetch('https://of-web-api.objectfirst.com/api/application/verified-webflow', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'locale': localeHeader },
@@ -981,31 +1014,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // --- ОБЩИЕ ФУНКЦИИ ---
-
-    // Функция API вызова (Verified Webflow)
-    async function submitFormToVerifiedWebflow(data, userId) {
-      const headers = { 'Content-Type': 'application/json', 'locale': localeHeader };
-      if (userId) headers['user_id'] = userId;
-
-      const response = await fetch('https://of-web-api.objectfirst.com/api/application/verified-webflow', {
-        method: 'POST',
-        headers: headers,
-        body: JSON.stringify(data),
-        credentials: 'include',
-      });
-      const responseData = await response.json();
-      if (!response.ok) {
-        // Если 400/500 ошибку возвращает, но это не "нужен код" (обычно 200 ok success:false)
-        if (responseData.errors && responseData.errors.email) {
-          $('form').validate().showErrors({ 'email': responseData.errors.email[0] });
-        }
-        // Возвращаем данные даже при ошибке, чтобы обработать их в try/catch выше
-        // Но лучше кинуть throw если это фатально
-        if(!responseData.errors && !responseData.success) return responseData; // Case where logic handles it
-        throw new Error('Server error: ' + JSON.stringify(responseData));
-      }
-      return responseData;
-    }
 
     // Функция Успешного Завершения (UI + Analytics)
     function handleSuccess(data, userId, ehashValue, specificEventName) {
