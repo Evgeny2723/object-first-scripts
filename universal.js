@@ -519,7 +519,10 @@ document.addEventListener('DOMContentLoaded', function() {
             code: { required: "This field is required" }
         },
         errorPlacement: function (error, element) {
-            if ($(element).data('modified')) error.appendTo(element.closest(".field-row"));
+            if ($(element).data('modified')) {
+                const container = element.closest(".input-wrapper").length ? element.closest(".input-wrapper") : element.closest(".field-row");
+                error.appendTo(container);
+            }
         },
         highlight: function(element) { if ($(element).data('modified')) $(element).css('border', '1px solid #c50006'); },
         unhighlight: function(element) { $(element).css('border', ''); },
