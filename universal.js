@@ -870,7 +870,7 @@ document.addEventListener('DOMContentLoaded', function() {
                  
                  // Если вдруг есть ошибки в ответе verified-endpoint
                  if (responseData.errors) {
-                    $('#main-form').validate().showErrors({ 'email': responseData.errors.email ? responseData.errors.email[0] : 'Invalid email.' });
+                    $('form').validate().showErrors({ 'email': responseData.errors.email ? responseData.errors.email[0] : 'Invalid email.' });
                     throw new Error('Validation error from 2FA server.');
                  }
                  
