@@ -535,7 +535,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     $.validator.addMethod("corporate", function(value, element) {
       return !/@(gmail\.com|yahoo\.com|hotmail\.com|outlook\.com|mail\.ru)$/i.test(value);
-    }, "Please enter a valid corporate email address (e.g., yourname@company.com). Personal email addresses (e.g., Gmail, Yahoo) are not accepted."");
+    }, "Please enter a valid corporate email address (e.g., yourname@company.com). Personal email addresses (e.g., Gmail, Yahoo) are not accepted.");
 
     $.validator.addMethod("validEmailChars", function (value, element) {
       return this.optional(element) || /^[a-zA-Z0-9@.\-_]+$/.test(value);
