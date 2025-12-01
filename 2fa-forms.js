@@ -3,9 +3,10 @@ document.addEventListener('DOMContentLoaded', function() {
     // 1. ГЛОБАЛЬНЫЕ КОНСТАНТЫ И УТИЛИТЫ
     // =========================================================================
     
-    // Карта стран для intlTelInput
+    // Карта кодов стран для телефона (ISO -> Dial Code не требуется, intlTelInput сам справляется, 
+    // но нужна карта Country Name -> ISO Code для синхронизации селекта и телефона)
     const countryCodeMap = {
-        "Australia": "AU", "Austria": "AT", "Azerbaijan": "AZ", "Albania": "AL", "Algeria": "DZ", "Angola": "AO", "Andorra": "AD", "Antigua and Barbuda": "AG", "Argentina": "AR", "Armenia": "AM", "Afghanistan": "AF", "Bahamas": "BS", "Bangladesh": "BD", "Barbados": "BB", "Bahrain": "BH", "Belarus": "BY", "Belize": "BZ", "Belgium": "BE", "Benin": "BJ", "Bulgaria": "BG", "Bolivia": "BO", "Bosnia and Herzegovina": "BA", "Botswana": "BW", "Brazil": "BR", "Brunei Darussalam": "BN", "Burkina Faso": "BF", "Burundi": "BI", "Bhutan": "BT", "Vanuatu": "VU", "Hungary": "HU", "Venezuela": "VE", "Vietnam": "VN", "Gabon": "GA", "Haiti": "HT", "Guyana": "GY", "Gambia": "GM", "Ghana": "GH", "Guatemala": "GT", "Guinea": "GN", "Guinea-Bissau": "GW", "Germany": "DE", "Honduras": "HN", "Grenada": "GD", "Greece": "GR", "Georgia": "GE", "Denmark": "DK", "Congo, Democratic Republic of the": "CD", "Djibouti": "DJ", "Dominica": "DM", "Dominican Republic": "DO", "Egypt": "EG", "Zambia": "ZM", "Zimbabwe": "ZW", "Israel": "IL", "India": "IN", "Indonesia": "ID", "Jordan": "JO", "Iraq": "IQ", "Iran": "IR", "Ireland": "IE", "Iceland": "IS", "Spain": "ES", "Italy": "IT", "Yemen": "YE", "Cabo Verde": "CV", "Kazakhstan": "KZ", "Cambodia": "KH", "Cameroon": "CM", "Canada": "CA", "Qatar": "QA", "Kenya": "KE", "Cyprus": "CY", "Kiribati": "KI", "China": "CN", "Colombia": "CO", "Comoros": "KM", "Congo": "CG", "North Korea": "KP", "Costa Rica": "CR", "Côte d'Ivoire": "CI", "Cuba": "CU", "Kuwait": "KW", "Kyrgyzstan": "KG", "Lao People's Democratic Republic": "LA", "Latvia": "LV", "Lesotho": "LS", "Liberia": "LR", "Lebanon": "LB", "Libya": "LY", "Lithuania": "LT", "Liechtenstein": "LI", "Luxembourg": "LU", "Mauritius": "MU", "Mauritania": "MR", "Madagascar": "MG", "Malawi": "MW", "Malaysia": "MY", "Mali": "ML", "Maldives": "MV", "Malta": "MT", "Morocco": "MA", "Marshall Islands": "MH", "Mexico": "MX", "Mozambique": "MZ", "Monaco": "MC", "Mongolia": "MN", "Myanmar": "MM", "Namibia": "NA", "Nauru": "NR", "Nepal": "NP", "Niger": "NE", "Nigeria": "NG", "Netherlands": "NL", "Nicaragua": "NI", "Niue": "NU", "New Zealand": "NZ", "Norway": "NO", "Tanzania, United Republic of": "TZ", "United Arab Emirates": "AE", "Oman": "OM", "Cook Islands": "CK", "Pakistan": "PK", "Panama": "PA", "Papua New Guinea": "PG", "Paraguay": "PY", "Peru": "PE", "Poland": "PL", "Portugal": "PT", "Korea, Republic of": "KR", "Moldova, Republic of": "MD", "Russian Federation": "RU", "Rwanda": "RW", "Romania": "RO", "El Salvador": "SV", "Samoa": "WS", "San Marino": "SM", "Sao Tome and Principe": "ST", "Saudi Arabia": "SA", "Holy See (Vatican City State)": "VA", "North Macedonia": "MK", "Seychelles": "SC", "Senegal": "SN", "Saint Vincent and the Grenadines": "VC", "Saint Kitts and Nevis": "KN", "Saint Lucia": "LC", "Serbia": "RS", "Singapore": "SG", "Syrian Arab Republic": "SY", "Slovakia": "SK", "Slovenia": "SI", "United Kingdom": "GB", "United States": "US", "Solomon Islands": "SB", "Somalia": "SO", "Sudan": "SD", "Suriname": "SR", "Sierra Leone": "SL", "Tajikistan": "TJ", "Thailand": "TH", "Timor-Leste": "TL", "Togo": "TG", "Tonga": "TO", "Trinidad and Tobago": "TT", "Tuvalu": "TV", "Tunisia": "TN", "Turkmenistan": "TM", "Turkey": "TR", "Uganda": "UG", "Uzbekistan": "UZ", "Ukraine": "UA", "Uruguay": "UY", "Fiji": "FJ", "Philippines": "PH", "Finland": "FI", "France": "FR", "Croatia": "HR", "Central African Republic": "CF", "Chad": "TD", "Montenegro": "ME", "Czech Republic": "CZ", "Chile": "CL", "Switzerland": "CH", "Sweden": "SE", "Sri Lanka": "LK", "Ecuador": "EC", "Equatorial Guinea": "GQ", "Eritrea": "ER", "Eswatini": "SZ", "Estonia": "EE", "Ethiopia": "ET"
+        "Australia": "au", "Austria": "at", "Azerbaijan": "az", "Albania": "al", "Algeria": "dz", "Angola": "ao", "Andorra": "ad", "Antigua and Barbuda": "ag", "Argentina": "ar", "Armenia": "am", "Afghanistan": "af", "Bahamas": "bs", "Bangladesh": "bd", "Barbados": "bb", "Bahrain": "bh", "Belarus": "by", "Belize": "bz", "Belgium": "be", "Benin": "bj", "Bulgaria": "bg", "Bolivia": "bo", "Bosnia and Herzegovina": "ba", "Botswana": "bw", "Brazil": "br", "Brunei Darussalam": "bn", "Burkina Faso": "bf", "Burundi": "bi", "Bhutan": "bt", "Vanuatu": "vu", "Hungary": "hu", "Venezuela": "ve", "Vietnam": "vn", "Gabon": "ga", "Haiti": "ht", "Guyana": "gy", "Gambia": "gm", "Ghana": "gh", "Guatemala": "gt", "Guinea": "gn", "Guinea-Bissau": "gw", "Germany": "de", "Honduras": "hn", "Grenada": "gd", "Greece": "gr", "Georgia": "ge", "Denmark": "dk", "Congo, Democratic Republic of the": "cd", "Djibouti": "dj", "Dominica": "dm", "Dominican Republic": "do", "Egypt": "eg", "Zambia": "zm", "Zimbabwe": "zw", "Israel": "il", "India": "in", "Indonesia": "id", "Jordan": "jo", "Iraq": "iq", "Iran": "ir", "Ireland": "ie", "Iceland": "is", "Spain": "es", "Italy": "it", "Yemen": "ye", "Cabo Verde": "cv", "Kazakhstan": "kz", "Cambodia": "kh", "Cameroon": "cm", "Canada": "ca", "Qatar": "qa", "Kenya": "ke", "Cyprus": "cy", "Kiribati": "ki", "China": "cn", "Colombia": "co", "Comoros": "km", "Congo": "cg", "North Korea": "kp", "Costa Rica": "cr", "Côte d'Ivoire": "ci", "Cuba": "cu", "Kuwait": "kw", "Kyrgyzstan": "kg", "Lao People's Democratic Republic": "la", "Latvia": "lv", "Lesotho": "ls", "Liberia": "lr", "Lebanon": "lb", "Libya": "ly", "Lithuania": "lt", "Liechtenstein": "li", "Luxembourg": "lu", "Mauritius": "mu", "Mauritania": "mr", "Madagascar": "mg", "Malawi": "mw", "Malaysia": "my", "Mali": "ml", "Maldives": "mv", "Malta": "mt", "Morocco": "ma", "Marshall Islands": "mh", "Mexico": "mx", "Mozambique": "mz", "Monaco": "mc", "Mongolia": "mn", "Myanmar": "mm", "Namibia": "na", "Nauru": "nr", "Nepal": "np", "Niger": "ne", "Nigeria": "ng", "Netherlands": "nl", "Nicaragua": "ni", "Niue": "nu", "New Zealand": "nz", "Norway": "no", "Tanzania, United Republic of": "tz", "United Arab Emirates": "ae", "Oman": "om", "Cook Islands": "ck", "Pakistan": "pk", "Panama": "pa", "Papua New Guinea": "pg", "Paraguay": "py", "Peru": "pe", "Poland": "pl", "Portugal": "pt", "Korea, Republic of": "kr", "Moldova, Republic of": "md", "Russian Federation": "ru", "Rwanda": "rw", "Romania": "ro", "El Salvador": "sv", "Samoa": "ws", "San Marino": "sm", "Sao Tome and Principe": "st", "Saudi Arabia": "sa", "Holy See (Vatican City State)": "va", "North Macedonia": "mk", "Seychelles": "sc", "Senegal": "sn", "Saint Vincent and the Grenadines": "vc", "Saint Kitts and Nevis": "kn", "Saint Lucia": "lc", "Serbia": "rs", "Singapore": "sg", "Syrian Arab Republic": "sy", "Slovakia": "sk", "Slovenia": "si", "United Kingdom": "gb", "United States": "us", "Solomon Islands": "sb", "Somalia": "so", "Sudan": "sd", "Suriname": "sr", "Sierra Leone": "sl", "Tajikistan": "tj", "Thailand": "th", "Timor-Leste": "tl", "Togo": "tg", "Tonga": "to", "Trinidad and Tobago": "tt", "Tuvalu": "tv", "Tunisia": "tn", "Turkmenistan": "tm", "Turkey": "tr", "Uganda": "ug", "Uzbekistan": "uz", "Ukraine": "ua", "Uruguay": "uy", "Fiji": "fj", "Philippines": "ph", "Finland": "fi", "France": "fr", "Croatia": "hr", "Central African Republic": "cf", "Chad": "td", "Montenegro": "me", "Czech Republic": "cz", "Chile": "cl", "Switzerland": "ch", "Sweden": "se", "Sri Lanka": "lk", "Ecuador": "ec", "Equatorial Guinea": "gq", "Eritrea": "er", "Eswatini": "sz", "Estonia": "ee", "Ethiopia": "et"
     };
 
     // Карта штатов США (Код -> Название)
@@ -140,6 +141,14 @@ document.addEventListener('DOMContentLoaded', function() {
         $.validator.addMethod("noSpacesOnly", function(value, element) {
             return this.optional(element) || value.trim().length > 0;
         }, "This field cannot contain only spaces.");
+        
+        // --- ОБНОВЛЕННЫЙ ТЕКСТ ВАЛИДАЦИИ ТЕЛЕФОНА ---
+        $.validator.addMethod("phoneCustom", function(value, element) {
+             if (window.intlTelInputGlobals && $(element).data('intlTelInput')) {
+                return $(element).intlTelInput("isValidNumber");
+            }
+            return true; 
+        }, "Phone number is invalid. Please add your country code, area code and phone number. Your phone number can contain numbers, spaces and these special characters: ( ) - # +");
     }
 
     // =========================================================================
@@ -196,10 +205,13 @@ document.addEventListener('DOMContentLoaded', function() {
             if (wrapperMap[selected]) {
                 document.querySelector(wrapperMap[selected]).style.display = 'block';
                 
-                // --- FIX: Reset specific state dropdown for ALL countries ---
+                // --- Reset specific state dropdown for ALL countries to avoid defaults ---
                 const selector = pStateSelectMap[selected];
                 if (selector) {
-                    $(selector).val('').selectpicker('refresh');
+                     // Only reset if value is not already set (prevents clearing if IP detect just set it)
+                     if (!$(selector).val()) {
+                         $(selector).val('').selectpicker('refresh');
+                     }
                 }
             }
 
@@ -224,41 +236,37 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (data && data.country) {
                     const opt = [...pCountrySelect.options].find(o => o.value === data.country);
                     if (opt) {
-                        // Set country but wait to trigger change
+                        // 1. Set Country Value
                         $(pCountrySelect).selectpicker('val', data.country);
                         
-                        // Check if this country has states
+                        // 2. Identify State Logic
                         const stateSelector = pStateSelectMap[data.country];
                         
-                        if (stateSelector) {
-                            // Manually trigger visual logic (show dropdowns)
-                            pCountrySelect.dispatchEvent(new Event('change'));
-                            
-                            // Try auto-select state
-                            if (data.region || data.region_code) {
-                                const regionCode = data.region || data.region_code;
-                                const regionName = (data.country === 'United States' && usStateMap[regionCode]) ? usStateMap[regionCode] : regionCode;
-                                
-                                // Try finding by value or text
-                                const stateSelectEl = document.querySelector(stateSelector);
-                                const stateOpt = [...stateSelectEl.options].find(o => 
-                                    o.value === regionName || o.text === regionName || 
-                                    o.value === regionCode || o.text === regionCode // Fallback check
-                                );
+                        // 3. Try Auto-Select State BEFORE triggering change (so change handler doesn't wipe it)
+                        let stateSet = false;
+                        if (stateSelector && (data.region || data.region_code)) {
+                             const regionCode = data.region || data.region_code;
+                             const regionName = (data.country === 'United States' && usStateMap[regionCode]) ? usStateMap[regionCode] : regionCode;
+                             
+                             const stateSelectEl = document.querySelector(stateSelector);
+                             const stateOpt = [...stateSelectEl.options].find(o => 
+                                o.value === regionName || o.text === regionName || 
+                                o.value === regionCode || o.text === regionCode
+                             );
 
-                                if (stateOpt) {
-                                    $(stateSelector).selectpicker('val', stateOpt.value);
-                                } else {
-                                    // Reset if auto-detect failed
-                                    $(stateSelector).val('').selectpicker('refresh');
-                                }
-                            } else {
-                                // No region data -> reset
-                                $(stateSelector).val('').selectpicker('refresh');
-                            }
-                        } else {
-                            // Standard country without states
-                            pCountrySelect.dispatchEvent(new Event('change'));
+                             if (stateOpt) {
+                                $(stateSelector).selectpicker('val', stateOpt.value);
+                                stateSet = true;
+                             }
+                        }
+                        
+                        // 4. Trigger Change to Update UI (Show/Hide Fields)
+                        // Important: We manually trigger change so visual logic runs
+                        $(pCountrySelect).trigger('change'); 
+
+                        // 5. If state wasn't set by IP, ensure it's empty (Reset)
+                        if (stateSelector && !stateSet) {
+                            $(stateSelector).val('').selectpicker('refresh');
                         }
                     }
                 }
@@ -441,53 +449,6 @@ document.addEventListener('DOMContentLoaded', function() {
         $('[id^="states-"], #state-2').selectpicker();
         $('[id^="states-"], #state-2, #country-2').on('shown.bs.select', function() { $(this).data('selectpicker').$menuInner[0].scrollTop = 0; });
 
-        let iti;
-        if (mPhoneInput) {
-            iti = window.intlTelInput(mPhoneInput, {
-                utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
-                autoPlaceholder: "aggressive", separateDialCode: true, initialCountry: "auto",
-                geoIpLookup: function(success, failure) {
-                    fetch('https://faas-nyc1-2ef2e6cc.doserverless.co/api/v1/web/fn-3627560b-2163-4a62-81db-3a3b5da17d5a/ip/info')
-                        .then(r => r.json()).then(data => {
-                            success(data.iso_code);
-                            const opt = [...mCountrySelect.options].find(o => o.value === data.country);
-                            if (opt) { 
-                                opt.selected = true; 
-                                $(mCountrySelect).selectpicker('val', data.country);
-                                
-                                // Logic for Form 2 (Full)
-                                const mStateSelectMap = { 'United States': '#state-2', 'Australia': '#states-australia', 'Brazil': '#states-brazil', 'Canada': '#states-canada', 'China': '#states-china', 'Ireland': '#states-ireland', 'India': '#states-india', 'Italy': '#states-italy', 'Mexico': '#states-mexico' };
-                                const stateSelector = mStateSelectMap[data.country];
-
-                                if (stateSelector) {
-                                     // Show visual dropdowns
-                                     mCountrySelect.dispatchEvent(new Event('change'));
-
-                                     if (data.region || data.region_code) {
-                                         const regionCode = data.region || data.region_code;
-                                         const regionName = (data.country === 'United States' && usStateMap[regionCode]) ? usStateMap[regionCode] : regionCode;
-                                         const stateSelectEl = document.querySelector(stateSelector);
-                                         const stateOpt = [...stateSelectEl.options].find(o => o.value === regionName || o.text === regionName || o.value === regionCode || o.text === regionCode);
-                                         
-                                         if (stateOpt) {
-                                             $(stateSelector).selectpicker('val', stateOpt.value);
-                                         } else {
-                                             $(stateSelector).val('').selectpicker('refresh');
-                                         }
-                                     } else {
-                                         $(stateSelector).val('').selectpicker('refresh');
-                                     }
-                                } else {
-                                     mCountrySelect.dispatchEvent(new Event('change')); 
-                                }
-                            }
-                        }).catch(failure);
-                }
-            });
-            mPhoneInput.addEventListener('focus', () => { if(mPhoneInput.nextElementSibling) mPhoneInput.nextElementSibling.classList.add('active'); });
-            $.validator.addMethod("phoneCustom", () => iti.isValidNumber(), "Invalid phone number.");
-        }
-
         // Map Country to Specific State Select ID for Form 2
         const mStateSelectMap = {
             'United States': '#state-2',
@@ -501,6 +462,53 @@ document.addEventListener('DOMContentLoaded', function() {
             'Mexico': '#states-mexico'
         };
 
+        let iti;
+        if (mPhoneInput) {
+            iti = window.intlTelInput(mPhoneInput, {
+                utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
+                autoPlaceholder: "aggressive", separateDialCode: true, initialCountry: "auto",
+                geoIpLookup: function(success, failure) {
+                    fetch('https://faas-nyc1-2ef2e6cc.doserverless.co/api/v1/web/fn-3627560b-2163-4a62-81db-3a3b5da17d5a/ip/info')
+                        .then(r => r.json()).then(data => {
+                            success(data.iso_code);
+                            const opt = [...mCountrySelect.options].find(o => o.value === data.country);
+                            if (opt) { 
+                                // 1. Set Country
+                                $(mCountrySelect).selectpicker('val', data.country);
+                                
+                                // 2. State Logic
+                                const stateSelector = mStateSelectMap[data.country];
+                                let stateSet = false;
+
+                                if (stateSelector && (data.region || data.region_code)) {
+                                     const regionCode = data.region || data.region_code;
+                                     const regionName = (data.country === 'United States' && usStateMap[regionCode]) ? usStateMap[regionCode] : regionCode;
+                                     const stateSelectEl = document.querySelector(stateSelector);
+                                     const stateOpt = [...stateSelectEl.options].find(o => o.value === regionName || o.text === regionName || o.value === regionCode || o.text === regionCode);
+                                     
+                                     if (stateOpt) {
+                                         $(stateSelector).selectpicker('val', stateOpt.value);
+                                         stateSet = true;
+                                     }
+                                }
+
+                                // 3. Trigger Change to Show Fields
+                                $(mCountrySelect).trigger('change'); 
+
+                                // 4. Reset if empty
+                                if (stateSelector && !stateSet) {
+                                    $(stateSelector).val('').selectpicker('refresh');
+                                }
+                            }
+                        }).catch(failure);
+                }
+            });
+            mPhoneInput.addEventListener('focus', () => { if(mPhoneInput.nextElementSibling) mPhoneInput.nextElementSibling.classList.add('active'); });
+            
+            // Assign intlTelInput instance to DOM element for validation access
+            $(mPhoneInput).data('intlTelInput', iti);
+        }
+
         // Country Logic Form 2
         mCountrySelect.addEventListener('change', function() {
             const selected = this.value;
@@ -511,10 +519,12 @@ document.addEventListener('DOMContentLoaded', function() {
             if (wrapperMap[selected]) {
                 document.querySelector(wrapperMap[selected]).style.display = 'block';
 
-                // --- FIX: Reset specific state dropdown for ALL countries ---
+                // --- Reset specific state dropdown for ALL countries ---
                 const selector = mStateSelectMap[selected];
                 if (selector) {
-                    $(selector).val('').selectpicker('refresh');
+                    if (!$(selector).val()) {
+                        $(selector).val('').selectpicker('refresh');
+                    }
                 }
             }
 
