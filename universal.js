@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const checkboxFields = document.querySelectorAll('.checkbox-field');
     const checkboxes = document.querySelectorAll('.checkbox-field input[type="checkbox"]');
     const submitButton = document.querySelector('[ms-code-submit-new="submit"]');
-    const mainForm = document.querySelector('form'); // Это ваша основная форма
+    const mainForm = document.getElementById('main-form'); // Это ваша основная форма
     const phoneInput = document.getElementById('phone');
     const selfAttributionInput = document.getElementById('self-attribution');
     const submitButtonWrapper = document.querySelector('.submit-button-wrapper');
@@ -459,7 +459,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Валидация основной формы (Main Form)
-    const validator = $('form').not('#code-form').validate({ // Исключаем форму кода из этого валидатора
+    const validator = $('#main-form').validate({ // Исключаем форму кода из этого валидатора
       onfocusout: function(element) { if ($(element).data('modified')) $(element).valid(); },
       onkeyup: function(element) { $(element).data('modified', true); $(element).valid(); },
       onclick: function(element) { if (isFormInitialized) $(element).valid(); },
@@ -665,7 +665,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // --- ЛОГИКА ОТПРАВКИ И 2FA ---
     
     const successMessage = document.querySelector('.w-form-done');
-    const formFields = document.querySelector('form'); // Для скрытия при успехе
+    const formFields = document.getElementById('#main-form'); // Для скрытия при успехе
     const blockingBlock = document.querySelector('.blocking-block');
     const unlockText = document.querySelector('.unlock-text');
     let isSubmitting = false;
@@ -870,7 +870,7 @@ document.addEventListener('DOMContentLoaded', function() {
                  
                  // Если вдруг есть ошибки в ответе verified-endpoint
                  if (responseData.errors) {
-                    $('form').validate().showErrors({ 'email': responseData.errors.email ? responseData.errors.email[0] : 'Invalid email.' });
+                    $('#main-form').validate().showErrors({ 'email': responseData.errors.email ? responseData.errors.email[0] : 'Invalid email.' });
                     throw new Error('Validation error from 2FA server.');
                  }
                  
@@ -916,7 +916,7 @@ document.addEventListener('DOMContentLoaded', function() {
       if (!response.ok) {
         // Обработка ошибок валидации (общая для обоих эндпоинтов)
         if (responseData.errors && responseData.errors.email) {
-          $('form').validate().showErrors({ 'email': responseData.errors.email[0] });
+          $('#main-form').validate().showErrors({ 'email': responseData.errors.email[0] });
         }
         // Для обычной формы ошибки могут приходить просто как объект, нужно смотреть структуру
         throw new Error('Server error: ' + JSON.stringify(responseData));
@@ -1027,7 +1027,7 @@ document.addEventListener('DOMContentLoaded', function() {
         sessionStorage.setItem('videoUnlocked', 'true');
 
         const roleValue = data.lead_type ? (data.lead_type.charAt(0).toUpperCase() + data.lead_type.slice(1).toLowerCase()) : 'Customer';
-        const eventType = specificEventName || $('form').attr('data-event-type') || 'demo';
+        const eventType = specificEventName || $('#main-form').attr('data-event-type') || 'demo';
 
         if (window.dataLayer) {
             window.dataLayer.push({
