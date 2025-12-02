@@ -524,15 +524,15 @@ document.addEventListener('DOMContentLoaded', function() {
                                     $('#country-2').selectpicker('refresh');
                                     
                                     const stateMap = {
-                                        'United States': '#state-2',
-                                        'Australia': '#states-australia',
-                                        'Brazil': '#states-brazil',
-                                        'Canada': '#states-canada',
-                                        'China': '#states-china',
-                                        'Ireland': '#states-ireland',
-                                        'India': '#states-india',
-                                        'Italy': '#states-italy',
-                                        'Mexico': '#states-mexico'
+                                        'United States': '.dropdown-state-2',
+                                        'Australia': '.states-australia',
+                                        'Brazil': '.states-brazil',
+                                        'Canada': '.states-canada',
+                                        'China': '.states-china',
+                                        'Ireland': '.states-ireland',
+                                        'India': '.states-india',
+                                        'Italy': '.states-italy',
+                                        'Mexico': '.states-mexico'
                                     };
                                     
                                     const stateSelector = stateMap[data.country];
