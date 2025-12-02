@@ -296,13 +296,13 @@ document.addEventListener('DOMContentLoaded', function() {
              onfocusout: function(el) { if ($(el).data('modified')) $(el).valid(); },
              onkeyup: function(el) { $(el).data('modified', true); $(el).valid(); },
              rules: {
-                'Full-Name': { required: true, maxlength: 100, noSpacesOnly: true },
+                'Full-Name': { required: true, maxlength: 100, noSpacesOnly: true, minlength: 2 },
                 email: { required: true, maxlength: 50, email: true, corporate: true, validEmailChars: true },
                 company: { required: true, maxlength: 50, noSpacesOnly: true },
                 'self-attribution': { maxlength: 50 },
                 agreement: { required: true }
              },
-             messages: { 'Full-Name': { required: "This field is required" }, email: { required: "This field is required" }, company: { required: "This field is required" } },
+             messages: { 'Full-Name': { required: "This field is required", minlength: "The Full Name field must be at least 2 characters." }, email: { required: "This field is required" }, company: { required: "This field is required" } },
              errorPlacement: function(error, element) { if ($(element).data('modified')) error.appendTo(element.closest(".field-row")); },
              highlight: function(el) {
                  const $el = $(el);
@@ -612,8 +612,8 @@ document.addEventListener('DOMContentLoaded', function() {
             onfocusout: function(el) { if ($(el).data('modified')) $(el).valid(); },
             onkeyup: function(el) { $(el).data('modified', true); $(el).valid(); },
             rules: {
-                firstname: { required: true, maxlength: 50, noSpacesOnly: true },
-                lastname: { required: true, maxlength: 50, noSpacesOnly: true },
+                firstname: { required: true, maxlength: 50, noSpacesOnly: true, minlength: 2 },
+                lastname: { required: true, maxlength: 50, noSpacesOnly: true, minlength: 2 },
                 email: { required: true, maxlength: 50, email: true, corporate: true, validEmailChars: true },
                 job_title: { required: true, maxlength: 50, noSpacesOnly: true },
                 company: { required: true, maxlength: 50, noSpacesOnly: true },
@@ -621,7 +621,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 'self-attribution': { maxlength: 50 },
                 agreement: { required: true }
             },
-            messages: { firstname: { required: "This field is required" }, lastname: { required: "This field is required" }, email: { required: "This field is required" }, company: { required: "This field is required" } },
+            messages: { firstname: { required: "This field is required", minlength: "The First Name field must be at least 2 characters." }, lastname: { required: "This field is required", minlength: "The Lastst Name field must be at least 2 characters." }, email: { required: "This field is required" }, company: { required: "This field is required" } },
             errorPlacement: function(error, element) { if ($(element).data('modified')) error.appendTo(element.closest(".field-row")); },
             highlight: function(el) { 
                  const $el = $(el);
