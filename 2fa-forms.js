@@ -5,28 +5,23 @@ document.addEventListener('DOMContentLoaded', function() {
         "Australia": "AU", "Austria": "AT", "Azerbaijan": "AZ", "Albania": "AL", "Algeria": "DZ", "Angola": "AO", "Andorra": "AD", "Antigua and Barbuda": "AG", "Argentina": "AR", "Armenia": "AM", "Afghanistan": "AF", "Bahamas": "BS", "Bangladesh": "BD", "Barbados": "BB", "Bahrain": "BH", "Belarus": "BY", "Belize": "BZ", "Belgium": "BE", "Benin": "BJ", "Bulgaria": "BG", "Bolivia": "BO", "Bosnia and Herzegovina": "BA", "Botswana": "BW", "Brazil": "BR", "Brunei Darussalam": "BN", "Burkina Faso": "BF", "Burundi": "BI", "Bhutan": "BT", "Vanuatu": "VU", "Hungary": "HU", "Venezuela": "VE", "Vietnam": "VN", "Gabon": "GA", "Haiti": "HT", "Guyana": "GY", "Gambia": "GM", "Ghana": "GH", "Guatemala": "GT", "Guinea": "GN", "Guinea-Bissau": "GW", "Germany": "DE", "Honduras": "HN", "Grenada": "GD", "Greece": "GR", "Georgia": "GE", "Denmark": "DK", "Congo, Democratic Republic of the": "CD", "Djibouti": "DJ", "Dominica": "DM", "Dominican Republic": "DO", "Egypt": "EG", "Zambia": "ZM", "Zimbabwe": "ZW", "Israel": "IL", "India": "IN", "Indonesia": "ID", "Jordan": "JO", "Iraq": "IQ", "Iran": "IR", "Ireland": "IE", "Iceland": "IS", "Spain": "ES", "Italy": "IT", "Yemen": "YE", "Cabo Verde": "CV", "Kazakhstan": "KZ", "Cambodia": "KH", "Cameroon": "CM", "Canada": "CA", "Qatar": "QA", "Kenya": "KE", "Cyprus": "CY", "Kiribati": "KI", "China": "CN", "Colombia": "CO", "Comoros": "KM", "Congo": "CG", "North Korea": "KP", "Costa Rica": "CR", "Côte d'Ivoire": "CI", "Cuba": "CU", "Kuwait": "KW", "Kyrgyzstan": "KG", "Lao People's Democratic Republic": "LA", "Latvia": "LV", "Lesotho": "LS", "Liberia": "LR", "Lebanon": "LB", "Libya": "LY", "Lithuania": "LT", "Liechtenstein": "LI", "Luxembourg": "LU", "Mauritius": "MU", "Mauritania": "MR", "Madagascar": "MG", "Malawi": "MW", "Malaysia": "MY", "Mali": "ML", "Maldives": "MV", "Malta": "MT", "Morocco": "MA", "Marshall Islands": "MH", "Mexico": "MX", "Mozambique": "MZ", "Monaco": "MC", "Mongolia": "MN", "Myanmar": "MM", "Namibia": "NA", "Nauru": "NR", "Nepal": "NP", "Niger": "NE", "Nigeria": "NG", "Netherlands": "NL", "Nicaragua": "NI", "Niue": "NU", "New Zealand": "NZ", "Norway": "NO", "Tanzania, United Republic of": "TZ", "United Arab Emirates": "AE", "Oman": "OM", "Cook Islands": "CK", "Pakistan": "PK", "Panama": "PA", "Papua New Guinea": "PG", "Paraguay": "PY", "Peru": "PE", "Poland": "PL", "Portugal": "PT", "Korea, Republic of": "KR", "Moldova, Republic of": "MD", "Russian Federation": "RU", "Rwanda": "RW", "Romania": "RO", "El Salvador": "SV", "Samoa": "WS", "San Marino": "SM", "Sao Tome and Principe": "ST", "Saudi Arabia": "SA", "Holy See (Vatican City State)": "VA", "North Macedonia": "MK", "Seychelles": "SC", "Senegal": "SN", "Saint Vincent and the Grenadines": "VC", "Saint Kitts and Nevis": "KN", "Saint Lucia": "LC", "Serbia": "RS", "Singapore": "SG", "Syrian Arab Republic": "SY", "Slovakia": "SK", "Slovenia": "SI", "United Kingdom": "GB", "United States": "US", "Solomon Islands": "SB", "Somalia": "SO", "Sudan": "SD", "Suriname": "SR", "Sierra Leone": "SL", "Tajikistan": "TJ", "Thailand": "TH", "Timor-Leste": "TL", "Togo": "TG", "Tonga": "TO", "Trinidad and Tobago": "TT", "Tuvalu": "TV", "Tunisia": "TN", "Turkmenistan": "TM", "Turkey": "TR", "Uganda": "UG", "Uzbekistan": "UZ", "Ukraine": "UA", "Uruguay": "UY", "Fiji": "FJ", "Philippines": "PH", "Finland": "FI", "France": "FR", "Croatia": "HR", "Central African Republic": "CF", "Chad": "TD", "Montenegro": "ME", "Czech Republic": "CZ", "Chile": "CL", "Switzerland": "CH", "Sweden": "SE", "Sri Lanka": "LK", "Ecuador": "EC", "Equatorial Guinea": "GQ", "Eritrea": "ER", "Eswatini": "SZ", "Estonia": "EE", "Ethiopia": "ET"
     };
 
-    // --- NEW: Init Selects (Placeholder via Title) ---
+    // --- NEW: Init Selects (Disabled by default) ---
     function initStateSelects() {
-        // Находим все селекты штатов
         const allStateSelects = document.querySelectorAll('[id^="p-states-"], [id^="states-"], #p-state, #state-2');
         
         allStateSelects.forEach(sel => {
-            // 1. Делаем поле обязательным
             sel.setAttribute('required', 'true');
-
-            // 2. Устанавливаем заголовок-плейсхолдер (НЕ добавляя option в список)
-            // Это текст, который будет виден, когда ничего не выбрано
-            sel.setAttribute('title', 'State*');
+            sel.setAttribute('title', 'State*'); // Плейсхолдер
             
-            // 3. Сбрасываем текущее значение на пустоту (чтобы появился title)
+            // ВАЖНО: Отключаем поле. Валидатор игнорирует disabled поля.
+            // Мы включим его только тогда, когда пользователь выберет нужную страну.
+            sel.disabled = true; 
+            
             $(sel).val('');
-            
-            // 4. Обновляем selectpicker, чтобы он подхватил title
             $(sel).selectpicker('refresh');
         });
     }
-    // Вызываем сразу
-    initStateSelects();
+    
     // --- Live Validation for State Selects ---
     // Убирает красную рамку сразу после выбора значения
     $('select[id^="p-states-"], select[id^="states-"], #p-state, #state-2').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
@@ -185,11 +180,20 @@ document.addEventListener('DOMContentLoaded', function() {
         $('[id^="p-states-"], #p-state').selectpicker();
         $('[id^="p-states-"], #p-state, #p-country').on('shown.bs.select', function() { $(this).data('selectpicker').$menuInner[0].scrollTop = 0; });
 
-        // Country Logic
+        // Country Logic Form 1
         pCountrySelect.addEventListener('change', function() {
             const selected = this.value;
-            // Скрываем все
-            document.querySelectorAll('[class^="p-states-"], .p-dropdown-state').forEach(el => el.style.display = 'none');
+            
+            // 1. Скрываем И ОТКЛЮЧАЕМ (disabled=true) все списки штатов
+            // Это гарантирует, что валидатор не будет ругаться на скрытые поля других стран
+            document.querySelectorAll('[class^="p-states-"], .p-dropdown-state').forEach(el => {
+                el.style.display = 'none';
+                const s = el.querySelector('select');
+                if (s) {
+                    s.disabled = true; 
+                    $(s).selectpicker('refresh');
+                }
+            });
             
             const stateMap = {
                 'United States': '.p-dropdown-state', 'Australia': '.p-states-australia', 'Brazil': '.p-states-brazil',
@@ -204,18 +208,19 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     const select = container.querySelector('select');
                     if (select) {
+                        // 2. ВКЛЮЧАЕМ (disabled=false) только нужный список
+                        select.disabled = false; 
                         $(select).val(''); 
                         $(select).selectpicker('refresh');
                         
-                        // --- ВАЖНО: Моментальная подсветка ---
-                        // Принудительно запускаем проверку этого поля.
-                        // Так как оно пустое и required -> оно сразу покрасится в красный.
+                        // 3. ПРИНУДИТЕЛЬНО ВАЛИДИРУЕМ
+                        // Т.к. ignore включен, а поле disabled=false и пустое -> сработает highlight
                         $(select).valid(); 
                     }
                 }
             }
 
-            // Логика чекбокса и сообщений (как и была)
+            // ... (далее код для США/чекбоксов без изменений) ...
              if (selected === 'United States') {
                 document.querySelector('.form-message').style.display = 'none';
                 document.querySelector('.form-message_usa').style.display = 'block';
@@ -228,10 +233,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 $(pCheckbox).parent().find('.w-checkbox-input').removeClass('w--redirected-checked');
             }
             
-            // Обновляем состояние кнопки
             setTimeout(updatePSubmitState, 50);
-            
-            // Валидируем саму страну (чтобы убрать ошибку с поля страны, если была)
             $(this).valid();
         });
 
@@ -287,6 +289,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Validation - Main
         $('#p-main-form').validate({
+            ignore: ":hidden:not(select)",
              onfocusout: function(el) { if ($(el).data('modified')) $(el).valid(); },
              onkeyup: function(el) { $(el).data('modified', true); $(el).valid(); },
              rules: {
@@ -294,7 +297,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 email: { required: true, maxlength: 50, email: true, corporate: true, validEmailChars: true },
                 company: { required: true, maxlength: 50, noSpacesOnly: true },
                 'self-attribution': { maxlength: 50 },
-                agreement: { required: function(el) { return $('#p-country').val() !== 'United States' && $(el).is(':visible'); } }
+                agreement: { required: true }
              },
              messages: { 'Full-Name': { required: "This field is required" }, email: { required: "This field is required" }, company: { required: "This field is required" } },
              errorPlacement: function(error, element) { if ($(element).data('modified')) error.appendTo(element.closest(".field-row")); },
@@ -556,12 +559,20 @@ document.addEventListener('DOMContentLoaded', function() {
             $.validator.addMethod("phoneCustom", () => iti.isValidNumber(), "Phone number is invalid. Please add your country code, area code and phone number. Your phone number can contain numbers, spaces and these special characters: ( ) - # +");
         }
 
-        // Country Logic
+        // Country Logic Form 2
         mCountrySelect.addEventListener('change', function() {
             const selected = this.value;
             if (iti && countryCodeMap[selected]) iti.setCountry(countryCodeMap[selected]);
             
-            document.querySelectorAll('[class^="states-"], .dropdown-state-2').forEach(el => el.style.display = 'none');
+            // 1. Скрываем И ОТКЛЮЧАЕМ
+            document.querySelectorAll('[class^="states-"], .dropdown-state-2').forEach(el => {
+                el.style.display = 'none';
+                const s = el.querySelector('select');
+                if (s) {
+                     s.disabled = true; 
+                     $(s).selectpicker('refresh');
+                }
+            });
             
             const stateMap = { 'United States': '.dropdown-state-2', 'Australia': '.states-australia', 'Brazil': '.states-brazil', 'Canada': '.states-canada', 'China': '.states-china', 'Ireland': '.states-ireland', 'India': '.states-india', 'Italy': '.states-italy', 'Mexico': '.states-mexico' };
             
@@ -572,16 +583,18 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     const select = container.querySelector('select');
                     if (select) {
+                        // 2. ВКЛЮЧАЕМ
+                        select.disabled = false; 
                         $(select).val(''); 
                         $(select).selectpicker('refresh');
 
-                        // --- ВАЖНО: Моментальная подсветка ---
-                        // Сразу же показываем пользователю, что это поле нужно заполнить
+                        // 3. МОМЕНТАЛЬНАЯ ПОДСВЕТКА
                         $(select).valid();
                     }
                 }
             }
 
+            // ... (далее код для США/чекбоксов без изменений) ...
             if (selected === 'United States') {
                 document.querySelector('.form-message').style.display = 'none';
                 document.querySelector('.form-message_usa').style.display = 'block';
@@ -600,6 +613,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Validation - Main
         $('#main-form-2').validate({
+            ignore: ":hidden:not(select)",
             onfocusout: function(el) { if ($(el).data('modified')) $(el).valid(); },
             onkeyup: function(el) { $(el).data('modified', true); $(el).valid(); },
             rules: {
@@ -610,7 +624,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 company: { required: true, maxlength: 50, noSpacesOnly: true },
                 phone: { phoneCustom: true },
                 'self-attribution': { maxlength: 50 },
-                agreement: { required: function(el) { return $('#country-2').val() !== 'United States' && $(el).is(':visible'); } }
+                agreement: { required: true }
             },
             messages: { firstname: { required: "This field is required" }, lastname: { required: "This field is required" }, email: { required: "This field is required" }, company: { required: "This field is required" } },
             errorPlacement: function(error, element) { if ($(element).data('modified')) error.appendTo(element.closest(".field-row")); },
