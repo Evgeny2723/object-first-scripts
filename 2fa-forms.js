@@ -164,7 +164,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         $('[id^="p-states-"], #p-state').selectpicker('refresh');
         
-        $('[id^="p-states-"], #p-state').on('changed.bs.select', function() {
+        $('[id^="p-states-"], #p-state').on('change', function() {
             $(this).data('modified', true);
             $(this).valid();
             updatePSubmitState();
@@ -491,7 +491,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         $('[id^="states-"], #state-2').selectpicker('refresh');
 
-        $('[id^="states-"], #state-2').on('changed.bs.select', function() {
+        $('[id^="states-"], #state-2').on('change', function() {
             $(this).data('modified', true);
             $(this).valid();
             updateMSubmitState();
