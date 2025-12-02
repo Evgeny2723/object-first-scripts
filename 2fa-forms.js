@@ -176,9 +176,13 @@ document.addEventListener('DOMContentLoaded', function() {
             // Hide all states
             document.querySelectorAll('[class^="p-states-"], .p-dropdown-state').forEach(el => {
                 el.style.display = 'none';
-                // Убрать валидацию со скрытых
                 $(el).data('modified', false);
-                $(el).valid(); // Очистить ошибки
+                if ($.contains(document, el)) {
+                    const $el = $(el);
+                    $el.removeClass('error');
+                    $el.parent().find('.btn').css('border', '');
+                    $el.closest('.field-row').find('label.error').remove();
+                }
             });
             // Show relevant state
             const stateMap = {
@@ -196,7 +200,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 $(stateElement).data('modified', true);
                 
                 setTimeout(() => {
-                    $(stateElement).valid();
+                    if ($.contains(document, stateElement)) {
+                        $(stateElement).valid();
+                    }
                 }, 100);
             }
 
@@ -289,6 +295,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Validation - Main
         $('#p-main-form').validate({
+            ignore: ":hidden:not(.selectpicker)",
              onfocusout: function(el) { if ($(el).data('modified')) $(el).valid(); },
              onkeyup: function(el) { $(el).data('modified', true); $(el).valid(); },
              rules: {
@@ -298,7 +305,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 'self-attribution': { maxlength: 50 },
                  state: {
                     required: function(element) {
-                        return $(element).is(':visible') && $(element).parent().is(':visible');
+                        if (!element || !$(element).length) return false;
+                        const $parent = $(element).parent();
+                        return $(element).is(':visible') && $parent.length && $parent.is(':visible');
                     }
                 },
                 agreement: { required: function(el) { return $('#p-country').val() !== 'United States' && $(el).is(':visible'); } }
@@ -582,20 +591,25 @@ document.addEventListener('DOMContentLoaded', function() {
             document.querySelectorAll('[class^="states-"], .dropdown-state-2').forEach(el => {
                 el.style.display = 'none';
                 $(el).data('modified', false);
-                $(el).valid();
+                if ($.contains(document, el)) {
+                    const $el = $(el);
+                    $el.removeClass('error');
+                    $el.parent().find('.btn').css('border', '');
+                    $el.closest('.field-row').find('label.error').remove();
+                }
             });
             const stateMap = { 'United States': '.dropdown-state-2', 'Australia': '.states-australia', 'Brazil': '.states-brazil', 'Canada': '.states-canada', 'China': '.states-china', 'Ireland': '.states-ireland', 'India': '.states-india', 'Italy': '.states-italy', 'Mexico': '.states-mexico' };
             if (stateMap[selected]) {
                 const stateSelector = stateMap[selected];
                 const stateElement = document.querySelector(stateSelector);
                 stateElement.style.display = 'block';
-                
                 $(stateElement).val('').selectpicker('refresh');
-                
                 $(stateElement).data('modified', true);
                 
                 setTimeout(() => {
-                    $(stateElement).valid();
+                    if ($.contains(document, stateElement)) {
+                        $(stateElement).valid();
+                    }
                 }, 100);
             }
 
@@ -616,6 +630,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Validation - Main
         $('#main-form-2').validate({
+            ignore: ":hidden:not(.selectpicker)",
             onfocusout: function(el) { if ($(el).data('modified')) $(el).valid(); },
             onkeyup: function(el) { $(el).data('modified', true); $(el).valid(); },
             rules: {
@@ -628,7 +643,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 'self-attribution': { maxlength: 50 },
                 state: {
                     required: function(element) {
-                        return $(element).is(':visible') && $(element).parent().is(':visible');
+                        if (!element || !$(element).length) return false;
+                        const $parent = $(element).parent();
+                        return $(element).is(':visible') && $parent.length && $parent.is(':visible');
                     }
                 },
                 agreement: { required: function(el) { return $('#country-2').val() !== 'United States' && $(el).is(':visible'); } }
