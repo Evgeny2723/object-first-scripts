@@ -188,18 +188,76 @@ document.addEventListener('DOMContentLoaded', function() {
             $(this).valid();
         });
 
-        // IP Detect
+        // IP Detect для Формы 1 (p-prefix)
         fetch('https://faas-nyc1-2ef2e6cc.doserverless.co/api/v1/web/fn-3627560b-2163-4a62-81db-3a3b5da17d5a/ip/info')
             .then(res => res.json()).then(data => {
                 if (data && data.country) {
+                    // Установить страну
                     const opt = [...pCountrySelect.options].find(o => o.value === data.country);
                     if (opt) {
                         opt.selected = true;
                         pCountrySelect.dispatchEvent(new Event('change'));
                         $('#p-country').selectpicker('refresh');
+                        
+                        // Карта селекторов штатов
+                        const stateMap = {
+                            'United States': '#p-state',
+                            'Australia': '#p-states-australia',
+                            'Brazil': '#p-states-brazil',
+                            'Canada': '#p-states-canada',
+                            'China': '#p-states-china',
+                            'Ireland': '#p-states-ireland',
+                            'India': '#p-states-india',
+                            'Italy': '#p-states-italy',
+                            'Mexico': '#p-states-mexico'
+                        };
+                        
+                        const stateSelector = stateMap[data.country];
+                        if (stateSelector) {
+                            const stateElement = document.querySelector(stateSelector);
+                            
+                            // Попытка найти штат по разным критериям
+                            let stateOption = null;
+                            
+                            if (data.state_name || data.state) {
+                                const searchValue = data.state_name || data.state;
+                                
+                                // 1. Поиск по state_name (например "Lombardy", "Texas")
+                                stateOption = [...stateElement.options].find(o => 
+                                    o.text.toLowerCase() === searchValue.toLowerCase()
+                                );
+                                
+                                // 2. Если не найдено - поиск по value (например "TX", "25")
+                                if (!stateOption && data.state) {
+                                    stateOption = [...stateElement.options].find(o => 
+                                        o.value === data.state || 
+                                        o.value.toLowerCase() === data.state.toLowerCase()
+                                    );
+                                }
+                                
+                                // 3. Поиск по частичному совпадению в тексте
+                                if (!stateOption && data.state_name) {
+                                    stateOption = [...stateElement.options].find(o => 
+                                        o.text.toLowerCase().includes(searchValue.toLowerCase()) ||
+                                        searchValue.toLowerCase().includes(o.text.toLowerCase())
+                                    );
+                                }
+                            }
+                            
+                            // Установить найденный штат или пустое значение
+                            if (stateOption && stateOption.value) {
+                                $(stateElement).val(stateOption.value).selectpicker('refresh');
+                            } else {
+                                // Если штат не найден - установить пустое значение
+                                $(stateElement).val('').selectpicker('refresh');
+                            }
+                        }
                     }
                 }
-            }).catch(console.error);
+            }).catch(err => {
+                console.error('IP detection error:', err);
+            });
+
 
         // Validation - Main
         $('#p-main-form').validate({
@@ -402,12 +460,70 @@ document.addEventListener('DOMContentLoaded', function() {
                 utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
                 autoPlaceholder: "aggressive", separateDialCode: true, initialCountry: "auto",
                 geoIpLookup: function(success, failure) {
+                    // IP Detect для Формы 2
                     fetch('https://faas-nyc1-2ef2e6cc.doserverless.co/api/v1/web/fn-3627560b-2163-4a62-81db-3a3b5da17d5a/ip/info')
-                        .then(r => r.json()).then(data => {
-                            success(data.iso_code);
-                            const opt = [...mCountrySelect.options].find(o => o.value === data.country);
-                            if (opt) { opt.selected = true; mCountrySelect.dispatchEvent(new Event('change')); }
-                        }).catch(failure);
+                        .then(res => res.json()).then(data => {
+                            if (data && data.country) {
+                                const opt = [...mCountrySelect.options].find(o => o.value === data.country);
+                                if (opt) {
+                                    opt.selected = true;
+                                    mCountrySelect.dispatchEvent(new Event('change'));
+                                    $('#country-2').selectpicker('refresh');
+                                    
+                                    const stateMap = {
+                                        'United States': '#state-2',
+                                        'Australia': '#states-australia',
+                                        'Brazil': '#states-brazil',
+                                        'Canada': '#states-canada',
+                                        'China': '#states-china',
+                                        'Ireland': '#states-ireland',
+                                        'India': '#states-india',
+                                        'Italy': '#states-italy',
+                                        'Mexico': '#states-mexico'
+                                    };
+                                    
+                                    const stateSelector = stateMap[data.country];
+                                    if (stateSelector) {
+                                        const stateElement = document.querySelector(stateSelector);
+                                        let stateOption = null;
+                                        
+                                        if (data.state_name || data.state) {
+                                            const searchValue = data.state_name || data.state;
+                                            
+                                            // Поиск по state_name
+                                            stateOption = [...stateElement.options].find(o => 
+                                                o.text.toLowerCase() === searchValue.toLowerCase()
+                                            );
+                                            
+                                            // Поиск по value
+                                            if (!stateOption && data.state) {
+                                                stateOption = [...stateElement.options].find(o => 
+                                                    o.value === data.state || 
+                                                    o.value.toLowerCase() === data.state.toLowerCase()
+                                                );
+                                            }
+                                            
+                                            // Частичное совпадение
+                                            if (!stateOption && data.state_name) {
+                                                stateOption = [...stateElement.options].find(o => 
+                                                    o.text.toLowerCase().includes(searchValue.toLowerCase()) ||
+                                                    searchValue.toLowerCase().includes(o.text.toLowerCase())
+                                                );
+                                            }
+                                        }
+                                        
+                                        if (stateOption && stateOption.value) {
+                                            $(stateElement).val(stateOption.value).selectpicker('refresh');
+                                        } else {
+                                            $(stateElement).val('').selectpicker('refresh');
+                                        }
+                                    }
+                                }
+                            }
+                        }).catch(err => {
+                            console.error('IP detection error:', err);
+                        });
+
                 }
             });
             mPhoneInput.addEventListener('focus', () => { if(mPhoneInput.nextElementSibling) mPhoneInput.nextElementSibling.classList.add('active'); });
