@@ -27,6 +27,11 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     // Вызываем сразу
     initStateSelects();
+    // --- Live Validation for State Selects ---
+    // Убирает красную рамку сразу после выбора значения
+    $('select[id^="p-states-"], select[id^="states-"], #p-state, #state-2').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
+        $(this).valid(); // Запускаем валидацию конкретного поля при изменении
+    });
 
     // Locale Logic
     const pathSegments = window.location.pathname.split('/').filter(Boolean);
@@ -293,8 +298,26 @@ document.addEventListener('DOMContentLoaded', function() {
              },
              messages: { 'Full-Name': { required: "This field is required" }, email: { required: "This field is required" }, company: { required: "This field is required" } },
              errorPlacement: function(error, element) { if ($(element).data('modified')) error.appendTo(element.closest(".field-row")); },
-             highlight: function(el) { if ($(el).data('modified')) $(el).css('border', '1px solid #c50006'); },
-             unhighlight: function(el) { $(el).css('border', ''); },
+             highlight: function(el) {
+                 const $el = $(el);
+                 // Если это Select (выпадающий список)
+                 if ($el.is('select')) {
+                     // Красим кнопку bootstrap-select
+                     $el.closest('.bootstrap-select').find('.dropdown-toggle').css('border', '1px solid #c50006');
+                 } else if ($el.data('modified')) {
+                     // Обычные поля
+                     $el.css('border', '1px solid #c50006'); 
+                 }
+             },
+             unhighlight: function(el) {
+                 const $el = $(el);
+                 if ($el.is('select')) {
+                     // Убираем обводку у кнопки (возвращаем стандартную)
+                     $el.closest('.bootstrap-select').find('.dropdown-toggle').css('border', '');
+                 } else {
+                     $el.css('border', ''); 
+                 }
+             },
              onfocusin: function(el) { $(el).data("interacted", true); }
         });
 
@@ -591,8 +614,24 @@ document.addEventListener('DOMContentLoaded', function() {
             },
             messages: { firstname: { required: "This field is required" }, lastname: { required: "This field is required" }, email: { required: "This field is required" }, company: { required: "This field is required" } },
             errorPlacement: function(error, element) { if ($(element).data('modified')) error.appendTo(element.closest(".field-row")); },
-            highlight: function(el) { if ($(el).data('modified')) $(el).css('border', '1px solid #c50006'); },
-            unhighlight: function(el) { $(el).css('border', ''); },
+            highlight: function(el) { 
+                 const $el = $(el);
+                 if ($el.is('select')) {
+                     // Красим кнопку
+                     $el.closest('.bootstrap-select').find('.dropdown-toggle').css('border', '1px solid #c50006');
+                 } else if ($el.data('modified')) {
+                     $el.css('border', '1px solid #c50006'); 
+                 }
+            },
+            unhighlight: function(el) { 
+                 const $el = $(el);
+                 if ($el.is('select')) {
+                     // Снимаем покраску
+                     $el.closest('.bootstrap-select').find('.dropdown-toggle').css('border', '');
+                 } else {
+                     $el.css('border', ''); 
+                 }
+            },
             onfocusin: function(el) { $(el).data("interacted", true); }
         });
 
