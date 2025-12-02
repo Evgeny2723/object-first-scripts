@@ -159,6 +159,17 @@ document.addEventListener('DOMContentLoaded', function() {
         $('[id^="p-states-"], #p-state').selectpicker();
         $('[id^="p-states-"], #p-state, #p-country').on('shown.bs.select', function() { $(this).data('selectpicker').$menuInner[0].scrollTop = 0; });
 
+        $('[id^="p-states-"], #p-state').each(function() {
+            $(this).attr('title', 'State*');
+        });
+        $('[id^="p-states-"], #p-state').selectpicker('refresh');
+
+        $('[id^="p-states-"], #p-state').on('change', function() {
+            $(this).data('modified', true);
+            $(this).valid();
+            updatePSubmitState();
+        });
+
         // Country Logic
         pCountrySelect.addEventListener('change', function() {
             const selected = this.value;
@@ -268,9 +279,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 email: { required: true, maxlength: 50, email: true, corporate: true, validEmailChars: true },
                 company: { required: true, maxlength: 50, noSpacesOnly: true },
                 'self-attribution': { maxlength: 50 },
+                 state: {
+                    required: function(element) {
+                        return $(element).is(':visible') && $(element).parent().is(':visible');
+                    }
+                },
                 agreement: { required: function(el) { return $('#p-country').val() !== 'United States' && $(el).is(':visible'); } }
              },
-             messages: { 'Full-Name': { required: "This field is required", minlength: "The Full Name field must be at least 2 characters." }, email: { required: "This field is required" }, company: { required: "This field is required" } },
+             messages: { 'Full-Name': { required: "This field is required", minlength: "The Full Name field must be at least 2 characters." }, email: { required: "This field is required" }, company: { required: "This field is required" }, state: { required: "Please select a state" } },
              errorPlacement: function(error, element) { if ($(element).data('modified')) error.appendTo(element.closest(".field-row")); },
              highlight: function(el) { if ($(el).data('modified')) $(el).css('border', '1px solid #c50006'); },
              unhighlight: function(el) { $(el).css('border', ''); },
@@ -453,6 +469,17 @@ document.addEventListener('DOMContentLoaded', function() {
         $('[id^="states-"], #state-2').selectpicker();
         $('[id^="states-"], #state-2, #country-2').on('shown.bs.select', function() { $(this).data('selectpicker').$menuInner[0].scrollTop = 0; });
 
+        $('[id^="states-"], #state-2').each(function() {
+            $(this).attr('title', 'State*');
+        });
+        $('[id^="states-"], #state-2').selectpicker('refresh');
+
+        $('[id^="states-"], #state-2').on('change', function() {
+            $(this).data('modified', true);
+            $(this).valid();
+            updateMSubmitState();
+        });
+
         // IntlTelInput
         let iti;
         if (mPhoneInput) {
@@ -566,9 +593,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 company: { required: true, maxlength: 50, noSpacesOnly: true },
                 phone: { phoneCustom: true },
                 'self-attribution': { maxlength: 50 },
+                state: {
+                    required: function(element) {
+                        return $(element).is(':visible') && $(element).parent().is(':visible');
+                    }
+                },
                 agreement: { required: function(el) { return $('#country-2').val() !== 'United States' && $(el).is(':visible'); } }
             },
-            messages: { firstname: { required: "This field is required", minlength: "The First Name field must be at least 2 characters." }, lastname: { required: "This field is required", minlength: "The Last Name field must be at least 2 characters." }, email: { required: "This field is required" }, company: { required: "This field is required" } },
+            messages: { firstname: { required: "This field is required", minlength: "The First Name field must be at least 2 characters." }, lastname: { required: "This field is required", minlength: "The Last Name field must be at least 2 characters." }, email: { required: "This field is required" }, company: { required: "This field is required" }, state: { required: "Please select a state" } },
             errorPlacement: function(error, element) { if ($(element).data('modified')) error.appendTo(element.closest(".field-row")); },
             highlight: function(el) { if ($(el).data('modified')) $(el).css('border', '1px solid #c50006'); },
             unhighlight: function(el) { $(el).css('border', ''); },
