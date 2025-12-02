@@ -1,8 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // =========================================================================
-    // 1. ГЛОБАЛЬНЫЕ КОНСТАНТЫ И УТИЛИТЫ
-    // =========================================================================
     
+    // 1. ГЛОБАЛЬНЫЕ КОНСТАНТЫ И УТИЛИТЫ
     const countryCodeMap = {
         "Australia": "AU", "Austria": "AT", "Azerbaijan": "AZ", "Albania": "AL", "Algeria": "DZ", "Angola": "AO", "Andorra": "AD", "Antigua and Barbuda": "AG", "Argentina": "AR", "Armenia": "AM", "Afghanistan": "AF", "Bahamas": "BS", "Bangladesh": "BD", "Barbados": "BB", "Bahrain": "BH", "Belarus": "BY", "Belize": "BZ", "Belgium": "BE", "Benin": "BJ", "Bulgaria": "BG", "Bolivia": "BO", "Bosnia and Herzegovina": "BA", "Botswana": "BW", "Brazil": "BR", "Brunei Darussalam": "BN", "Burkina Faso": "BF", "Burundi": "BI", "Bhutan": "BT", "Vanuatu": "VU", "Hungary": "HU", "Venezuela": "VE", "Vietnam": "VN", "Gabon": "GA", "Haiti": "HT", "Guyana": "GY", "Gambia": "GM", "Ghana": "GH", "Guatemala": "GT", "Guinea": "GN", "Guinea-Bissau": "GW", "Germany": "DE", "Honduras": "HN", "Grenada": "GD", "Greece": "GR", "Georgia": "GE", "Denmark": "DK", "Congo, Democratic Republic of the": "CD", "Djibouti": "DJ", "Dominica": "DM", "Dominican Republic": "DO", "Egypt": "EG", "Zambia": "ZM", "Zimbabwe": "ZW", "Israel": "IL", "India": "IN", "Indonesia": "ID", "Jordan": "JO", "Iraq": "IQ", "Iran": "IR", "Ireland": "IE", "Iceland": "IS", "Spain": "ES", "Italy": "IT", "Yemen": "YE", "Cabo Verde": "CV", "Kazakhstan": "KZ", "Cambodia": "KH", "Cameroon": "CM", "Canada": "CA", "Qatar": "QA", "Kenya": "KE", "Cyprus": "CY", "Kiribati": "KI", "China": "CN", "Colombia": "CO", "Comoros": "KM", "Congo": "CG", "North Korea": "KP", "Costa Rica": "CR", "Côte d'Ivoire": "CI", "Cuba": "CU", "Kuwait": "KW", "Kyrgyzstan": "KG", "Lao People's Democratic Republic": "LA", "Latvia": "LV", "Lesotho": "LS", "Liberia": "LR", "Lebanon": "LB", "Libya": "LY", "Lithuania": "LT", "Liechtenstein": "LI", "Luxembourg": "LU", "Mauritius": "MU", "Mauritania": "MR", "Madagascar": "MG", "Malawi": "MW", "Malaysia": "MY", "Mali": "ML", "Maldives": "MV", "Malta": "MT", "Morocco": "MA", "Marshall Islands": "MH", "Mexico": "MX", "Mozambique": "MZ", "Monaco": "MC", "Mongolia": "MN", "Myanmar": "MM", "Namibia": "NA", "Nauru": "NR", "Nepal": "NP", "Niger": "NE", "Nigeria": "NG", "Netherlands": "NL", "Nicaragua": "NI", "Niue": "NU", "New Zealand": "NZ", "Norway": "NO", "Tanzania, United Republic of": "TZ", "United Arab Emirates": "AE", "Oman": "OM", "Cook Islands": "CK", "Pakistan": "PK", "Panama": "PA", "Papua New Guinea": "PG", "Paraguay": "PY", "Peru": "PE", "Poland": "PL", "Portugal": "PT", "Korea, Republic of": "KR", "Moldova, Republic of": "MD", "Russian Federation": "RU", "Rwanda": "RW", "Romania": "RO", "El Salvador": "SV", "Samoa": "WS", "San Marino": "SM", "Sao Tome and Principe": "ST", "Saudi Arabia": "SA", "Holy See (Vatican City State)": "VA", "North Macedonia": "MK", "Seychelles": "SC", "Senegal": "SN", "Saint Vincent and the Grenadines": "VC", "Saint Kitts and Nevis": "KN", "Saint Lucia": "LC", "Serbia": "RS", "Singapore": "SG", "Syrian Arab Republic": "SY", "Slovakia": "SK", "Slovenia": "SI", "United Kingdom": "GB", "United States": "US", "Solomon Islands": "SB", "Somalia": "SO", "Sudan": "SD", "Suriname": "SR", "Sierra Leone": "SL", "Tajikistan": "TJ", "Thailand": "TH", "Timor-Leste": "TL", "Togo": "TG", "Tonga": "TO", "Trinidad and Tobago": "TT", "Tuvalu": "TV", "Tunisia": "TN", "Turkmenistan": "TM", "Turkey": "TR", "Uganda": "UG", "Uzbekistan": "UZ", "Ukraine": "UA", "Uruguay": "UY", "Fiji": "FJ", "Philippines": "PH", "Finland": "FI", "France": "FR", "Croatia": "HR", "Central African Republic": "CF", "Chad": "TD", "Montenegro": "ME", "Czech Republic": "CZ", "Chile": "CL", "Switzerland": "CH", "Sweden": "SE", "Sri Lanka": "LK", "Ecuador": "EC", "Equatorial Guinea": "GQ", "Eritrea": "ER", "Eswatini": "SZ", "Estonia": "EE", "Ethiopia": "ET"
     };
@@ -192,11 +190,48 @@ document.addEventListener('DOMContentLoaded', function() {
         fetch('https://faas-nyc1-2ef2e6cc.doserverless.co/api/v1/web/fn-3627560b-2163-4a62-81db-3a3b5da17d5a/ip/info')
             .then(res => res.json()).then(data => {
                 if (data && data.country) {
+                    // 1. Устанавливаем страну
                     const opt = [...pCountrySelect.options].find(o => o.value === data.country);
                     if (opt) {
                         opt.selected = true;
                         pCountrySelect.dispatchEvent(new Event('change'));
                         $('#p-country').selectpicker('refresh');
+
+                        // Карта ID полей штатов для разных стран (взято из логики submit)
+                        const stateInputIds = {
+                            'United States': 'p-state',
+                            'Australia': 'p-states-australia',
+                            'Brazil': 'p-states-brazil',
+                            'Canada': 'p-states-canada',
+                            'China': 'p-states-china',
+                            'Ireland': 'p-states-ireland',
+                            'India': 'p-states-india',
+                            'Italy': 'p-states-italy',
+                            'Mexico': 'p-states-mexico'
+                        };
+
+                        // 2. Устанавливаем регион (штат/провинцию), если он пришел и есть поле для этой страны
+                        if ((data.state_name || data.state) && stateInputIds[data.country]) {
+                            setTimeout(() => {
+                                const targetId = stateInputIds[data.country];
+                                const stateSelect = document.getElementById(targetId);
+                                
+                                if (stateSelect) {
+                                    const valToFind = data.state_name || data.state;
+                                    // Ищем совпадение по значению или тексту
+                                    const stateOpt = [...stateSelect.options].find(o => 
+                                        o.value.toLowerCase() === valToFind.toLowerCase() || 
+                                        o.text.toLowerCase() === valToFind.toLowerCase()
+                                    );
+
+                                    if (stateOpt) {
+                                        stateOpt.selected = true;
+                                        $(`#${targetId}`).selectpicker('refresh'); // Обновляем конкретный select
+                                        $(stateSelect).valid(); 
+                                    }
+                                }
+                            }, 100);
+                        }
                     }
                 }
             }).catch(console.error);
@@ -405,8 +440,48 @@ document.addEventListener('DOMContentLoaded', function() {
                     fetch('https://faas-nyc1-2ef2e6cc.doserverless.co/api/v1/web/fn-3627560b-2163-4a62-81db-3a3b5da17d5a/ip/info')
                         .then(r => r.json()).then(data => {
                             success(data.iso_code);
+                            // 1. Устанавливаем страну
                             const opt = [...mCountrySelect.options].find(o => o.value === data.country);
-                            if (opt) { opt.selected = true; mCountrySelect.dispatchEvent(new Event('change')); }
+                            if (opt) { 
+                                opt.selected = true; 
+                                mCountrySelect.dispatchEvent(new Event('change')); 
+                                $('#country-2').selectpicker('refresh');
+                                
+                                // Карта ID полей штатов для второй формы
+                                const stateInputIds = {
+                                    'United States': 'state-2',
+                                    'Australia': 'states-australia',
+                                    'Brazil': 'states-brazil',
+                                    'Canada': 'states-canada',
+                                    'China': 'states-china',
+                                    'Ireland': 'states-ireland',
+                                    'India': 'states-india',
+                                    'Italy': 'states-italy',
+                                    'Mexico': 'states-mexico'
+                                };
+
+                                // 2. Устанавливаем регион для любой поддерживаемой страны
+                                if ((data.state_name || data.state) && stateInputIds[data.country]) {
+                                    setTimeout(() => {
+                                        const targetId = stateInputIds[data.country];
+                                        const stateSelect = document.getElementById(targetId);
+                                        
+                                        if (stateSelect) {
+                                            const valToFind = data.state_name || data.state;
+                                            const stateOpt = [...stateSelect.options].find(o => 
+                                                o.value.toLowerCase() === valToFind.toLowerCase() || 
+                                                o.text.toLowerCase() === valToFind.toLowerCase()
+                                            );
+
+                                            if (stateOpt) {
+                                                stateOpt.selected = true;
+                                                $(`#${targetId}`).selectpicker('refresh');
+                                                $(stateSelect).valid();
+                                            }
+                                        }
+                                    }, 100);
+                                }
+                            }
                         }).catch(failure);
                 }
             });
