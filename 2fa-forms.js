@@ -5,33 +5,34 @@ document.addEventListener('DOMContentLoaded', function() {
         "Australia": "AU", "Austria": "AT", "Azerbaijan": "AZ", "Albania": "AL", "Algeria": "DZ", "Angola": "AO", "Andorra": "AD", "Antigua and Barbuda": "AG", "Argentina": "AR", "Armenia": "AM", "Afghanistan": "AF", "Bahamas": "BS", "Bangladesh": "BD", "Barbados": "BB", "Bahrain": "BH", "Belarus": "BY", "Belize": "BZ", "Belgium": "BE", "Benin": "BJ", "Bulgaria": "BG", "Bolivia": "BO", "Bosnia and Herzegovina": "BA", "Botswana": "BW", "Brazil": "BR", "Brunei Darussalam": "BN", "Burkina Faso": "BF", "Burundi": "BI", "Bhutan": "BT", "Vanuatu": "VU", "Hungary": "HU", "Venezuela": "VE", "Vietnam": "VN", "Gabon": "GA", "Haiti": "HT", "Guyana": "GY", "Gambia": "GM", "Ghana": "GH", "Guatemala": "GT", "Guinea": "GN", "Guinea-Bissau": "GW", "Germany": "DE", "Honduras": "HN", "Grenada": "GD", "Greece": "GR", "Georgia": "GE", "Denmark": "DK", "Congo, Democratic Republic of the": "CD", "Djibouti": "DJ", "Dominica": "DM", "Dominican Republic": "DO", "Egypt": "EG", "Zambia": "ZM", "Zimbabwe": "ZW", "Israel": "IL", "India": "IN", "Indonesia": "ID", "Jordan": "JO", "Iraq": "IQ", "Iran": "IR", "Ireland": "IE", "Iceland": "IS", "Spain": "ES", "Italy": "IT", "Yemen": "YE", "Cabo Verde": "CV", "Kazakhstan": "KZ", "Cambodia": "KH", "Cameroon": "CM", "Canada": "CA", "Qatar": "QA", "Kenya": "KE", "Cyprus": "CY", "Kiribati": "KI", "China": "CN", "Colombia": "CO", "Comoros": "KM", "Congo": "CG", "North Korea": "KP", "Costa Rica": "CR", "Côte d'Ivoire": "CI", "Cuba": "CU", "Kuwait": "KW", "Kyrgyzstan": "KG", "Lao People's Democratic Republic": "LA", "Latvia": "LV", "Lesotho": "LS", "Liberia": "LR", "Lebanon": "LB", "Libya": "LY", "Lithuania": "LT", "Liechtenstein": "LI", "Luxembourg": "LU", "Mauritius": "MU", "Mauritania": "MR", "Madagascar": "MG", "Malawi": "MW", "Malaysia": "MY", "Mali": "ML", "Maldives": "MV", "Malta": "MT", "Morocco": "MA", "Marshall Islands": "MH", "Mexico": "MX", "Mozambique": "MZ", "Monaco": "MC", "Mongolia": "MN", "Myanmar": "MM", "Namibia": "NA", "Nauru": "NR", "Nepal": "NP", "Niger": "NE", "Nigeria": "NG", "Netherlands": "NL", "Nicaragua": "NI", "Niue": "NU", "New Zealand": "NZ", "Norway": "NO", "Tanzania, United Republic of": "TZ", "United Arab Emirates": "AE", "Oman": "OM", "Cook Islands": "CK", "Pakistan": "PK", "Panama": "PA", "Papua New Guinea": "PG", "Paraguay": "PY", "Peru": "PE", "Poland": "PL", "Portugal": "PT", "Korea, Republic of": "KR", "Moldova, Republic of": "MD", "Russian Federation": "RU", "Rwanda": "RW", "Romania": "RO", "El Salvador": "SV", "Samoa": "WS", "San Marino": "SM", "Sao Tome and Principe": "ST", "Saudi Arabia": "SA", "Holy See (Vatican City State)": "VA", "North Macedonia": "MK", "Seychelles": "SC", "Senegal": "SN", "Saint Vincent and the Grenadines": "VC", "Saint Kitts and Nevis": "KN", "Saint Lucia": "LC", "Serbia": "RS", "Singapore": "SG", "Syrian Arab Republic": "SY", "Slovakia": "SK", "Slovenia": "SI", "United Kingdom": "GB", "United States": "US", "Solomon Islands": "SB", "Somalia": "SO", "Sudan": "SD", "Suriname": "SR", "Sierra Leone": "SL", "Tajikistan": "TJ", "Thailand": "TH", "Timor-Leste": "TL", "Togo": "TG", "Tonga": "TO", "Trinidad and Tobago": "TT", "Tuvalu": "TV", "Tunisia": "TN", "Turkmenistan": "TM", "Turkey": "TR", "Uganda": "UG", "Uzbekistan": "UZ", "Ukraine": "UA", "Uruguay": "UY", "Fiji": "FJ", "Philippines": "PH", "Finland": "FI", "France": "FR", "Croatia": "HR", "Central African Republic": "CF", "Chad": "TD", "Montenegro": "ME", "Czech Republic": "CZ", "Chile": "CL", "Switzerland": "CH", "Sweden": "SE", "Sri Lanka": "LK", "Ecuador": "EC", "Equatorial Guinea": "GQ", "Eritrea": "ER", "Eswatini": "SZ", "Estonia": "EE", "Ethiopia": "ET"
     };
 
-    // --- NEW: Init Selects (Add Option Method) ---
+    // --- NEW: Init Selects ---
     function initStateSelects() {
         const allStateSelects = document.querySelectorAll('[id^="p-states-"], [id^="states-"], #p-state, #state-2');
         
         allStateSelects.forEach(sel => {
-            // 1. Убираем старые пустые опции, если они были, чтобы не дублировать
+            // 1. Чистим старые опции
             const oldOpt = sel.querySelector('option[value=""]');
             if (oldOpt) oldOpt.remove();
 
-            // 2. Создаем новую опцию-плейсхолдер
+            // 2. Создаем "Призрачную опцию"
+            // Она выбрана по умолчанию, поэтому на кнопке будет написано "State*"
+            // Но у неё есть атрибут data-hidden="true", поэтому в списке её не будет
             const opt = document.createElement('option');
             opt.value = ""; 
             opt.text = "State*";
-            opt.selected = true; // Выбираем её по умолчанию
-            sel.prepend(opt);    // Вставляем в самое начало списка
-
-            // 3. Атрибуты валидации
-            sel.setAttribute('required', 'true');
+            opt.selected = true; 
+            opt.setAttribute('data-hidden', 'true'); // <--- Магия Bootstrap Select
             
-            // 4. Отключаем по умолчанию (включим только при выборе страны)
+            sel.prepend(opt);
+
+            // 3. Настройки
+            sel.setAttribute('required', 'true');
             sel.disabled = true; 
             
-            // 5. Обновляем плагин
+            // 4. Обновляем
             $(sel).selectpicker('refresh');
         });
     }
-    // Вызываем сразу
     initStateSelects();
     
     // --- Live Validation for State Selects ---
@@ -196,12 +197,14 @@ document.addEventListener('DOMContentLoaded', function() {
         pCountrySelect.addEventListener('change', function() {
             const selected = this.value;
             
-            // 1. Скрываем И ОТКЛЮЧАЕМ все
+            // Скрываем все
             document.querySelectorAll('[class^="p-states-"], .p-dropdown-state').forEach(el => {
                 el.style.display = 'none';
                 const s = el.querySelector('select');
                 if (s) {
-                    s.disabled = true; 
+                    s.disabled = true;
+                    // Очищаем бордер у скрытых, чтобы при повторном показе не было "красного наследия"
+                    $(s).closest('.bootstrap-select').find('.dropdown-toggle').css('border', '');
                     $(s).selectpicker('refresh');
                 }
             });
@@ -216,26 +219,26 @@ document.addEventListener('DOMContentLoaded', function() {
                 const container = document.querySelector(stateMap[selected]);
                 if (container) {
                     container.style.display = 'block';
-                    
                     const select = container.querySelector('select');
                     if (select) {
-                        // 2. Включаем
-                        select.disabled = false; 
+                        select.disabled = false;
+                        $(select).val(''); // Выбираем нашу скрытую опцию
                         
-                        // 3. Выбираем пустую опцию "State*"
-                        $(select).val(''); 
+                        // 1. Перерисовываем кнопку (создается новый DOM элемент)
                         $(select).selectpicker('refresh');
                         
-                        // 4. ПРИНУДИТЕЛЬНАЯ ПРОВЕРКА
-                        // Это заставит поле мгновенно покраснеть, т.к. значение "" (пустое) и поле required
-                        if (!$(select).valid()) {
-                            $(select).closest('.bootstrap-select').find('.dropdown-toggle').css('border', '1px solid #c50006');
-                        }
+                        // 2. ЖЕСТКО красим новую кнопку. 
+                        // Мы на 100% знаем, что поле сейчас пустое и обязательное.
+                        // Не ждем милости от валидатора.
+                        $(select).closest('.bootstrap-select').find('.dropdown-toggle').css('border', '1px solid #c50006');
+                        
+                        // 3. Для порядка обновляем статус валидатора
+                        $(select).valid(); 
                     }
                 }
             }
 
-            // ... (остальной код для США/чекбоксов без изменений) ...
+            // ... (остальной код для США/чекбоксов тот же) ...
              if (selected === 'United States') {
                 document.querySelector('.form-message').style.display = 'none';
                 document.querySelector('.form-message_usa').style.display = 'block';
@@ -247,9 +250,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 $(pCheckbox).prop('checked', false).removeAttr('checked');
                 $(pCheckbox).parent().find('.w-checkbox-input').removeClass('w--redirected-checked');
             }
-            
             setTimeout(updatePSubmitState, 50);
-            $(this).valid(); // Валидация самого поля страны
+            $(this).valid(); 
         });
 
         // IP Detect
@@ -579,12 +581,12 @@ document.addEventListener('DOMContentLoaded', function() {
             const selected = this.value;
             if (iti && countryCodeMap[selected]) iti.setCountry(countryCodeMap[selected]);
             
-            // 1. Скрываем И ОТКЛЮЧАЕМ
             document.querySelectorAll('[class^="states-"], .dropdown-state-2').forEach(el => {
                 el.style.display = 'none';
                 const s = el.querySelector('select');
                 if (s) {
                      s.disabled = true; 
+                     $(s).closest('.bootstrap-select').find('.dropdown-toggle').css('border', '');
                      $(s).selectpicker('refresh');
                 }
             });
@@ -595,24 +597,23 @@ document.addEventListener('DOMContentLoaded', function() {
                 const container = document.querySelector(stateMap[selected]);
                 if (container) {
                     container.style.display = 'block';
-                    
                     const select = container.querySelector('select');
                     if (select) {
                         select.disabled = false; 
-                        
-                        // Выбираем пустую опцию "State*"
                         $(select).val(''); 
+                        
+                        // 1. Перерисовываем
                         $(select).selectpicker('refresh');
 
-                        // ПРИНУДИТЕЛЬНАЯ ПРОВЕРКА (Красная рамка сразу)
-                        if (!$(select).valid()) {
-                            $(select).closest('.bootstrap-select').find('.dropdown-toggle').css('border', '1px solid #c50006');
-                        }
+                        // 2. ЖЕСТКО красим
+                        $(select).closest('.bootstrap-select').find('.dropdown-toggle').css('border', '1px solid #c50006');
+                        
+                        $(select).valid();
                     }
                 }
             }
 
-            // ... (далее код для США/чекбоксов без изменений) ...
+            // ... (остальной код без изменений) ...
             if (selected === 'United States') {
                 document.querySelector('.form-message').style.display = 'none';
                 document.querySelector('.form-message_usa').style.display = 'block';
@@ -624,7 +625,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 $(mCheckbox).prop('checked', false).removeAttr('checked');
                 $(mCheckbox).parent().find('.w-checkbox-input').removeClass('w--redirected-checked');
             }
-            
             setTimeout(updateMSubmitState, 50);
             $(this).valid();
         });
