@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // =========================================================================
     
     const countryCodeMap = {
-        "Australia": "AU", "Austria": "AT", "Azerbaijan": "AZ", "Albania": "AL", "Algeria": "DZ", "Angola": "AO", "Andorra": "AD", "Antigua and Barbuda": "AG", "Argentina": "AR", "Armenia": "AM", "Afghanistan": "AF", "Bahamas": "BS", "Bangladesh": "BD", "Barbados": "BB", "Bahrain": "BH", "Belarus": "BY", "Belize": "BZ", "Belgium": "BE", "Benin": "BJ", "Bulgaria": "BG", "Bolivia": "BO", "Bosnia and Herzegovina": "BA", "Botswana": "BW", "Brazil": "BR", "Brunei Darussalam": "BN", "Burkina Faso": "BF", "Burundi": "BI", "Bhutan": "BT", "Vanuatu": "VU", "Hungary": "HU", "Venezuela": "VE", "Vietnam": "VN", "Gabon": "GA", "Haiti": "HT", "Guyana": "GY", "Gambia": "GM", "Ghana": "GH", "Guatemala": "GT", "Guinea": "GN", "Guinea-Bissau": "GW", "Germany": "DE", "Honduras": "HN", "Grenada": "GD", "Greece": "GR", "Georgia": "GE", "Denmark": "DK", "Congo, Democratic Republic of the": "CD", "Djibouti": "DJ", "Dominica": "DM", "Dominican Republic": "DO", "Egypt": "EG", "Zambia": "ZM", "Zimbabwe": "ZW", "Israel": "IL", "India": "IN", "Indonesia": "ID", "Jordan": "JO", "Iraq": "IQ", "Iran": "IR", "Ireland": "IE", "Iceland": "IS", "Spain": "ES", "Italy": "IT", "Yemen": "YE", "Cabo Verde": "CV", "Kazakhstan": "KZ", "Cambodia": "KH", "Cameroon": "CM", "Canada": "CA", "Qatar": "QA", "Kenya": "KE", "Cyprus": "CY", "Kiribati": "KI", "China": "CN", "Colombia": "CO", "Comoros": "KM", "Congo": "CG", "North Korea": "KP", "Costa Rica": "cr", "Côte d'Ivoire": "CI", "Cuba": "CU", "Kuwait": "KW", "Kyrgyzstan": "kg", "Lao People's Democratic Republic": "LA", "Latvia": "LV", "Lesotho": "LS", "Liberia": "LR", "Lebanon": "LB", "Libya": "LY", "Lithuania": "LT", "Liechtenstein": "LI", "Luxembourg": "LU", "Mauritius": "MU", "Mauritania": "MR", "Madagascar": "MG", "Malawi": "MW", "Malaysia": "MY", "Mali": "ML", "Maldives": "MV", "Malta": "MT", "Morocco": "MA", "Marshall Islands": "MH", "Mexico": "MX", "Mozambique": "MZ", "Monaco": "MC", "Mongolia": "MN", "Myanmar": "MM", "Namibia": "NA", "Nauru": "NR", "Nepal": "NP", "Niger": "NE", "Nigeria": "NG", "Netherlands": "NL", "Nicaragua": "NI", "Niue": "NU", "New Zealand": "nz", "Norway": "NO", "Tanzania, United Republic of": "TZ", "United Arab Emirates": "AE", "Oman": "OM", "Cook Islands": "CK", "Pakistan": "PK", "Panama": "PA", "Papua New Guinea": "PG", "Paraguay": "PY", "Peru": "PE", "Poland": "PL", "Portugal": "PT", "Korea, Republic of": "KR", "Moldova, Republic of": "MD", "Russian Federation": "RU", "Rwanda": "RW", "Romania": "RO", "El Salvador": "SV", "Samoa": "WS", "San Marino": "SM", "Sao Tome and Principe": "ST", "Saudi Arabia": "SA", "Holy See (Vatican City State)": "VA", "North Macedonia": "MK", "Seychelles": "SC", "Senegal": "SN", "Saint Vincent and the Grenadines": "VC", "Saint Kitts and Nevis": "KN", "Saint Lucia": "LC", "Serbia": "RS", "Singapore": "SG", "Syrian Arab Republic": "SY", "Slovakia": "SK", "Slovenia": "SI", "United Kingdom": "GB", "United States": "US", "Solomon Islands": "SB", "Somalia": "SO", "Sudan": "SD", "Suriname": "SR", "Sierra Leone": "SL", "Tajikistan": "TJ", "Thailand": "TH", "Timor-Leste": "TL", "Togo": "TG", "Tonga": "TO", "Trinidad and Tobago": "TT", "Tuvalu": "TV", "Tunisia": "TN", "Turkmenistan": "TM", "Turkey": "TR", "Uganda": "UG", "Uzbekistan": "UZ", "Ukraine": "UA", "Uruguay": "UY", "Fiji": "FJ", "Philippines": "PH", "Finland": "FI", "France": "FR", "Croatia": "HR", "Central African Republic": "cf", "Chad": "TD", "Montenegro": "ME", "Czech Republic": "CZ", "Chile": "CL", "Switzerland": "CH", "Sweden": "SE", "Sri Lanka": "LK", "Ecuador": "EC", "Equatorial Guinea": "GQ", "Eritrea": "ER", "Eswatini": "SZ", "Estonia": "EE", "Ethiopia": "ET"
+        "Australia": "AU", "Austria": "AT", "Azerbaijan": "AZ", "Albania": "AL", "Algeria": "DZ", "Angola": "AO", "Andorra": "AD", "Antigua and Barbuda": "AG", "Argentina": "AR", "Armenia": "AM", "Afghanistan": "AF", "Bahamas": "BS", "Bangladesh": "BD", "Barbados": "BB", "Bahrain": "BH", "Belarus": "BY", "Belize": "BZ", "Belgium": "BE", "Benin": "BJ", "Bulgaria": "BG", "Bolivia": "BO", "Bosnia and Herzegovina": "BA", "Botswana": "BW", "Brazil": "BR", "Brunei Darussalam": "BN", "Burkina Faso": "BF", "Burundi": "BI", "Bhutan": "BT", "Vanuatu": "VU", "Hungary": "HU", "Venezuela": "VE", "Vietnam": "VN", "Gabon": "GA", "Haiti": "HT", "Guyana": "GY", "Gambia": "GM", "Ghana": "GH", "Guatemala": "GT", "Guinea": "GN", "Guinea-Bissau": "GW", "Germany": "DE", "Honduras": "HN", "Grenada": "GD", "Greece": "GR", "Georgia": "GE", "Denmark": "DK", "Congo, Democratic Republic of the": "CD", "Djibouti": "DJ", "Dominica": "DM", "Dominican Republic": "DO", "Egypt": "EG", "Zambia": "ZM", "Zimbabwe": "ZW", "Israel": "IL", "India": "IN", "Indonesia": "ID", "Jordan": "JO", "Iraq": "IQ", "Iran": "IR", "Ireland": "IE", "Iceland": "IS", "Spain": "ES", "Italy": "IT", "Yemen": "YE", "Cabo Verde": "CV", "Kazakhstan": "KZ", "Cambodia": "KH", "Cameroon": "CM", "Canada": "CA", "Qatar": "QA", "Kenya": "KE", "Cyprus": "CY", "Kiribati": "KI", "China": "CN", "Colombia": "CO", "Comoros": "KM", "Congo": "CG", "North Korea": "KP", "Costa Rica": "CR", "Côte d'Ivoire": "CI", "Cuba": "CU", "Kuwait": "KW", "Kyrgyzstan": "KG", "Lao People's Democratic Republic": "LA", "Latvia": "LV", "Lesotho": "LS", "Liberia": "LR", "Lebanon": "LB", "Libya": "LY", "Lithuania": "LT", "Liechtenstein": "LI", "Luxembourg": "LU", "Mauritius": "MU", "Mauritania": "MR", "Madagascar": "MG", "Malawi": "MW", "Malaysia": "MY", "Mali": "ML", "Maldives": "MV", "Malta": "MT", "Morocco": "MA", "Marshall Islands": "MH", "Mexico": "MX", "Mozambique": "MZ", "Monaco": "MC", "Mongolia": "MN", "Myanmar": "MM", "Namibia": "NA", "Nauru": "NR", "Nepal": "NP", "Niger": "NE", "Nigeria": "NG", "Netherlands": "NL", "Nicaragua": "NI", "Niue": "NU", "New Zealand": "NZ", "Norway": "NO", "Tanzania, United Republic of": "TZ", "United Arab Emirates": "AE", "Oman": "OM", "Cook Islands": "CK", "Pakistan": "PK", "Panama": "PA", "Papua New Guinea": "PG", "Paraguay": "PY", "Peru": "PE", "Poland": "PL", "Portugal": "PT", "Korea, Republic of": "KR", "Moldova, Republic of": "MD", "Russian Federation": "RU", "Rwanda": "RW", "Romania": "RO", "El Salvador": "SV", "Samoa": "WS", "San Marino": "SM", "Sao Tome and Principe": "ST", "Saudi Arabia": "SA", "Holy See (Vatican City State)": "VA", "North Macedonia": "MK", "Seychelles": "SC", "Senegal": "SN", "Saint Vincent and the Grenadines": "VC", "Saint Kitts and Nevis": "KN", "Saint Lucia": "LC", "Serbia": "RS", "Singapore": "SG", "Syrian Arab Republic": "SY", "Slovakia": "SK", "Slovenia": "SI", "United Kingdom": "GB", "United States": "US", "Solomon Islands": "SB", "Somalia": "SO", "Sudan": "SD", "Suriname": "SR", "Sierra Leone": "SL", "Tajikistan": "TJ", "Thailand": "TH", "Timor-Leste": "TL", "Togo": "TG", "Tonga": "TO", "Trinidad and Tobago": "TT", "Tuvalu": "TV", "Tunisia": "TN", "Turkmenistan": "TM", "Turkey": "TR", "Uganda": "UG", "Uzbekistan": "UZ", "Ukraine": "UA", "Uruguay": "UY", "Fiji": "FJ", "Philippines": "PH", "Finland": "FI", "France": "FR", "Croatia": "HR", "Central African Republic": "CF", "Chad": "TD", "Montenegro": "ME", "Czech Republic": "CZ", "Chile": "CL", "Switzerland": "CH", "Sweden": "SE", "Sri Lanka": "LK", "Ecuador": "EC", "Equatorial Guinea": "GQ", "Eritrea": "ER", "Eswatini": "SZ", "Estonia": "EE", "Ethiopia": "ET"
     };
 
     // Карта штатов США (Код API "state" -> Название в списке)
@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', function() {
         input.addEventListener('input', updateLabelState);
     }
 
-    // Исходная логика имени (как вы просили - не тронута)
+    // [ОРИГИНАЛЬНАЯ ЛОГИКА]
     function splitFullName(fullName) {
         if (!fullName) return { firstName: '', lastName: '' };
         const nameParts = fullName.trim().split(' ');
@@ -164,7 +164,6 @@ document.addEventListener('DOMContentLoaded', function() {
         $('[id^="p-states-"], #p-state').selectpicker();
         $('[id^="p-states-"], #p-state, #p-country').on('shown.bs.select', function() { $(this).data('selectpicker').$menuInner[0].scrollTop = 0; });
 
-        // Configuration for Form 1
         const pStateConfig = {
             'United States': { wrapper: '.p-dropdown-state', select: '#p-state' },
             'Australia': { wrapper: '.p-states-australia', select: '#p-states-australia' },
@@ -181,29 +180,28 @@ document.addEventListener('DOMContentLoaded', function() {
         function handlePCountryChange() {
             const selectedCountry = pCountrySelect.value;
             
-            // 1. Скрываем все штаты
+            // 1. Скрываем все и сбрасываем валидацию скрытых
             document.querySelectorAll('[class^="p-states-"], .p-dropdown-state').forEach(el => {
                 el.style.display = 'none';
-                // Сбрасываем валидацию для скрытых полей, чтобы не блокировали отправку
                 const select = el.querySelector('select');
                 if (select) {
                      $(select).removeClass('error').valid(); 
                 }
             });
             
-            // 2. Очищаем значения всех штатов
+            // 2. Очищаем
             Object.values(pStateConfig).forEach(config => {
                 $(config.select).val('').selectpicker('refresh');
             });
 
-            // 3. Показываем нужный блок и СРАЗУ ВЫЗЫВАЕМ ОШИБКУ
+            // 3. Показываем нужный + ТРИГГЕР ВАЛИДАЦИИ (КРАСНАЯ РАМКА)
             if (pStateConfig[selectedCountry]) {
                 const wrapper = document.querySelector(pStateConfig[selectedCountry].wrapper);
                 const selectEl = document.querySelector(pStateConfig[selectedCountry].select);
                 
                 if (wrapper && selectEl) {
                     wrapper.style.display = 'block';
-                    // [КЛЮЧЕВОЙ МОМЕНТ] Валидируем сразу после показа, чтобы появилась красная рамка
+                    // ПРИНУДИТЕЛЬНАЯ ПРОВЕРКА -> ПОКАЖЕТ ОШИБКУ
                     setTimeout(() => {
                         $(selectEl).valid(); 
                     }, 50);
@@ -234,7 +232,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (data && data.country) {
                     $(pCountrySelect).selectpicker('val', data.country);
                     
-                    // Вызываем логику смены страны (поля появятся ПУСТЫМИ и КРАСНЫМИ)
+                    // Вызываем смену страны (поля появятся пустыми и красными)
                     handlePCountryChange();
 
                     const config = pStateConfig[data.country];
@@ -256,16 +254,15 @@ document.addEventListener('DOMContentLoaded', function() {
                          );
 
                          if (stateOpt) {
-                            // Если нашли автоопределение - выбираем и УБИРАЕМ КРАСНОТУ
+                            // ЕСЛИ НАШЛИ - ЗАПОЛНЯЕМ И УБИРАЕМ КРАСНОТУ
                             $(config.select).selectpicker('val', stateOpt.value);
-                            $(config.select).valid();
+                            $(config.select).valid(); // Проверяем снова -> успешно -> убираем класс error
                          }
                          updatePSubmitState();
                     }
                 }
             }).catch(console.error);
 
-        // Слушатель для снятия красноты при ручном выборе
         Object.values(pStateConfig).forEach(config => {
             $(config.select).on('change', function() {
                 $(this).valid();
@@ -465,7 +462,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 if (opt) { 
                                     $(mCountrySelect).selectpicker('val', data.country);
                                     
-                                    // Вызываем логику смены (ПУСТОЙ + КРАСНЫЙ)
+                                    // Вызываем смену страны (поля появятся пустыми и красными)
                                     handleMCountryChange();
 
                                     const config = mStateConfig[data.country];
@@ -483,9 +480,9 @@ document.addEventListener('DOMContentLoaded', function() {
                                          const stateOpt = [...stateSelectEl.options].find(o => o.value === targetValue || o.text === targetValue || o.value === stateCode || o.text === stateCode || o.value === stateName || o.text === stateName);
                                          
                                          if (stateOpt) {
-                                             // Если автоопределение сработало - ставим значение и УБИРАЕМ КРАСНОТУ
+                                             // ЕСЛИ НАШЛИ - ЗАПОЛНЯЕМ И УБИРАЕМ КРАСНОТУ
                                              $(config.select).selectpicker('val', stateOpt.value);
-                                             $(config.select).valid();
+                                             $(config.select).valid(); 
                                          }
                                          updateMSubmitState();
                                     }
@@ -498,7 +495,6 @@ document.addEventListener('DOMContentLoaded', function() {
             $(mPhoneInput).data('intlTelInput', iti);
         }
 
-        // Configuration for Form 2
         const mStateConfig = {
             'United States': { wrapper: '.dropdown-state-2', select: '#state-2' },
             'Australia': { wrapper: '.states-australia', select: '#states-australia' },
@@ -514,9 +510,10 @@ document.addEventListener('DOMContentLoaded', function() {
         // --- ЛОГИКА СМЕНЫ СТРАНЫ ФОРМА 2 ---
         function handleMCountryChange() {
             const selectedCountry = mCountrySelect.value;
+            // [ОРИГИНАЛЬНЫЙ РЕГИСТР]
             if (iti && countryCodeMap[selectedCountry]) iti.setCountry(countryCodeMap[selectedCountry]);
             
-            // 1. Скрываем все и сбрасываем валидацию для скрытых
+            // 1. Скрываем все и сбрасываем валидацию скрытых
             document.querySelectorAll('[class^="states-"], .dropdown-state-2').forEach(el => {
                 el.style.display = 'none';
                 const select = el.querySelector('select');
@@ -525,19 +522,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
             
-            // 2. Очищаем значения
+            // 2. Очищаем
             Object.values(mStateConfig).forEach(config => {
                 $(config.select).val('').selectpicker('refresh');
             });
 
-            // 3. Показываем нужный и ТРИГГЕРИМ КРАСНУЮ РАМКУ
+            // 3. Показываем нужный + ТРИГГЕР ВАЛИДАЦИИ (КРАСНАЯ РАМКА)
             if (mStateConfig[selectedCountry]) {
                 const wrapper = document.querySelector(mStateConfig[selectedCountry].wrapper);
                 const selectEl = document.querySelector(mStateConfig[selectedCountry].select);
                 
                 if (wrapper && selectEl) {
                     wrapper.style.display = 'block';
-                    // [КЛЮЧЕВОЙ МОМЕНТ]
+                    // ПРИНУДИТЕЛЬНАЯ ПРОВЕРКА -> ПОКАЖЕТ ОШИБКУ
                     setTimeout(() => {
                         $(selectEl).valid(); 
                     }, 50);
@@ -561,7 +558,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
         mCountrySelect.addEventListener('change', handleMCountryChange);
         
-        // Слушатель для снятия красноты при ручном выборе
         Object.values(mStateConfig).forEach(config => {
             $(config.select).on('change', function() {
                 $(this).valid();
