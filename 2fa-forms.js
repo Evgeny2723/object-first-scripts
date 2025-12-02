@@ -163,8 +163,8 @@ document.addEventListener('DOMContentLoaded', function() {
             $(this).attr('title', 'State*');
         });
         $('[id^="p-states-"], #p-state').selectpicker('refresh');
-
-        $('[id^="p-states-"], #p-state').on('change', function() {
+        
+        $('[id^="p-states-"], #p-state').on('changed.bs.select', function() {
             $(this).data('modified', true);
             $(this).valid();
             updatePSubmitState();
@@ -174,14 +174,31 @@ document.addEventListener('DOMContentLoaded', function() {
         pCountrySelect.addEventListener('change', function() {
             const selected = this.value;
             // Hide all states
-            document.querySelectorAll('[class^="p-states-"], .p-dropdown-state').forEach(el => el.style.display = 'none');
+            document.querySelectorAll('[class^="p-states-"], .p-dropdown-state').forEach(el => {
+                el.style.display = 'none';
+                // Убрать валидацию со скрытых
+                $(el).data('modified', false);
+                $(el).valid(); // Очистить ошибки
+            });
             // Show relevant state
             const stateMap = {
                 'United States': '.p-dropdown-state', 'Australia': '.p-states-australia', 'Brazil': '.p-states-brazil',
                 'Canada': '.p-states-canada', 'China': '.p-states-china', 'Ireland': '.p-states-ireland',
                 'India': '.p-states-india', 'Italy': '.p-states-italy', 'Mexico': '.p-states-mexico'
             };
-            if (stateMap[selected]) document.querySelector(stateMap[selected]).style.display = 'block';
+            if (stateMap[selected]) {
+                const stateSelector = stateMap[selected];
+                const stateElement = document.querySelector(stateSelector);
+                stateElement.style.display = 'block';
+                
+                $(stateElement).val('').selectpicker('refresh');
+                
+                $(stateElement).data('modified', true);
+                
+                setTimeout(() => {
+                    $(stateElement).valid();
+                }, 100);
+            }
 
             // USA Message / Checkbox
              if (selected === 'United States') {
@@ -474,7 +491,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         $('[id^="states-"], #state-2').selectpicker('refresh');
 
-        $('[id^="states-"], #state-2').on('change', function() {
+        $('[id^="states-"], #state-2').on('changed.bs.select', function() {
             $(this).data('modified', true);
             $(this).valid();
             updateMSubmitState();
@@ -562,9 +579,25 @@ document.addEventListener('DOMContentLoaded', function() {
             const selected = this.value;
             if (iti && countryCodeMap[selected]) iti.setCountry(countryCodeMap[selected]);
             
-            document.querySelectorAll('[class^="states-"], .dropdown-state-2').forEach(el => el.style.display = 'none');
+            document.querySelectorAll('[class^="states-"], .dropdown-state-2').forEach(el => {
+                el.style.display = 'none';
+                $(el).data('modified', false);
+                $(el).valid();
+            });
             const stateMap = { 'United States': '.dropdown-state-2', 'Australia': '.states-australia', 'Brazil': '.states-brazil', 'Canada': '.states-canada', 'China': '.states-china', 'Ireland': '.states-ireland', 'India': '.states-india', 'Italy': '.states-italy', 'Mexico': '.states-mexico' };
-            if (stateMap[selected]) document.querySelector(stateMap[selected]).style.display = 'block';
+            if (stateMap[selected]) {
+                const stateSelector = stateMap[selected];
+                const stateElement = document.querySelector(stateSelector);
+                stateElement.style.display = 'block';
+                
+                $(stateElement).val('').selectpicker('refresh');
+                
+                $(stateElement).data('modified', true);
+                
+                setTimeout(() => {
+                    $(stateElement).valid();
+                }, 100);
+            }
 
             if (selected === 'United States') {
                 document.querySelector('.form-message').style.display = 'none';
