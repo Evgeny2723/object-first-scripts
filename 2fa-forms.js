@@ -159,46 +159,18 @@ document.addEventListener('DOMContentLoaded', function() {
         $('[id^="p-states-"], #p-state').selectpicker();
         $('[id^="p-states-"], #p-state, #p-country').on('shown.bs.select', function() { $(this).data('selectpicker').$menuInner[0].scrollTop = 0; });
 
-        $('[id^="p-states-"], #p-state').each(function() {
-            $(this).attr('title', 'State*');
-        });
-        $('[id^="p-states-"], #p-state').selectpicker('refresh');
-        
-        $('[id^="p-states-"], #p-state').on('changed.bs.select', function() {
-            $(this).data('modified', true);
-            $(this).valid();
-            updatePSubmitState();
-        });
-
         // Country Logic
         pCountrySelect.addEventListener('change', function() {
             const selected = this.value;
             // Hide all states
-            document.querySelectorAll('[class^="p-states-"], .p-dropdown-state').forEach(el => {
-                el.style.display = 'none';
-                // Убрать валидацию со скрытых
-                $(el).data('modified', false);
-                $(el).valid(); // Очистить ошибки
-            });
+            document.querySelectorAll('[class^="p-states-"], .p-dropdown-state').forEach(el => el.style.display = 'none');
             // Show relevant state
             const stateMap = {
                 'United States': '.p-dropdown-state', 'Australia': '.p-states-australia', 'Brazil': '.p-states-brazil',
                 'Canada': '.p-states-canada', 'China': '.p-states-china', 'Ireland': '.p-states-ireland',
                 'India': '.p-states-india', 'Italy': '.p-states-italy', 'Mexico': '.p-states-mexico'
             };
-            if (stateMap[selected]) {
-                const stateSelector = stateMap[selected];
-                const stateElement = document.querySelector(stateSelector);
-                stateElement.style.display = 'block';
-                
-                $(stateElement).val('').selectpicker('refresh');
-                
-                $(stateElement).data('modified', true);
-                
-                setTimeout(() => {
-                    $(stateElement).valid();
-                }, 100);
-            }
+            if (stateMap[selected]) document.querySelector(stateMap[selected]).style.display = 'block';
 
             // USA Message / Checkbox
              if (selected === 'United States') {
@@ -216,94 +188,31 @@ document.addEventListener('DOMContentLoaded', function() {
             $(this).valid();
         });
 
-        // IP Detect для Формы 1 (p-prefix)
+        // IP Detect
         fetch('https://faas-nyc1-2ef2e6cc.doserverless.co/api/v1/web/fn-3627560b-2163-4a62-81db-3a3b5da17d5a/ip/info')
             .then(res => res.json()).then(data => {
                 if (data && data.country) {
-                    // Установить страну
                     const opt = [...pCountrySelect.options].find(o => o.value === data.country);
                     if (opt) {
                         opt.selected = true;
                         pCountrySelect.dispatchEvent(new Event('change'));
                         $('#p-country').selectpicker('refresh');
-                        
-                        // Карта селекторов штатов
-                        const stateMap = {
-                            'United States': '#p-state',
-                            'Australia': '#p-states-australia',
-                            'Brazil': '#p-states-brazil',
-                            'Canada': '#p-states-canada',
-                            'China': '#p-states-china',
-                            'Ireland': '#p-states-ireland',
-                            'India': '#p-states-india',
-                            'Italy': '#p-states-italy',
-                            'Mexico': '#p-states-mexico'
-                        };
-                        
-                        const stateSelector = stateMap[data.country];
-                        if (stateSelector) {
-                            const stateElement = document.querySelector(stateSelector);
-                            
-                            // Попытка найти штат по разным критериям
-                            let stateOption = null;
-                            
-                            if (data.state_name || data.state) {
-                                const searchValue = data.state_name || data.state;
-                                
-                                // 1. Поиск по state_name (например "Lombardy", "Texas")
-                                stateOption = [...stateElement.options].find(o => 
-                                    o.text.toLowerCase() === searchValue.toLowerCase()
-                                );
-                                
-                                // 2. Если не найдено - поиск по value (например "TX", "25")
-                                if (!stateOption && data.state) {
-                                    stateOption = [...stateElement.options].find(o => 
-                                        o.value === data.state || 
-                                        o.value.toLowerCase() === data.state.toLowerCase()
-                                    );
-                                }
-                                
-                                // 3. Поиск по частичному совпадению в тексте
-                                if (!stateOption && data.state_name) {
-                                    stateOption = [...stateElement.options].find(o => 
-                                        o.text.toLowerCase().includes(searchValue.toLowerCase()) ||
-                                        searchValue.toLowerCase().includes(o.text.toLowerCase())
-                                    );
-                                }
-                            }
-                            
-                            // Установить найденный штат или пустое значение
-                            if (stateOption && stateOption.value) {
-                                $(stateElement).val(stateOption.value).selectpicker('refresh');
-                            } else {
-                                // Если штат не найден - установить пустое значение
-                                $(stateElement).val('').selectpicker('refresh');
-                            }
-                        }
                     }
                 }
-            }).catch(err => {
-                console.error('IP detection error:', err);
-            });
-
+            }).catch(console.error);
 
         // Validation - Main
         $('#p-main-form').validate({
              onfocusout: function(el) { if ($(el).data('modified')) $(el).valid(); },
              onkeyup: function(el) { $(el).data('modified', true); $(el).valid(); },
              rules: {
-                'Full-Name': { required: true, maxlength: 100, noSpacesOnly: true, minlength: 2 },
+                'Full-Name': { required: true, maxlength: 100, noSpacesOnly: true },
                 email: { required: true, maxlength: 50, email: true, corporate: true, validEmailChars: true },
                 company: { required: true, maxlength: 50, noSpacesOnly: true },
                 'self-attribution': { maxlength: 50 },
-                 state: {
-                    required: function(element) {
-                        return $(element).is(':visible') && $(element).parent().is(':visible');
-                    }
-                },
                 agreement: { required: function(el) { return $('#p-country').val() !== 'United States' && $(el).is(':visible'); } }
              },
-             messages: { 'Full-Name': { required: "This field is required", minlength: "The Full Name field must be at least 2 characters." }, email: { required: "This field is required" }, company: { required: "This field is required" }, state: { required: "Please select a state" } },
+             messages: { 'Full-Name': { required: "This field is required" }, email: { required: "This field is required" }, company: { required: "This field is required" } },
              errorPlacement: function(error, element) { if ($(element).data('modified')) error.appendTo(element.closest(".field-row")); },
              highlight: function(el) { if ($(el).data('modified')) $(el).css('border', '1px solid #c50006'); },
              unhighlight: function(el) { $(el).css('border', ''); },
@@ -486,17 +395,6 @@ document.addEventListener('DOMContentLoaded', function() {
         $('[id^="states-"], #state-2').selectpicker();
         $('[id^="states-"], #state-2, #country-2').on('shown.bs.select', function() { $(this).data('selectpicker').$menuInner[0].scrollTop = 0; });
 
-        $('[id^="states-"], #state-2').each(function() {
-            $(this).attr('title', 'State*');
-        });
-        $('[id^="states-"], #state-2').selectpicker('refresh');
-
-        $('[id^="states-"], #state-2').on('changed.bs.select', function() {
-            $(this).data('modified', true);
-            $(this).valid();
-            updateMSubmitState();
-        });
-
         // IntlTelInput
         let iti;
         if (mPhoneInput) {
@@ -504,70 +402,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
                 autoPlaceholder: "aggressive", separateDialCode: true, initialCountry: "auto",
                 geoIpLookup: function(success, failure) {
-                    // IP Detect для Формы 2
                     fetch('https://faas-nyc1-2ef2e6cc.doserverless.co/api/v1/web/fn-3627560b-2163-4a62-81db-3a3b5da17d5a/ip/info')
-                        .then(res => res.json()).then(data => {
-                            if (data && data.country) {
-                                const opt = [...mCountrySelect.options].find(o => o.value === data.country);
-                                if (opt) {
-                                    opt.selected = true;
-                                    mCountrySelect.dispatchEvent(new Event('change'));
-                                    $('#country-2').selectpicker('refresh');
-                                    
-                                    const stateMap = {
-                                        'United States': '#state-2',
-                                        'Australia': '#states-australia',
-                                        'Brazil': '#states-brazil',
-                                        'Canada': '#states-canada',
-                                        'China': '#states-china',
-                                        'Ireland': '#states-ireland',
-                                        'India': '#states-india',
-                                        'Italy': '#states-italy',
-                                        'Mexico': '#states-mexico'
-                                    };
-                                    
-                                    const stateSelector = stateMap[data.country];
-                                    if (stateSelector) {
-                                        const stateElement = document.querySelector(stateSelector);
-                                        let stateOption = null;
-                                        
-                                        if (data.state_name || data.state) {
-                                            const searchValue = data.state_name || data.state;
-                                            
-                                            // Поиск по state_name
-                                            stateOption = [...stateElement.options].find(o => 
-                                                o.text.toLowerCase() === searchValue.toLowerCase()
-                                            );
-                                            
-                                            // Поиск по value
-                                            if (!stateOption && data.state) {
-                                                stateOption = [...stateElement.options].find(o => 
-                                                    o.value === data.state || 
-                                                    o.value.toLowerCase() === data.state.toLowerCase()
-                                                );
-                                            }
-                                            
-                                            // Частичное совпадение
-                                            if (!stateOption && data.state_name) {
-                                                stateOption = [...stateElement.options].find(o => 
-                                                    o.text.toLowerCase().includes(searchValue.toLowerCase()) ||
-                                                    searchValue.toLowerCase().includes(o.text.toLowerCase())
-                                                );
-                                            }
-                                        }
-                                        
-                                        if (stateOption && stateOption.value) {
-                                            $(stateElement).val(stateOption.value).selectpicker('refresh');
-                                        } else {
-                                            $(stateElement).val('').selectpicker('refresh');
-                                        }
-                                    }
-                                }
-                            }
-                        }).catch(err => {
-                            console.error('IP detection error:', err);
-                        });
-
+                        .then(r => r.json()).then(data => {
+                            success(data.iso_code);
+                            const opt = [...mCountrySelect.options].find(o => o.value === data.country);
+                            if (opt) { opt.selected = true; mCountrySelect.dispatchEvent(new Event('change')); }
+                        }).catch(failure);
                 }
             });
             mPhoneInput.addEventListener('focus', () => { if(mPhoneInput.nextElementSibling) mPhoneInput.nextElementSibling.classList.add('active'); });
@@ -579,25 +419,9 @@ document.addEventListener('DOMContentLoaded', function() {
             const selected = this.value;
             if (iti && countryCodeMap[selected]) iti.setCountry(countryCodeMap[selected]);
             
-            document.querySelectorAll('[class^="states-"], .dropdown-state-2').forEach(el => {
-                el.style.display = 'none';
-                $(el).data('modified', false);
-                $(el).valid();
-            });
+            document.querySelectorAll('[class^="states-"], .dropdown-state-2').forEach(el => el.style.display = 'none');
             const stateMap = { 'United States': '.dropdown-state-2', 'Australia': '.states-australia', 'Brazil': '.states-brazil', 'Canada': '.states-canada', 'China': '.states-china', 'Ireland': '.states-ireland', 'India': '.states-india', 'Italy': '.states-italy', 'Mexico': '.states-mexico' };
-            if (stateMap[selected]) {
-                const stateSelector = stateMap[selected];
-                const stateElement = document.querySelector(stateSelector);
-                stateElement.style.display = 'block';
-                
-                $(stateElement).val('').selectpicker('refresh');
-                
-                $(stateElement).data('modified', true);
-                
-                setTimeout(() => {
-                    $(stateElement).valid();
-                }, 100);
-            }
+            if (stateMap[selected]) document.querySelector(stateMap[selected]).style.display = 'block';
 
             if (selected === 'United States') {
                 document.querySelector('.form-message').style.display = 'none';
@@ -619,21 +443,16 @@ document.addEventListener('DOMContentLoaded', function() {
             onfocusout: function(el) { if ($(el).data('modified')) $(el).valid(); },
             onkeyup: function(el) { $(el).data('modified', true); $(el).valid(); },
             rules: {
-                firstname: { required: true, maxlength: 50, minlength: 2, noSpacesOnly: true },
-                lastname: { required: true, maxlength: 50, minlength: 2, noSpacesOnly: true },
+                firstname: { required: true, maxlength: 50, noSpacesOnly: true },
+                lastname: { required: true, maxlength: 50, noSpacesOnly: true },
                 email: { required: true, maxlength: 50, email: true, corporate: true, validEmailChars: true },
                 job_title: { required: true, maxlength: 50, noSpacesOnly: true },
                 company: { required: true, maxlength: 50, noSpacesOnly: true },
                 phone: { phoneCustom: true },
                 'self-attribution': { maxlength: 50 },
-                state: {
-                    required: function(element) {
-                        return $(element).is(':visible') && $(element).parent().is(':visible');
-                    }
-                },
                 agreement: { required: function(el) { return $('#country-2').val() !== 'United States' && $(el).is(':visible'); } }
             },
-            messages: { firstname: { required: "This field is required", minlength: "The First Name field must be at least 2 characters." }, lastname: { required: "This field is required", minlength: "The Last Name field must be at least 2 characters." }, email: { required: "This field is required" }, company: { required: "This field is required" }, state: { required: "Please select a state" } },
+            messages: { firstname: { required: "This field is required" }, lastname: { required: "This field is required" }, email: { required: "This field is required" }, company: { required: "This field is required" } },
             errorPlacement: function(error, element) { if ($(element).data('modified')) error.appendTo(element.closest(".field-row")); },
             highlight: function(el) { if ($(el).data('modified')) $(el).css('border', '1px solid #c50006'); },
             unhighlight: function(el) { $(el).css('border', ''); },
