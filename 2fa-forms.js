@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!sel.querySelector('option[value=""]')) {
                 const opt = document.createElement('option');
                 opt.value = "";
-                opt.text = "Select State"; // Текст заглушки
+                opt.text = "State*"; // Текст заглушки
                 // opt.setAttribute('data-hidden', 'true'); // Можно раскомментировать, если нужно скрыть его из списка выбора после открытия
                 sel.prepend(opt);
             }
@@ -198,8 +198,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const s = el.querySelector('select');
                 if (s) {
                     s.disabled = true;
-                    // Очищаем бордер у скрытых, чтобы при повторном показе не было "красного наследия"
-                    $(s).closest('.bootstrap-select').find('.dropdown-toggle').css('border', '');
+                    $(s).closest('.bootstrap-select').find('.dropdown-toggle').removeClass('input-error');
                     $(s).selectpicker('refresh');
                 }
             });
@@ -217,18 +216,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     const select = container.querySelector('select');
                     if (select) {
                         select.disabled = false;
-                        $(select).val(''); // Выбираем нашу скрытую опцию
-                        
-                        // 1. Перерисовываем кнопку (создается новый DOM элемент)
+                        $(select).val(""); 
                         $(select).selectpicker('refresh');
-                        
-                        // 2. ЖЕСТКО красим новую кнопку. 
-                        // Мы на 100% знаем, что поле сейчас пустое и обязательное.
-                        // Не ждем милости от валидатора.
-                        $(select).closest('.bootstrap-select').find('.dropdown-toggle').css('border', '1px solid #c50006');
-                        
-                        // 3. Для порядка обновляем статус валидатора
-                        $(select).valid(); 
+                        $(select).closest('.bootstrap-select').find('.dropdown-toggle').addClass('input-error');
+                        $(select).valid();
                     }
                 }
             }
@@ -315,24 +306,22 @@ document.addEventListener('DOMContentLoaded', function() {
              errorPlacement: function(error, element) { if ($(element).data('modified')) error.appendTo(element.closest(".field-row")); },
              highlight: function(el) {
                  const $el = $(el);
-                 // Если это Select (выпадающий список)
                  if ($el.is('select')) {
-                     // Красим кнопку bootstrap-select
-                     $el.closest('.bootstrap-select').find('.dropdown-toggle').css('border', '1px solid #c50006');
+                     // Добавляем класс
+                     $el.closest('.bootstrap-select').find('.dropdown-toggle').addClass('input-error');
                  } else if ($el.data('modified')) {
-                     // Обычные поля
                      $el.css('border', '1px solid #c50006'); 
                  }
-             },
-             unhighlight: function(el) {
+            },
+            unhighlight: function(el) {
                  const $el = $(el);
                  if ($el.is('select')) {
-                     // Убираем обводку у кнопки (возвращаем стандартную)
-                     $el.closest('.bootstrap-select').find('.dropdown-toggle').css('border', '');
+                     // Убираем класс
+                     $el.closest('.bootstrap-select').find('.dropdown-toggle').removeClass('input-error');
                  } else {
                      $el.css('border', ''); 
                  }
-             },
+            },
              onfocusin: function(el) { $(el).data("interacted", true); }
         });
 
@@ -581,7 +570,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const s = el.querySelector('select');
                 if (s) {
                      s.disabled = true; 
-                     $(s).closest('.bootstrap-select').find('.dropdown-toggle').css('border', '');
+                     $(s).closest('.bootstrap-select').find('.dropdown-toggle').removeClass('input-error');
                      $(s).selectpicker('refresh');
                 }
             });
@@ -595,20 +584,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     const select = container.querySelector('select');
                     if (select) {
                         select.disabled = false; 
-                        $(select).val(''); 
-                        
-                        // 1. Перерисовываем
+                        $(select).val(""); 
                         $(select).selectpicker('refresh');
-
-                        // 2. ЖЕСТКО красим
-                        $(select).closest('.bootstrap-select').find('.dropdown-toggle').css('border', '1px solid #c50006');
-                        
+                        $(select).closest('.bootstrap-select').find('.dropdown-toggle').addClass('input-error');
                         $(select).valid();
                     }
                 }
             }
-
-            // ... (остальной код без изменений) ...
             if (selected === 'United States') {
                 document.querySelector('.form-message').style.display = 'none';
                 document.querySelector('.form-message_usa').style.display = 'block';
@@ -644,8 +626,7 @@ document.addEventListener('DOMContentLoaded', function() {
             highlight: function(el) { 
                  const $el = $(el);
                  if ($el.is('select')) {
-                     // Красим кнопку
-                     $el.closest('.bootstrap-select').find('.dropdown-toggle').css('border', '1px solid #c50006');
+                     $el.closest('.bootstrap-select').find('.dropdown-toggle').addClass('input-error');
                  } else if ($el.data('modified')) {
                      $el.css('border', '1px solid #c50006'); 
                  }
@@ -653,8 +634,7 @@ document.addEventListener('DOMContentLoaded', function() {
             unhighlight: function(el) { 
                  const $el = $(el);
                  if ($el.is('select')) {
-                     // Снимаем покраску
-                     $el.closest('.bootstrap-select').find('.dropdown-toggle').css('border', '');
+                     $el.closest('.bootstrap-select').find('.dropdown-toggle').removeClass('input-error');
                  } else {
                      $el.css('border', ''); 
                  }
