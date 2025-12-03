@@ -411,9 +411,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 email: { required: "This field is required", email: "Invalid email address" },
                 company: { required: "This field is required" }
             },
-            errorPlacement: function(error, element) {
-                if ($(element).data('modified')) error.appendTo(element.closest(".field-row"));
-            },
+            errorPlacement: function (error, element) {
+                const container = element.closest(".input-wrapper").length ? element.closest(".input-wrapper") : element.closest(".field-row");
+                
+                if (element.attr("name") === "agreement" && $(element).data('modified')) {
+                  error.appendTo(container);
+                } 
+                else if (element.is("select")) {
+                   error.appendTo(container);
+                }
+                else if ($(element).data('modified')) {
+                  error.appendTo(container);
+                }
+              },
             highlight: function(el) {
                  const $el = $(el);
                  if ($el.is('select')) {
@@ -745,9 +755,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 job_title: { required: "This field is required" },
                 company: { required: "This field is required" }
             },
-            errorPlacement: function(error, element) {
-                if ($(element).data('modified')) error.appendTo(element.closest(".field-row"));
-            },
+            errorPlacement: function (error, element) {
+                const container = element.closest(".input-wrapper").length ? element.closest(".input-wrapper") : element.closest(".field-row");
+                
+                if (element.attr("name") === "agreement" && $(element).data('modified')) {
+                  error.appendTo(container);
+                } 
+                else if (element.is("select")) {
+                   error.appendTo(container);
+                }
+                else if ($(element).data('modified')) {
+                  error.appendTo(container);
+                }
+              },
             highlight: function(el) {
                  const $el = $(el);
                  if ($el.is('select')) {
