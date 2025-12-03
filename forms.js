@@ -334,6 +334,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Валидация
         $('#p-main-form').validate({
+            ignore: ":hidden:not(select)",
             onfocusout: function(element) { if ($(element).data('modified')) $(element).valid(); },
             onkeyup: function(element) { $(element).data('modified', true); $(element).valid(); },
             onclick: function(element) { if ($(element).data('interacted')) $(element).valid(); },
@@ -616,7 +617,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Валидация
         $('#main-form-2').validate({
-             onfocusout: function(element) { if ($(element).data('modified')) $(element).valid(); },
+            ignore: ":hidden:not(select)",
+            onfocusout: function(element) { if ($(element).data('modified')) $(element).valid(); },
             onkeyup: function(element) { $(element).data('modified', true); $(element).valid(); },
             onclick: function(element) { if ($(element).data('interacted')) $(element).valid(); },
             rules: {
