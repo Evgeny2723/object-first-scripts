@@ -125,6 +125,36 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     observer.observe(document.body, { childList: true, subtree: true });
 
+    // --- NEW: Add Empty Option & Required Attribute for States ---
+    function initStateSelects() {
+        // Находим все селекты штатов (обе формы)
+        const allStateSelects = document.querySelectorAll('[id^="p-states-"], [id^="states-"], #p-state, #state-2');
+        
+        allStateSelects.forEach(sel => {
+            // 1. Делаем поле обязательным
+            sel.setAttribute('required', 'true');
+
+            // 2. Добавляем пустой пункт в начало, если его нет
+            if (!sel.querySelector('option[value=""]')) {
+                const opt = document.createElement('option');
+                opt.value = "";
+                opt.text = "State*"; // Текст заглушки
+                sel.prepend(opt);
+            }
+            
+            // 3. Обновляем selectpicker
+            $(sel).selectpicker('refresh');
+        });
+    }
+    // Вызываем сразу
+    initStateSelects();
+    
+    // --- Live Validation for State Selects ---
+    // Убирает красную рамку сразу после выбора значения
+    $('select[id^="p-states-"], select[id^="states-"], #p-state, #state-2').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
+        $(this).valid(); // Запускаем валидацию конкретного поля при изменении
+    });
+
     // =========================================================================
     // 2. ВАЛИДАЦИЯ (jQuery Validation Methods)
     // =========================================================================
@@ -251,14 +281,52 @@ document.addEventListener('DOMContentLoaded', function() {
             $(this).valid();
         });
 
-        // Автоопределение страны
+        // Автоопределение страны и штата (Form 1)
         detectUserCountry().then(data => {
             if (data && data.country) {
+                // 1. Устанавливаем страну
                 const option = [...pCountrySelect.options].find(opt => opt.value === data.country);
                 if (option) {
                     option.selected = true;
                     pCountrySelect.dispatchEvent(new Event('change'));
                     $('#p-country').selectpicker('refresh');
+
+                    // 2. Логика определения штата
+                    // Карта ID полей штатов для разных стран
+                    const stateInputIds = {
+                        'United States': 'p-state',
+                        'Australia': 'p-states-australia',
+                        'Brazil': 'p-states-brazil',
+                        'Canada': 'p-states-canada',
+                        'China': 'p-states-china',
+                        'Ireland': 'p-states-ireland',
+                        'India': 'p-states-india',
+                        'Italy': 'p-states-italy',
+                        'Mexico': 'p-states-mexico'
+                    };
+
+                    // Если пришел штат и для этой страны есть поле выбора
+                    if ((data.state_name || data.state) && stateInputIds[data.country]) {
+                        setTimeout(() => {
+                            const targetId = stateInputIds[data.country];
+                            const stateSelect = document.getElementById(targetId);
+                            
+                            if (stateSelect) {
+                                const valToFind = data.state_name || data.state;
+                                // Ищем совпадение по значению или тексту
+                                const stateOpt = [...stateSelect.options].find(o => 
+                                    o.value.toLowerCase() === valToFind.toLowerCase() || 
+                                    o.text.toLowerCase() === valToFind.toLowerCase()
+                                );
+
+                                if (stateOpt) {
+                                    stateOpt.selected = true;
+                                    $(`#${targetId}`).selectpicker('refresh'); // Обновляем
+                                    $(stateSelect).valid(); // Валидируем
+                                }
+                            }
+                        }, 100);
+                    }
                 }
             }
         });
@@ -452,11 +520,47 @@ document.addEventListener('DOMContentLoaded', function() {
                     detectUserCountry().then(data => {
                         if (data && data.iso_code && data.country) {
                             success(data.iso_code);
-                            // Auto select country in dropdown
+                            
+                            // 1. Устанавливаем страну в дропдауне
                             const option = [...mCountrySelect.options].find(opt => opt.value === data.country);
                             if (option) {
                                 option.selected = true;
                                 mCountrySelect.dispatchEvent(new Event('change'));
+                                $('#country-2').selectpicker('refresh');
+
+                                // 2. Логика определения штата (Form 2)
+                                const stateInputIds = {
+                                    'United States': 'state-2',
+                                    'Australia': 'states-australia',
+                                    'Brazil': 'states-brazil',
+                                    'Canada': 'states-canada',
+                                    'China': 'states-china',
+                                    'Ireland': 'states-ireland',
+                                    'India': 'states-india',
+                                    'Italy': 'states-italy',
+                                    'Mexico': 'states-mexico'
+                                };
+
+                                if ((data.state_name || data.state) && stateInputIds[data.country]) {
+                                    setTimeout(() => {
+                                        const targetId = stateInputIds[data.country];
+                                        const stateSelect = document.getElementById(targetId);
+                                        
+                                        if (stateSelect) {
+                                            const valToFind = data.state_name || data.state;
+                                            const stateOpt = [...stateSelect.options].find(o => 
+                                                o.value.toLowerCase() === valToFind.toLowerCase() || 
+                                                o.text.toLowerCase() === valToFind.toLowerCase()
+                                            );
+
+                                            if (stateOpt) {
+                                                stateOpt.selected = true;
+                                                $(`#${targetId}`).selectpicker('refresh');
+                                                $(stateSelect).valid();
+                                            }
+                                        }
+                                    }, 100);
+                                }
                             }
                         } else {
                             failure();
