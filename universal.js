@@ -44,6 +44,65 @@ document.addEventListener('DOMContentLoaded', function() {
 
     let iti = null;
 
+    // --- НОВЫЕ ФУНКЦИИ (Auto-detect helpers) ---
+
+    // 1. Настройка селектов (Required + Empty Option + Title)
+    function initStateSelects() {
+        // Перечисляем все ID селектов штатов
+        const selectors = '#state, #states-australia, #states-brazil, #states-canada, #states-china, #states-ireland, #states-india, #states-italy, #states-mexico';
+        const allStateSelects = document.querySelectorAll(selectors);
+        
+        allStateSelects.forEach(sel => {
+            // Делаем обязательным
+            sel.setAttribute('required', 'true');
+            // Заголовок для плагина (чтобы не писало "Nothing selected")
+            sel.setAttribute('title', 'State*'); 
+            sel.setAttribute('data-none-selected-text', 'State*');
+
+            // Добавляем пустой пункт (скрытый), если нет
+            if (!sel.querySelector('option[value=""]')) {
+                const opt = document.createElement('option');
+                opt.value = "";
+                opt.text = "State*"; 
+                opt.setAttribute('data-hidden', 'true'); // Скрываем из выпадающего списка
+                sel.prepend(opt);
+            }
+            
+            $(sel).selectpicker('refresh');
+        });
+    }
+    // Вызываем сразу
+    initStateSelects();
+
+    // 2. Умный поиск опции (Exact + Fuzzy + City check)
+    function findBestOption(selectElement, ...searchValues) {
+        const options = [...selectElement.options];
+        
+        for (let val of searchValues) {
+            if (!val) continue;
+            const search = val.toLowerCase().trim();
+
+            // А. Точное совпадение
+            let match = options.find(o => 
+                o.value.toLowerCase().trim() === search || 
+                o.text.toLowerCase().trim() === search
+            );
+            if (match) return match;
+
+            // Б. Частичное совпадение (исключая короткие и заглушку)
+            match = options.find(o => {
+                const oVal = o.value.toLowerCase().trim();
+                const oTxt = o.text.toLowerCase().trim();
+                if (oVal.length < 3 || oVal.includes('state*')) return false;
+                
+                return oVal.includes(search) || search.includes(oVal) || 
+                       oTxt.includes(search) || search.includes(oTxt);
+            });
+            if (match) return match;
+        }
+        return null;
+    }
+
     // --- ФУНКЦИИ UI (Метки, Плейсхолдеры, Selectpicker) ---
     
     // Обработка изменения состояния меток полей
@@ -123,40 +182,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Honeypot переменные
     let formInteractionStartTime = 0;
     let decoyLinkClicked = false;
-
-    // Переключение отображения dropdown-меню в зависимости от выбранной страны
-    if (countrySelect) {
-      countrySelect.addEventListener('change', function() {
-        const selectedCountry = countrySelect.value;
-        const dropdowns = {
-          'United States': dropdownState,
-          'Australia': dropdownAustralia,
-          'Brazil': dropdownBrazil,
-          'Canada': dropdownCanada,
-          'China': dropdownChina,
-          'Ireland': dropdownIreland,
-          'India': dropdownIndia,
-          'Italy': dropdownItaly,
-          'Mexico': dropdownMexico
-        };
-  
-        Object.values(dropdowns).forEach(dropdown => {
-          if (dropdown) {
-            dropdown.style.display = 'none';
-          }
-        });
-  
-        if (dropdowns[selectedCountry]) {
-          dropdowns[selectedCountry].style.display = 'block';
-        } else {
-          Object.values(dropdowns).forEach(dropdown => {
-            if (dropdown) {
-              dropdown.style.display = 'none';
-            }
-          });
-        }
-      });
-    }
 
     // Инициализация селекторов
     if (countrySelect) {
@@ -394,21 +419,70 @@ document.addEventListener('DOMContentLoaded', function() {
       });
     }
     
-    // Автоопределение страны по IP
+    // Автоопределение страны, штата и города по IP
     function detectCountryByIP() {
       if (!countrySelect) return;
-    
+   
       fetch('https://faas-nyc1-2ef2e6cc.doserverless.co/api/v1/web/fn-3627560b-2163-4a62-81db-3a3b5da17d5a/ip/info')
         .then(response => response.json())
         .then(data => {
           if (data && data.iso_code && data.country) {
             if (iti) iti.setCountry(data.iso_code);
+            
+            // 1. Устанавливаем страну
             const optionToSelect = [...countrySelect.options].find(
               option => option.value === data.country
             );
+            
             if (optionToSelect) {
               optionToSelect.selected = true;
               countrySelect.dispatchEvent(new Event('change'));
+              $('#country').selectpicker('refresh');
+
+              // 2. Логика определения штата/города
+              // Карта: Страна -> ID селекта штата
+              const stateInputIds = {
+                  'United States': 'state',
+                  'Australia': 'states-australia',
+                  'Brazil': 'states-brazil',
+                  'Canada': 'states-canada',
+                  'China': 'states-china',
+                  'Ireland': 'states-ireland',
+                  'India': 'states-india',
+                  'Italy': 'states-italy',
+                  'Mexico': 'states-mexico'
+              };
+
+              if (stateInputIds[data.country]) {
+                  setTimeout(() => {
+                      const targetId = stateInputIds[data.country];
+                      const stateSelectEl = document.getElementById(targetId);
+                      
+                      if (stateSelectEl) {
+                          // Ищем совпадение (Штат API -> Код API -> Город API)
+                          const foundOption = findBestOption(
+                              stateSelectEl, 
+                              data.state_name, 
+                              data.state, 
+                              data.city
+                          );
+
+                          if (foundOption) {
+                              foundOption.selected = true;
+                              $(stateSelectEl).selectpicker('refresh');
+                              
+                              // Снимаем ошибку и запускаем валидацию
+                              $(stateSelectEl).closest('.bootstrap-select').find('.dropdown-toggle').removeClass('input-error');
+                              $(stateSelectEl).valid();
+                              
+                              // Обновляем кнопку
+                              if (typeof updateSubmitButtonState === 'function') {
+                                  updateSubmitButtonState();
+                              }
+                          }
+                      }
+                  }, 200);
+              }
             }
           }
         })
@@ -459,7 +533,8 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Валидация основной формы (Main Form)
-    const validator = $('form').not('#code-form').validate({ // Исключаем форму кода из этого валидатора
+    const validator = $('form').not('#code-form').validate({
+        ignore: ":hidden:not(select)",
       onfocusout: function(element) { if ($(element).data('modified')) $(element).valid(); },
       onkeyup: function(element) { $(element).data('modified', true); $(element).valid(); },
       onclick: function(element) { if (isFormInitialized) $(element).valid(); },
@@ -501,8 +576,28 @@ document.addEventListener('DOMContentLoaded', function() {
           error.appendTo(container);
         }
       },
-      highlight: function(element) { if ($(element).data('modified')) $(element).css('border', '1px solid #c50006'); },
-      unhighlight: function(element) { $(element).css('border', ''); },
+      highlight: function(element) {
+         const $el = $(element);
+         // Если это селект (Bootstrap Select)
+         if ($el.is('select')) {
+             $el.closest('.bootstrap-select').find('.dropdown-toggle').addClass('input-error');
+         } 
+         // Если обычное поле
+         else if ($el.data('modified')) {
+             $el.css('border', '1px solid #c50006');
+         }
+      },
+      unhighlight: function(element) {
+         const $el = $(element);
+         // Если это селект
+         if ($el.is('select')) {
+             $el.closest('.bootstrap-select').find('.dropdown-toggle').removeClass('input-error');
+         } 
+         // Если обычное поле
+         else {
+             $el.css('border', '');
+         }
+      },
       ignoreTitle: true,
       onfocusin: function(element) { isFormInitialized = true; $(element).data("interacted", true); }
     });
@@ -654,16 +749,90 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     observer.observe(document.body, { childList: true, subtree: true });
 
-    // Обработчик изменения страны
+    // Обработчик изменения страны (Исправленный)
     if (countrySelect) {
       $('#country').on('change', function() {
-        toggleCountrySpecificElements(this.value);
-        if (iti && countryCodeMap[this.value]) {
-          iti.setCountry(countryCodeMap[this.value]);
+        const selectedCountry = this.value;
+
+        // A. Обновляем телефонный код
+        if (iti && countryCodeMap[selectedCountry]) {
+          iti.setCountry(countryCodeMap[selectedCountry]);
         }
+
+        // B. Скрываем и ОТКЛЮЧАЕМ все списки штатов (чтобы валидатор их игнорировал)
+        // Список контейнеров (классы) и селектов внутри них
+        const allStateContainers = [
+            { container: '.dropdown-state', select: '#state' },
+            { container: '.states-australia', select: '#states-australia' },
+            { container: '.states-brazil', select: '#states-brazil' },
+            { container: '.states-canada', select: '#states-canada' },
+            { container: '.states-china', select: '#states-china' },
+            { container: '.states-ireland', select: '#states-ireland' },
+            { container: '.states-india', select: '#states-india' },
+            { container: '.states-italy', select: '#states-italy' },
+            { container: '.states-mexico', select: '#states-mexico' }
+        ];
+
+        allStateContainers.forEach(item => {
+            const container = document.querySelector(item.container);
+            const select = document.querySelector(item.select);
+            
+            if (container) container.style.display = 'none'; // Скрываем
+            if (select) {
+                select.disabled = true; // Отключаем (валидатор пропустит)
+                $(select).selectpicker('refresh');
+                $(select).closest('.bootstrap-select').find('.dropdown-toggle').removeClass('input-error');
+            }
+        });
+
+        // C. Включаем нужный список
+        const stateMap = {
+            'United States': { container: '.dropdown-state', select: '#state' },
+            'Australia': { container: '.states-australia', select: '#states-australia' },
+            'Brazil': { container: '.states-brazil', select: '#states-brazil' },
+            'Canada': { container: '.states-canada', select: '#states-canada' },
+            'China': { container: '.states-china', select: '#states-china' },
+            'Ireland': { container: '.states-ireland', select: '#states-ireland' },
+            'India': { container: '.states-india', select: '#states-india' },
+            'Italy': { container: '.states-italy', select: '#states-italy' },
+            'Mexico': { container: '.states-mexico', select: '#states-mexico' }
+        };
+
+        if (stateMap[selectedCountry]) {
+            const target = stateMap[selectedCountry];
+            const container = document.querySelector(target.container);
+            const select = document.querySelector(target.select);
+
+            if (container) container.style.display = 'block';
+            if (select) {
+                select.disabled = false; // Включаем обратно
+                
+                // Сбрас значения на "пусто", чтобы отобразился "State*"
+                $(select).val(""); 
+                $(select).selectpicker('refresh');
+                
+                // Подсвечиваем как ошибку (т.к. стало пустым и обязательным)
+                $(select).closest('.bootstrap-select').find('.dropdown-toggle').addClass('input-error');
+            }
+        }
+
+        // D. Логика чекбоксов и сообщений (выносим toggleCountrySpecificElements прямо сюда или вызываем её)
+        toggleCountrySpecificElements(selectedCountry);
+
+        // E. Обновляем валидацию страны и кнопку
         $(this).valid();
+        setTimeout(() => updateSubmitButtonState(), 50);
       });
     }
+
+    // Слушатель для обновления кнопки при выборе ШТАТА
+    const stateSelectors = '#state, #states-australia, #states-brazil, #states-canada, #states-china, #states-ireland, #states-india, #states-italy, #states-mexico';
+    $(stateSelectors).on('changed.bs.select', function () {
+        // Убираем класс ошибки
+        $(this).closest('.bootstrap-select').find('.dropdown-toggle').removeClass('input-error');
+        $(this).valid();
+        updateSubmitButtonState();
+    });
 
     // --- ЛОГИКА ОТПРАВКИ И 2FA ---
     
