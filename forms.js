@@ -125,13 +125,13 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     observer.observe(document.body, { childList: true, subtree: true });
 
-    // --- NEW: Add Empty Option & Required Attribute for States ---
+    // --- NEW: Add Empty Option & Required Attribute ---
     function initStateSelects() {
         // Находим все селекты штатов (обе формы)
         const allStateSelects = document.querySelectorAll('[id^="p-states-"], [id^="states-"], #p-state, #state-2');
         
         allStateSelects.forEach(sel => {
-            // 1. Делаем поле обязательным
+            // 1. Делаем поле обязательным (jQuery Validate подхватит это, когда поле станет видимым)
             sel.setAttribute('required', 'true');
 
             // 2. Добавляем пустой пункт в начало, если его нет
@@ -139,14 +139,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 const opt = document.createElement('option');
                 opt.value = "";
                 opt.text = "State*"; // Текст заглушки
+                // opt.setAttribute('data-hidden', 'true'); // Можно раскомментировать, если нужно скрыть его из списка выбора после открытия
                 sel.prepend(opt);
             }
             
-            // 3. Обновляем selectpicker
+            // 3. Обновляем selectpicker, чтобы он увидел изменения
             $(sel).selectpicker('refresh');
         });
     }
-    // Вызываем сразу
+    // Вызываем сразу после объявления
     initStateSelects();
     
     // --- Live Validation for State Selects ---
