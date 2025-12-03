@@ -31,6 +31,36 @@ document.addEventListener('DOMContentLoaded', function() {
         return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
     }
 
+    // Умный поиск опции в селекте (Exact + Fuzzy + City check)
+    function findBestOption(selectElement, ...searchValues) {
+        const options = [...selectElement.options];
+        
+        for (let val of searchValues) {
+            if (!val) continue;
+            const search = val.toLowerCase().trim();
+
+            // 1. Точное совпадение (value или text)
+            let match = options.find(o => 
+                o.value.toLowerCase().trim() === search || 
+                o.text.toLowerCase().trim() === search
+            );
+            if (match) return match;
+
+            // 2. Частичное совпадение (API значение внутри Опции или наоборот)
+            // Игнорируем заглушку "State*" и слишком короткие совпадения (менее 3 букв)
+            match = options.find(o => {
+                const oVal = o.value.toLowerCase().trim();
+                const oTxt = o.text.toLowerCase().trim();
+                if (oVal.length < 3 || oVal.includes('state*')) return false;
+                
+                return oVal.includes(search) || search.includes(oVal) || 
+                       oTxt.includes(search) || search.includes(oTxt);
+            });
+            if (match) return match;
+        }
+        return null;
+    }
+
     // Утилита замены символов (Honeypot)
     function replaceConfusableChars(str) {
         if (typeof str !== 'string') return str;
@@ -323,8 +353,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     pCountrySelect.dispatchEvent(new Event('change'));
                     $('#p-country').selectpicker('refresh');
 
-                    // 2. Логика определения штата
-                    // Карта ID полей штатов для разных стран
+                    // 2. Логика определения штата/региона/города
                     const stateInputIds = {
                         'United States': 'p-state',
                         'Australia': 'p-states-australia',
@@ -337,27 +366,29 @@ document.addEventListener('DOMContentLoaded', function() {
                         'Mexico': 'p-states-mexico'
                     };
 
-                    // Если пришел штат и для этой страны есть поле выбора
-                    if ((data.state_name || data.state) && stateInputIds[data.country]) {
+                    // Проверяем, есть ли ID для этой страны
+                    if (stateInputIds[data.country]) {
                         setTimeout(() => {
                             const targetId = stateInputIds[data.country];
                             const stateSelect = document.getElementById(targetId);
                             
                             if (stateSelect) {
-                                const valToFind = data.state_name || data.state;
-                                // Ищем совпадение по значению или тексту
-                                const stateOpt = [...stateSelect.options].find(o => 
-                                    o.value.toLowerCase() === valToFind.toLowerCase() || 
-                                    o.text.toLowerCase() === valToFind.toLowerCase()
+                                // Ищем совпадение: сначала пробуем Регион, потом Город
+                                const foundOption = findBestOption(
+                                    stateSelect, 
+                                    data.state_name, // Приоритет 1: Штат/Регион (Lombardy)
+                                    data.state,      // Приоритет 2: Код штата
+                                    data.city        // Приоритет 3: Город (Milan) - для Италии часто нужно это
                                 );
 
-                                if (stateOpt) {
-                                    stateOpt.selected = true;
-                                    $(`#${targetId}`).selectpicker('refresh'); // Обновляем
-                                    $(stateSelect).valid(); // Валидируем
+                                if (foundOption) {
+                                    foundOption.selected = true;
+                                    $(`#${targetId}`).selectpicker('refresh');
+                                    $(stateSelect).closest('.bootstrap-select').find('.dropdown-toggle').removeClass('input-error'); // Убираем красную рамку
+                                    $(stateSelect).valid(); 
                                 }
                             }
-                        }, 100);
+                        }, 200); // Чуть увеличил тайдер для надежности
                     }
                 }
             }
@@ -568,14 +599,14 @@ document.addEventListener('DOMContentLoaded', function() {
                         if (data && data.iso_code && data.country) {
                             success(data.iso_code);
                             
-                            // 1. Устанавливаем страну в дропдауне
+                            // 1. Устанавливаем страну
                             const option = [...mCountrySelect.options].find(opt => opt.value === data.country);
                             if (option) {
                                 option.selected = true;
                                 mCountrySelect.dispatchEvent(new Event('change'));
                                 $('#country-2').selectpicker('refresh');
 
-                                // 2. Логика определения штата (Form 2)
+                                // 2. Логика определения штата
                                 const stateInputIds = {
                                     'United States': 'state-2',
                                     'Australia': 'states-australia',
@@ -588,25 +619,28 @@ document.addEventListener('DOMContentLoaded', function() {
                                     'Mexico': 'states-mexico'
                                 };
 
-                                if ((data.state_name || data.state) && stateInputIds[data.country]) {
+                                if (stateInputIds[data.country]) {
                                     setTimeout(() => {
                                         const targetId = stateInputIds[data.country];
                                         const stateSelect = document.getElementById(targetId);
                                         
                                         if (stateSelect) {
-                                            const valToFind = data.state_name || data.state;
-                                            const stateOpt = [...stateSelect.options].find(o => 
-                                                o.value.toLowerCase() === valToFind.toLowerCase() || 
-                                                o.text.toLowerCase() === valToFind.toLowerCase()
+                                            // ИСПОЛЬЗУЕМ НОВУЮ ФУНКЦИЮ ПОИСКА
+                                            const foundOption = findBestOption(
+                                                stateSelect, 
+                                                data.state_name, 
+                                                data.state, 
+                                                data.city // Добавлен поиск по городу
                                             );
 
-                                            if (stateOpt) {
-                                                stateOpt.selected = true;
+                                            if (foundOption) {
+                                                foundOption.selected = true;
                                                 $(`#${targetId}`).selectpicker('refresh');
+                                                $(stateSelect).closest('.bootstrap-select').find('.dropdown-toggle').removeClass('input-error');
                                                 $(stateSelect).valid();
                                             }
                                         }
-                                    }, 100);
+                                    }, 200);
                                 }
                             }
                         } else {
