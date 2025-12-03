@@ -772,7 +772,7 @@ document.addEventListener('DOMContentLoaded', function() {
                  const $el = $(el);
                  if ($el.is('select')) {
                      // Добавляем класс
-                     $el.closest('.bootstrap-select').find('.dropdown-toggle').addClass('input-error');
+                     $el.closest('.bootstrap-select').find('.dropdown-toggle').addClass('input-error').css('color', '#c50006');
                  } else if ($el.data('modified')) {
                      $el.css('border', '1px solid #c50006'); 
                  }
@@ -781,7 +781,7 @@ document.addEventListener('DOMContentLoaded', function() {
                  const $el = $(el);
                  if ($el.is('select')) {
                      // Убираем класс
-                     $el.closest('.bootstrap-select').find('.dropdown-toggle').removeClass('input-error');
+                     $el.closest('.bootstrap-select').find('.dropdown-toggle').removeClass('input-error').css('color', '');
                  } else {
                      $el.css('border', ''); 
                  }
