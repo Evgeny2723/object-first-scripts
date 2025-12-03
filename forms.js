@@ -411,7 +411,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 'Full-Name': { required: "This field is required", maxlength: "Full name must be at most 50 characters" },
                 email: { required: "This field is required", email: "Invalid email address" },
                 company: { required: "This field is required" },
-                state: { required: "his field is required" }
+                state: { required: "This field is required" }
             },
             errorPlacement: function (error, element) {
                 const container = element.closest(".input-wrapper").length ? element.closest(".input-wrapper") : element.closest(".field-row");
@@ -757,7 +757,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 email: { required: "This field is required", email: "Invalid email address" },
                 job_title: { required: "This field is required" },
                 company: { required: "This field is required" },
-                state: { required: "his field is required" }
+                state: { required: "This field is required" }
             },
             errorPlacement: function (error, element) {
                 const container = element.closest(".input-wrapper").length ? element.closest(".input-wrapper") : element.closest(".field-row");
