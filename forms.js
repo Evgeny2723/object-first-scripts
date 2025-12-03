@@ -261,7 +261,21 @@ document.addEventListener('DOMContentLoaded', function() {
                 'India': '.p-states-india', 'Italy': '.p-states-italy', 'Mexico': '.p-states-mexico'
             };
             if (stateMap[selectedCountry]) {
-                document.querySelector(stateMap[selectedCountry]).style.display = 'block';
+                const container = document.querySelector(stateMap[selectedCountry]);
+                if (container) {
+                    container.style.display = 'block';
+
+                    const select = container.querySelector('select');
+                    if (select) {
+                        select.disabled = false; 
+                        $(select).val("");
+                        $(select).selectpicker('refresh');
+
+                        // Добавляем класс ошибки
+                        $(select).closest('.bootstrap-select').find('.dropdown-toggle').addClass('input-error');
+                        $(select).valid();
+                    }
+                }
             }
 
             // Логика сообщений и чекбокса для США
@@ -610,7 +624,21 @@ document.addEventListener('DOMContentLoaded', function() {
                 'India': '.states-india', 'Italy': '.states-italy', 'Mexico': '.states-mexico'
             };
             if (stateMap[selectedCountry]) {
-                document.querySelector(stateMap[selectedCountry]).style.display = 'block';
+                const container = document.querySelector(stateMap[selectedCountry]);
+                if (container) {
+                    container.style.display = 'block';
+
+                    const select = container.querySelector('select');
+                    if (select) {
+                        select.disabled = false; 
+                        $(select).val("");
+                        $(select).selectpicker('refresh');
+
+                        // Добавляем класс ошибки
+                        $(select).closest('.bootstrap-select').find('.dropdown-toggle').addClass('input-error');
+                        $(select).valid();
+                    }
+                }
             }
 
             // Логика сообщений и чекбокса
