@@ -250,37 +250,50 @@ document.addEventListener('DOMContentLoaded', function() {
             $(this).data('selectpicker').$menuInner[0].scrollTop = 0;
         });
 
-        // Логика переключения стран
+        // Логика переключения стран Form 1
         pCountrySelect.addEventListener('change', function() {
             const selectedCountry = this.value;
-            // Скрыть все стейты
-            document.querySelectorAll('[class^="p-states-"], .p-dropdown-state').forEach(el => el.style.display = 'none');
-            
-            // Показать нужный
+
+            // 1. Сначала СКРЫВАЕМ и ОТКЛЮЧАЕМ (disable) ВСЕ списки штатов
+            // Это критически важно, чтобы валидатор не ругался на скрытые поля
+            const allStateContainers = document.querySelectorAll('[class^="p-states-"], .p-dropdown-state');
+            allStateContainers.forEach(container => {
+                container.style.display = 'none'; // Скрываем визуально
+                const select = container.querySelector('select');
+                if (select) {
+                    select.disabled = true; // Отключаем логически (валидатор пропустит)
+                    $(select).selectpicker('refresh');
+                    // Убираем ошибку визуально, если она была
+                    $(select).closest('.bootstrap-select').find('.dropdown-toggle').removeClass('input-error');
+                }
+            });
+
+            // 2. Включаем только нужный, если он есть для этой страны
             const stateMap = {
                 'United States': '.p-dropdown-state', 'Australia': '.p-states-australia', 'Brazil': '.p-states-brazil',
                 'Canada': '.p-states-canada', 'China': '.p-states-china', 'Ireland': '.p-states-ireland',
                 'India': '.p-states-india', 'Italy': '.p-states-italy', 'Mexico': '.p-states-mexico'
             };
+
             if (stateMap[selectedCountry]) {
                 const container = document.querySelector(stateMap[selectedCountry]);
                 if (container) {
-                    container.style.display = 'block';
-
+                    container.style.display = 'block'; // Показываем
                     const select = container.querySelector('select');
                     if (select) {
-                        select.disabled = false; 
-                        $(select).val("");
+                        select.disabled = false; // Включаем для валидации
+                        
+                        // Сброс значения на "пусто", чтобы появился State*
+                        $(select).val(""); 
                         $(select).selectpicker('refresh');
 
-                        // Добавляем класс ошибки
+                        // Подсвечиваем как ошибку (так как поле обязательное, но пустое)
                         $(select).closest('.bootstrap-select').find('.dropdown-toggle').addClass('input-error');
-                        $(select).valid();
                     }
                 }
             }
 
-            // Логика сообщений и чекбокса для США
+            // 3. Логика сообщений и чекбокса (как и было)
             if (selectedCountry === 'United States') {
                 document.querySelector('.form-message').style.display = 'none';
                 document.querySelector('.form-message_usa').style.display = 'block';
@@ -289,14 +302,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.querySelector('.form-message').style.display = 'block';
                 document.querySelector('.form-message_usa').style.display = 'none';
                 $(pCheckbox).parent().show();
-                
-                // Reset checkbox
                 $(pCheckbox).prop('checked', false).removeAttr('checked');
                 $(pCheckbox).parent().find('.w-checkbox-input').removeClass('w--redirected-checked');
             }
+
+            // 4. Принудительно запускаем проверку валидности всей формы и обновление кнопки
             setTimeout(() => {
-                $(this).valid();
-                updatePSubmitState();
+                $(this).valid(); // Проверяем страну
+                updatePSubmitState(); // Обновляем кнопку
             }, 50);
         });
 
@@ -616,37 +629,47 @@ document.addEventListener('DOMContentLoaded', function() {
         // Логика переключения стран (Main Form)
         mCountrySelect.addEventListener('change', function() {
             const selectedCountry = this.value;
+            
             // Обновить телефон
             if (iti && countryCodeMap[selectedCountry]) iti.setCountry(countryCodeMap[selectedCountry]);
 
-            // Скрыть стейты
-            document.querySelectorAll('.states-australia, .states-brazil, .states-canada, .states-china, .states-ireland, .states-india, .states-italy, .states-mexico, .dropdown-state-2').forEach(el => el.style.display = 'none');
+            // 1. Сначала СКРЫВАЕМ и ОТКЛЮЧАЕМ (disable) ВСЕ списки штатов
+            const allStateContainers2 = document.querySelectorAll('.states-australia, .states-brazil, .states-canada, .states-china, .states-ireland, .states-india, .states-italy, .states-mexico, .dropdown-state-2');
+            allStateContainers2.forEach(container => {
+                container.style.display = 'none';
+                const select = container.querySelector('select');
+                if (select) {
+                    select.disabled = true; // ВАЖНО: Валидатор теперь проигнорирует это поле
+                    $(select).selectpicker('refresh');
+                    $(select).closest('.bootstrap-select').find('.dropdown-toggle').removeClass('input-error');
+                }
+            });
 
+            // 2. Включаем нужный
             const stateMap = {
                 'United States': '.dropdown-state-2', 'Australia': '.states-australia', 'Brazil': '.states-brazil',
                 'Canada': '.states-canada', 'China': '.states-china', 'Ireland': '.states-ireland',
                 'India': '.states-india', 'Italy': '.states-italy', 'Mexico': '.states-mexico'
             };
+
             if (stateMap[selectedCountry]) {
                 const container = document.querySelector(stateMap[selectedCountry]);
                 if (container) {
                     container.style.display = 'block';
-
                     const select = container.querySelector('select');
                     if (select) {
-                        select.disabled = false; 
-                        $(select).val("");
+                        select.disabled = false; // Включаем обратно
+                        
+                        // Сброс на "пусто"
+                        $(select).val(""); 
                         $(select).selectpicker('refresh');
-
-                        // Добавляем класс ошибки
                         $(select).closest('.bootstrap-select').find('.dropdown-toggle').addClass('input-error');
-                        $(select).valid();
                     }
                 }
             }
 
-            // Логика сообщений и чекбокса
-             if (selectedCountry === 'United States') {
+            // 3. Логика чекбокса
+            if (selectedCountry === 'United States') {
                 document.querySelector('.form-message').style.display = 'none';
                 document.querySelector('.form-message_usa').style.display = 'block';
                 $(mCheckbox).prop('checked', true).parent().hide();
@@ -657,9 +680,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 $(mCheckbox).prop('checked', false).removeAttr('checked');
                 $(mCheckbox).parent().find('.w-checkbox-input').removeClass('w--redirected-checked');
             }
+
+            // 4. Принудительно обновляем состояние кнопки
             setTimeout(() => {
                 $(this).valid();
-                updateMSubmitState();
+                updateMSubmitState(); // <-- Эта функция разблокирует кнопку
             }, 50);
         });
 
