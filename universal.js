@@ -568,11 +568,15 @@ document.addEventListener('DOMContentLoaded', function() {
         'self-attribution': { maxlength: "This field should contain no more than 50 characters" }
       },
       errorPlacement: function (error, element) {
+        const container = element.closest(".input-wrapper").length ? element.closest(".input-wrapper") : element.closest(".field-row");
+        
         if (element.attr("name") === "agreement" && $(element).data('modified')) {
-          const container = element.closest(".input-wrapper").length ? element.closest(".input-wrapper") : element.closest(".field-row");
           error.appendTo(container);
-        } else if (element.attr("name") !== "agreement" && $(element).data('modified')) {
-          const container = element.closest(".input-wrapper").length ? element.closest(".input-wrapper") : element.closest(".field-row");
+        } 
+        else if (element.is("select")) {
+           error.appendTo(container);
+        }
+        else if ($(element).data('modified')) {
           error.appendTo(container);
         }
       },
