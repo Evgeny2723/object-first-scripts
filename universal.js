@@ -578,11 +578,9 @@ document.addEventListener('DOMContentLoaded', function() {
       },
       highlight: function(element) {
          const $el = $(element);
-         // Если это селект (Bootstrap Select)
          if ($el.is('select')) {
-             $el.closest('.bootstrap-select').find('.dropdown-toggle').addClass('input-error');
+             $el.closest('.bootstrap-select').find('.dropdown-toggle').addClass('input-error').css('color', '#c50006');
          } 
-         // Если обычное поле
          else if ($el.data('modified')) {
              $el.css('border', '1px solid #c50006');
          }
@@ -591,9 +589,8 @@ document.addEventListener('DOMContentLoaded', function() {
          const $el = $(element);
          // Если это селект
          if ($el.is('select')) {
-             $el.closest('.bootstrap-select').find('.dropdown-toggle').removeClass('input-error');
+             $el.closest('.bootstrap-select').find('.dropdown-toggle').removeClass('input-error').css('color', '');
          } 
-         // Если обычное поле
          else {
              $el.css('border', '');
          }
