@@ -352,10 +352,24 @@ document.addEventListener('DOMContentLoaded', function() {
             errorPlacement: function(error, element) {
                 if ($(element).data('modified')) error.appendTo(element.closest(".field-row"));
             },
-            highlight: function(element) {
-                if ($(element).data('modified')) $(element).css('border', '1px solid #c50006');
+            highlight: function(el) {
+                 const $el = $(el);
+                 if ($el.is('select')) {
+                     // Добавляем класс
+                     $el.closest('.bootstrap-select').find('.dropdown-toggle').addClass('input-error');
+                 } else if ($el.data('modified')) {
+                     $el.css('border', '1px solid #c50006'); 
+                 }
             },
-            unhighlight: function(element) { $(element).css('border', ''); },
+            unhighlight: function(el) {
+                 const $el = $(el);
+                 if ($el.is('select')) {
+                     // Убираем класс
+                     $el.closest('.bootstrap-select').find('.dropdown-toggle').removeClass('input-error');
+                 } else {
+                     $el.css('border', ''); 
+                 }
+            },
             onfocusin: function(element) { $(element).data("interacted", true); }
         });
 
@@ -629,7 +643,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 company: { required: true, maxlength: 50, noSpacesOnly: true },
                 phone: { phoneCustom: true },
                 'self-attribution': { maxlength: 50 },
-                agreement: { required: function(el) { return $('#country-2').val() !== 'United States' && $(el).is(':visible'); } }
+                agreement: { required: true }
             },
             messages: {
                 firstname: { required: "This field is required" },
@@ -641,8 +655,24 @@ document.addEventListener('DOMContentLoaded', function() {
             errorPlacement: function(error, element) {
                 if ($(element).data('modified')) error.appendTo(element.closest(".field-row"));
             },
-            highlight: function(element) { if ($(element).data('modified')) $(element).css('border', '1px solid #c50006'); },
-            unhighlight: function(element) { $(element).css('border', ''); },
+            highlight: function(el) {
+                 const $el = $(el);
+                 if ($el.is('select')) {
+                     // Добавляем класс
+                     $el.closest('.bootstrap-select').find('.dropdown-toggle').addClass('input-error');
+                 } else if ($el.data('modified')) {
+                     $el.css('border', '1px solid #c50006'); 
+                 }
+            },
+            unhighlight: function(el) {
+                 const $el = $(el);
+                 if ($el.is('select')) {
+                     // Убираем класс
+                     $el.closest('.bootstrap-select').find('.dropdown-toggle').removeClass('input-error');
+                 } else {
+                     $el.css('border', ''); 
+                 }
+            },
             onfocusin: function(element) { $(element).data("interacted", true); }
         });
 
