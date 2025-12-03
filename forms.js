@@ -294,8 +294,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 $(pCheckbox).prop('checked', false).removeAttr('checked');
                 $(pCheckbox).parent().find('.w-checkbox-input').removeClass('w--redirected-checked');
             }
-            setTimeout(updatePSubmitState, 50);
-            $(this).valid();
+            setTimeout(() => {
+                $(this).valid();
+                updatePSubmitState();
+            }, 50);
         });
 
         // Автоопределение страны и штата (Form 1)
@@ -655,8 +657,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 $(mCheckbox).prop('checked', false).removeAttr('checked');
                 $(mCheckbox).parent().find('.w-checkbox-input').removeClass('w--redirected-checked');
             }
-            setTimeout(updateMSubmitState, 50);
-            $(this).valid();
+            setTimeout(() => {
+                $(this).valid();
+                updateMSubmitState();
+            }, 50);
         });
 
         // Валидация
