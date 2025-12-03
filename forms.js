@@ -139,7 +139,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const opt = document.createElement('option');
                 opt.value = "";
                 opt.text = "State*"; // Текст заглушки
-                // opt.setAttribute('data-hidden', 'true'); // Можно раскомментировать, если нужно скрыть его из списка выбора после открытия
+                opt.setAttribute('data-hidden', 'true');
                 sel.prepend(opt);
             }
             
