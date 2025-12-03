@@ -13,6 +13,8 @@ document.addEventListener('DOMContentLoaded', function() {
         allStateSelects.forEach(sel => {
             // 1. Делаем поле обязательным (jQuery Validate подхватит это, когда поле станет видимым)
             sel.setAttribute('required', 'true');
+            sel.setAttribute('title', 'State*'); 
+            sel.setAttribute('data-none-selected-text', 'State*');
 
             // 2. Добавляем пустой пункт в начало, если его нет
             if (!sel.querySelector('option[value=""]')) {
