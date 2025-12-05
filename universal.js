@@ -1108,13 +1108,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (turnstileWidget) {
                   turnstile.reset(turnstileWidget);
                   isTurnstileCompleted = false;
-                  // Задержка перед обновлением кнопки, чтобы не сбросить ошибку
-                  setTimeout(() => updateSubmitButtonState(), 100);
+                    disableMainSubmit();
                 }
               }
         } finally {
           isSubmitting = false;
-          submitButton.removeAttribute('disabled');
         }
       });
     }
