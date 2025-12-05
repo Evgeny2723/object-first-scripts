@@ -592,9 +592,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // =========================================================================
-    // 5. ФОРМА 2: Demo / Full Form (#main-form-2)
+    // 5. ФОРМА 2: Demo / Full Form (#main-form)
     // =========================================================================
-    const mainForm = document.getElementById('main-form-2');
+    const mainForm = document.getElementById('main-form');
     if (mainForm) {
         const mFirstName = document.getElementById('first-name');
         const mLastName = document.getElementById('last-name');
