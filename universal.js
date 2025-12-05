@@ -182,6 +182,18 @@ document.addEventListener('DOMContentLoaded', function() {
     // Honeypot переменные
     let formInteractionStartTime = 0;
     let decoyLinkClicked = false;
+    let isTurnstileCompleted = false;
+
+    // Turnstile callback
+    function onTurnstileSuccess(token) {
+      isTurnstileCompleted = true;
+      updateSubmitButtonState();
+    }
+
+    function onTurnstileExpired() {
+      isTurnstileCompleted = false;
+      updateSubmitButtonState();
+    }
 
     // Инициализация селекторов
     if (countrySelect) {
@@ -647,7 +659,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Обновление состояния кнопки отправки ОСНОВНОЙ формы
     function updateSubmitButtonState() {
       const $form = $(mainForm);
-      // Если это форма кода, не трогаем кнопку основной формы тут (хотя можно разделить логику)
       if ($form.attr('id') === 'code-form') return; 
 
       const isFormValid = $form.valid();
@@ -656,7 +667,8 @@ document.addEventListener('DOMContentLoaded', function() {
       if (isSimpleEmailForm) {
         const emailEl = document.getElementById('email');
         const isEmailValid = emailEl ? $(emailEl).valid() : false;
-        if (isEmailValid) {
+        
+        if (isEmailValid && isTurnstileCompleted) {
           enableMainSubmit();
         } else {
           disableMainSubmit();
@@ -670,7 +682,7 @@ document.addEventListener('DOMContentLoaded', function() {
       const areAllCheckboxesChecked = $requiredCheckboxes.length === checkedCount;
       const isCheckboxRequirementMet = selectedCountry === 'United States' || areAllCheckboxesChecked;
 
-      if (isFormValid && isCheckboxRequirementMet) {
+      if (isFormValid && isCheckboxRequirementMet && isTurnstileCompleted) {
         enableMainSubmit();
       } else {
         disableMainSubmit();
@@ -1065,6 +1077,15 @@ document.addEventListener('DOMContentLoaded', function() {
           if (mainForm) mainForm.style.display = 'flex';
           if (mainFormContainer) mainFormContainer.style.display = 'flex';
           if (codeFormContainer) codeFormContainer.style.display = 'none';
+            // Сброс Turnstile
+              if (window.turnstile) {
+                const turnstileWidget = mainForm.querySelector('.cf-turnstile');
+                if (turnstileWidget) {
+                  turnstile.reset(turnstileWidget);
+                  isTurnstileCompleted = false;
+                  updateSubmitButtonState();
+                }
+              }
         } finally {
           isSubmitting = false;
           submitButton.removeAttribute('disabled');
