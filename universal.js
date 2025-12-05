@@ -184,17 +184,24 @@ document.addEventListener('DOMContentLoaded', function() {
     let decoyLinkClicked = false;
     let isTurnstileCompleted = false;
 
-    // Turnstile callback
+    // Turnstile callbacks
     window.onTurnstileSuccess = function(token) {
       console.log("Turnstile success");
       isTurnstileCompleted = true;
-      updateSubmitButtonState();
+      
+      const hasServerErrors = $(mainForm).find('label.error:visible').length > 0;
+      
+      if (!hasServerErrors) {
+        updateSubmitButtonState();
+      } else {
+        console.log("Server errors present, skipping validation");
+      }
     };
-
+    
     window.onTurnstileExpired = function() {
       console.log("Turnstile expired");
       isTurnstileCompleted = false;
-      updateSubmitButtonState();
+      disableMainSubmit();
     };
 
     // Инициализация селекторов
@@ -1080,17 +1087,14 @@ document.addEventListener('DOMContentLoaded', function() {
                   const jsonString = error.message.substring(jsonStartIndex);
                   const errorData = JSON.parse(jsonString);
                   
-                  // Используем встроенный метод валидатора
                   if (errorData.errors && errorData.errors.email) {
                     const errorText = errorData.errors.email[0];
                     
-                    // ПРАВИЛЬНЫЙ способ через jQuery Validate
                     const validatorInstance = $(mainForm).validate();
                     validatorInstance.showErrors({
                       'email': errorText
                     });
                     
-                    // Важно: устанавливаем флаг modified
                     $('#email').data('modified', true);
                     
                     console.log('Email error displayed:', errorText);
