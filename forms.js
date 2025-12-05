@@ -61,6 +61,22 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // Анимация стрелки dropdown
+    const dropdownsUI = document.querySelectorAll('.dropdown.bootstrap-select.select-search.w-select');
+    const highlightColor = '#5B00B3';
+    const defaultColor = '';
+
+    dropdownsUI.forEach(dropdownContainer => {
+      const targetButton = dropdownContainer.querySelector('button[type="button"].dropdown-toggle');
+      const svgArrow = dropdownContainer.nextElementSibling; 
+        if (targetButton && svgArrow && svgArrow.classList.contains('select-arrow-new')) {
+              function handleMouseOver() { svgArrow.style.color = highlightColor; }
+              function handleMouseOut() { svgArrow.style.color = defaultColor; }
+              targetButton.addEventListener('mouseover', handleMouseOver);
+              targetButton.addEventListener('mouseout', handleMouseOut);
+          }
+      });
+
     // Переменные Honeypot
     let formInteractionStartTime = 0;
     let decoyLinkClicked = false;
