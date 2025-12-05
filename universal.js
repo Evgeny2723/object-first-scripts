@@ -1074,52 +1074,55 @@ document.addEventListener('DOMContentLoaded', function() {
         } catch (error) {
           console.error('Error:', error.message);
             try {
-                // --- ШАГ 1: Надежный парсинг JSON ---
-                // Находим, где начинается JSON (первая фигурная скобка), 
-                // чтобы игнорировать "Error: Server error: " и любые другие префиксы
-                const jsonStartIndex = error.message.indexOf('{');
+        const jsonStartIndex = error.message.indexOf('{');
+        
+        if (jsonStartIndex !== -1) {
+            const jsonString = error.message.substring(jsonStartIndex);
+            const errorData = JSON.parse(jsonString);
+            
+            console.log('2. Parsed JSON data:', errorData);
+
+            // Проверяем наличие ошибки email
+            if (errorData.errors && errorData.errors.email) {
+                const errorText = errorData.errors.email[0];
+                console.log('3. Found email error text:', errorText);
+
+                // --- РУЧНОЕ ОТОБРАЖЕНИЕ ОШИБКИ (ГАРАНТИРОВАННЫЙ СПОСОБ) ---
+                const $emailInput = $('#email');
+                const $inputWrapper = $emailInput.closest('.input-wrapper');
                 
-                if (jsonStartIndex !== -1) {
-                    const jsonString = error.message.substring(jsonStartIndex);
-                    const errorData = JSON.parse(jsonString);
-                    
-                    console.log('2. Parsed JSON data:', errorData);
-        
-                    // --- ШАГ 2: Проверка наличия ошибки email ---
-                    if (errorData.errors && errorData.errors.email) {
-                        const errorText = errorData.errors.email[0];
-                        console.log('3. Found email error text:', errorText);
-        
-                        // --- ШАГ 3: Применение к JQuery Validate ---
-                        // ВАЖНО: Убедись, что 'mainForm' - это именно HTML элемент формы.
-                        // Если mainForm не определен, замени его на $('#id-твоей-формы')
-                        
-                        // Пробуем найти валидатор, привязанный к форме
-                        var $form = $(mainForm); 
-                        var validator = $form.data('validator');
-                        
-                        if (validator) {
-                            console.log('4. Validator instance found via .data(), calling showErrors...');
-                            $form.find('input[name="email"]').data('modified', true);
-                            validator.showErrors({
-                                'email': errorText
-                            });
-                        } else {
-                            console.warn('4. Validator instance NOT found via .data(). Trying .validate()...');
-                            // Если instance не найден, пробуем вызвать стандартно
-                            $form.validate().showErrors({
-                                'email': errorText
-                            });
-                        }
-                    } else {
-                        console.log('3. No "email" errors found in the response object');
-                    }
-                } else {
-                    console.log('2. No JSON object found in error message (no "{" symbol)');
+                // 1. Добавляем красную рамку напрямую
+                $emailInput.css('border', '1px solid #c50006');
+                $emailInput.addClass('error'); // На всякий случай
+
+                // 2. Ищем или создаем лейбл ошибки
+                let $errorLabel = $inputWrapper.find('label.error');
+                if ($errorLabel.length === 0) {
+                    // Если лейбла нет, создаем его
+                    $errorLabel = $('<label id="email-error" class="error" for="email"></label>');
+                    $inputWrapper.append($errorLabel);
                 }
-            } catch (e) {
-                console.error('DEBUG: Parsing or Display logic failed:', e);
+
+                // 3. Вставляем текст и принудительно показываем
+                $errorLabel.text(errorText);
+                $errorLabel.css('display', 'block'); // Перебиваем display: none
+                $errorLabel.show();
+                
+                // 4. Важно: ставим флаг modified, чтобы при следующем клике валидация работала штатно
+                $emailInput.data('modified', true);
+                
+                console.log('4. Manual error injection applied.');
+                // -----------------------------------------------------------
+
+            } else {
+                console.log('3. No "email" errors found in the response object');
             }
+        } else {
+            console.log('2. No JSON object found in error message');
+        }
+    } catch (e) {
+        console.error('DEBUG: Parsing or Display logic failed:', e);
+    }
           if (successMessage) successMessage.style.display = 'none';
           if (mainForm) mainForm.style.display = 'flex';
           if (mainFormContainer) mainFormContainer.style.display = 'flex';
