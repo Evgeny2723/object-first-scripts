@@ -1074,66 +1074,42 @@ document.addEventListener('DOMContentLoaded', function() {
         } catch (error) {
           console.error('Error:', error.message);
             try {
-        const jsonStartIndex = error.message.indexOf('{');
-        
-        if (jsonStartIndex !== -1) {
-            const jsonString = error.message.substring(jsonStartIndex);
-            const errorData = JSON.parse(jsonString);
-            
-            console.log('2. Parsed JSON data:', errorData);
-
-            // Проверяем наличие ошибки email
-            if (errorData.errors && errorData.errors.email) {
-                const errorText = errorData.errors.email[0];
-                console.log('3. Found email error text:', errorText);
-
-                // --- РУЧНОЕ ОТОБРАЖЕНИЕ ОШИБКИ (ГАРАНТИРОВАННЫЙ СПОСОБ) ---
-                const $emailInput = $('#email');
-                const $inputWrapper = $emailInput.closest('.input-wrapper');
+                const jsonStartIndex = error.message.indexOf('{');
                 
-                // 1. Добавляем красную рамку напрямую
-                $emailInput.css('border', '1px solid #c50006');
-                $emailInput.addClass('error'); // На всякий случай
-
-                // 2. Ищем или создаем лейбл ошибки
-                let $errorLabel = $inputWrapper.find('label.error');
-                if ($errorLabel.length === 0) {
-                    // Если лейбла нет, создаем его
-                    $errorLabel = $('<label id="email-error" class="error" for="email"></label>');
-                    $inputWrapper.append($errorLabel);
+                if (jsonStartIndex !== -1) {
+                  const jsonString = error.message.substring(jsonStartIndex);
+                  const errorData = JSON.parse(jsonString);
+                  
+                  // Используем встроенный метод валидатора
+                  if (errorData.errors && errorData.errors.email) {
+                    const errorText = errorData.errors.email[0];
+                    
+                    // ПРАВИЛЬНЫЙ способ через jQuery Validate
+                    const validatorInstance = $(mainForm).validate();
+                    validatorInstance.showErrors({
+                      'email': errorText
+                    });
+                    
+                    // Важно: устанавливаем флаг modified
+                    $('#email').data('modified', true);
+                    
+                    console.log('Email error displayed:', errorText);
+                  }
                 }
-
-                // 3. Вставляем текст и принудительно показываем
-                $errorLabel.text(errorText);
-                $errorLabel.css('display', 'block'); // Перебиваем display: none
-                $errorLabel.show();
-                
-                // 4. Важно: ставим флаг modified, чтобы при следующем клике валидация работала штатно
-                $emailInput.data('modified', true);
-                
-                console.log('4. Manual error injection applied.');
-                // -----------------------------------------------------------
-
-            } else {
-                console.log('3. No "email" errors found in the response object');
-            }
-        } else {
-            console.log('2. No JSON object found in error message');
-        }
-    } catch (e) {
-        console.error('DEBUG: Parsing or Display logic failed:', e);
-    }
+              } catch (e) {
+                console.error('Parsing failed:', e);
+              }
           if (successMessage) successMessage.style.display = 'none';
           if (mainForm) mainForm.style.display = 'flex';
           if (mainFormContainer) mainFormContainer.style.display = 'flex';
           if (codeFormContainer) codeFormContainer.style.display = 'none';
-            // Сброс Turnstile
-              if (window.turnstile) {
+            if (window.turnstile) {
                 const turnstileWidget = mainForm.querySelector('.cf-turnstile');
                 if (turnstileWidget) {
                   turnstile.reset(turnstileWidget);
                   isTurnstileCompleted = false;
-                  updateSubmitButtonState();
+                  // Задержка перед обновлением кнопки, чтобы не сбросить ошибку
+                  setTimeout(() => updateSubmitButtonState(), 100);
                 }
               }
         } finally {
