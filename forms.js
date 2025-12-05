@@ -711,6 +711,11 @@ document.addEventListener('DOMContentLoaded', function() {
                                     setTimeout(() => {
                                         const targetId = stateInputIds[data.country];
                                         const stateSelect = document.getElementById(targetId);
+
+                                        console.log('Попытка автозаполнения для:', data.country);
+                                        console.log('Ищем ID:', targetId);
+                                        console.log('Найден элемент:', stateSelect);
+                                        console.log('Данные API:', data.state_name, data.state, data.city);
                                         
                                         if (stateSelect) {
                                             const foundOption = findBestOption(
