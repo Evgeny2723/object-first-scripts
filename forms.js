@@ -389,14 +389,20 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             // 3. Логика сообщений и чекбокса
+            const $pCheckboxWrapper = $(pCheckbox).closest('.input-wrapper'); // Находим обертку
+            
             if (selectedCountry === 'United States') {
-                document.querySelector('.form-message').style.display = 'none';
-                document.querySelector('.form-message_usa').style.display = 'block';
-                $(pCheckbox).prop('checked', true).parent().hide();
+                // Ищем элементы только внутри этой формы
+                pForm.querySelector('.form-message').style.display = 'none';
+                pForm.querySelector('.form-message_usa').style.display = 'block';
+                
+                $(pCheckbox).prop('checked', true);
+                $pCheckboxWrapper.hide(); // Скрываем всю обертку, чтобы убрать gap
             } else {
-                document.querySelector('.form-message').style.display = 'block';
-                document.querySelector('.form-message_usa').style.display = 'none';
-                $(pCheckbox).parent().show();
+                pForm.querySelector('.form-message').style.display = 'block';
+                pForm.querySelector('.form-message_usa').style.display = 'none';
+                
+                $pCheckboxWrapper.show(); // Показываем обертку
                 $(pCheckbox).prop('checked', false).removeAttr('checked');
                 $(pCheckbox).parent().find('.w-checkbox-input').removeClass('w--redirected-checked');
             }
@@ -551,7 +557,7 @@ document.addEventListener('DOMContentLoaded', function() {
         $(pCheckbox).on('change', function() {
           $(this).data('modified', true);
           $(this).valid();
-          updateCheckboxErrorClass(this);
+          updateCheckboxErrorClass();
           updatePSubmitState();
         });
 
@@ -783,14 +789,20 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             // 3. Логика чекбокса
+            const $mCheckboxWrapper = $(mCheckbox).closest('.input-wrapper'); // Находим обертку
+
             if (selectedCountry === 'United States') {
-                document.querySelector('.form-message').style.display = 'none';
-                document.querySelector('.form-message_usa').style.display = 'block';
-                $(mCheckbox).prop('checked', true).parent().hide();
+                // ВАЖНО: Ищем внутри mainForm, а не document
+                mainForm.querySelector('.form-message').style.display = 'none';
+                mainForm.querySelector('.form-message_usa').style.display = 'block';
+                
+                $(mCheckbox).prop('checked', true);
+                $mCheckboxWrapper.hide(); // Скрываем обертку целиком
             } else {
-                document.querySelector('.form-message').style.display = 'block';
-                document.querySelector('.form-message_usa').style.display = 'none';
-                $(mCheckbox).parent().show();
+                mainForm.querySelector('.form-message').style.display = 'block';
+                mainForm.querySelector('.form-message_usa').style.display = 'none';
+                
+                $mCheckboxWrapper.show(); // Показываем обертку
                 $(mCheckbox).prop('checked', false).removeAttr('checked');
                 $(mCheckbox).parent().find('.w-checkbox-input').removeClass('w--redirected-checked');
             }
@@ -890,7 +902,7 @@ document.addEventListener('DOMContentLoaded', function() {
         $(mCheckbox).on('change', function() {
           $(this).data('modified', true);
           $(this).valid();
-          updateCheckboxErrorClass(this);
+          updateCheckboxErrorClass();
           updateMSubmitState();
         });
 
