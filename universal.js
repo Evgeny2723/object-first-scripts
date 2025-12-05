@@ -1076,22 +1076,50 @@ document.addEventListener('DOMContentLoaded', function() {
         } catch (error) {
           console.error('Error:', error.message);
             try {
-                let jsonString = error.message;
-                if (jsonString.includes("Server error: ")) {
-                    jsonString = jsonString.replace("Server error: ", "");
-                }
-            
-                const errorData = JSON.parse(jsonString);
-            
-                // 2. Если есть ошибки валидации, скармливаем их JQuery Validation
-                if (errorData.errors && errorData.errors.email) {
-                    $(mainForm).validate().showErrors({
-                        'email': errorData.errors.email[0]
-                    });
+                // --- ШАГ 1: Надежный парсинг JSON ---
+                // Находим, где начинается JSON (первая фигурная скобка), 
+                // чтобы игнорировать "Error: Server error: " и любые другие префиксы
+                const jsonStartIndex = error.message.indexOf('{');
+                
+                if (jsonStartIndex !== -1) {
+                    const jsonString = error.message.substring(jsonStartIndex);
+                    const errorData = JSON.parse(jsonString);
+                    
+                    console.log('2. Parsed JSON data:', errorData);
+        
+                    // --- ШАГ 2: Проверка наличия ошибки email ---
+                    if (errorData.errors && errorData.errors.email) {
+                        const errorText = errorData.errors.email[0];
+                        console.log('3. Found email error text:', errorText);
+        
+                        // --- ШАГ 3: Применение к JQuery Validate ---
+                        // ВАЖНО: Убедись, что 'mainForm' - это именно HTML элемент формы.
+                        // Если mainForm не определен, замени его на $('#id-твоей-формы')
+                        
+                        // Пробуем найти валидатор, привязанный к форме
+                        var $form = $(mainForm); 
+                        var validator = $form.data('validator');
+                        
+                        if (validator) {
+                            console.log('4. Validator instance found via .data(), calling showErrors...');
+                            validator.showErrors({
+                                'email': errorText
+                            });
+                        } else {
+                            console.warn('4. Validator instance NOT found via .data(). Trying .validate()...');
+                            // Если instance не найден, пробуем вызвать стандартно
+                            $form.validate().showErrors({
+                                'email': errorText
+                            });
+                        }
+                    } else {
+                        console.log('3. No "email" errors found in the response object');
+                    }
+                } else {
+                    console.log('2. No JSON object found in error message (no "{" symbol)');
                 }
             } catch (e) {
-                // Если распарсить не удалось, ничего страшного, просто идем дальше
-                console.log("Не удалось извлечь ошибки валидации из ответа", e);
+                console.error('DEBUG: Parsing or Display logic failed:', e);
             }
           if (successMessage) successMessage.style.display = 'none';
           if (mainForm) mainForm.style.display = 'flex';
