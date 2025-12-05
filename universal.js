@@ -1075,6 +1075,24 @@ document.addEventListener('DOMContentLoaded', function() {
 
         } catch (error) {
           console.error('Error:', error.message);
+            try {
+                let jsonString = error.message;
+                if (jsonString.includes("Server error: ")) {
+                    jsonString = jsonString.replace("Server error: ", "");
+                }
+            
+                const errorData = JSON.parse(jsonString);
+            
+                // 2. Если есть ошибки валидации, скармливаем их JQuery Validation
+                if (errorData.errors && errorData.errors.email) {
+                    $(mainForm).validate().showErrors({
+                        'email': errorData.errors.email[0]
+                    });
+                }
+            } catch (e) {
+                // Если распарсить не удалось, ничего страшного, просто идем дальше
+                console.log("Не удалось извлечь ошибки валидации из ответа", e);
+            }
           if (successMessage) successMessage.style.display = 'none';
           if (mainForm) mainForm.style.display = 'flex';
           if (mainFormContainer) mainFormContainer.style.display = 'flex';
