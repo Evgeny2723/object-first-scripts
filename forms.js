@@ -78,25 +78,6 @@ document.addEventListener('DOMContentLoaded', function() {
         return 'user_' + Math.random().toString(36).substr(2, 9);
     }
 
-    // Утилита для плавающего лейбла
-    function handleLabel(input) {
-        if (!input) return;
-        const label = input.nextElementSibling;
-        const updateLabelState = () => {
-            if (input.value !== '') {
-                label.classList.add('active');
-                input.classList.add('not-empty');
-            } else {
-                label.classList.remove('active');
-                input.classList.remove('not-empty');
-            }
-        };
-        updateLabelState();
-        input.addEventListener('focus', () => label.classList.add('active'));
-        input.addEventListener('blur', updateLabelState);
-        input.addEventListener('input', updateLabelState);
-    }
-
     // Утилита Fetch Country
     function detectUserCountry() {
         return fetch('https://faas-nyc1-2ef2e6cc.doserverless.co/api/v1/web/fn-3627560b-2163-4a62-81db-3a3b5da17d5a/ip/info')
@@ -266,9 +247,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const pSubmitButton = document.getElementById('p-submit');
         const pCheckbox = document.getElementById('p-agreement');
         let pIsSubmitting = false;
-
-        // Лейблы
-        [pFullNameInput, pEmailInput, pCompanyInput, pSelfAttribution].forEach(handleLabel);
 
         // Инициализация Selectpicker
         $('#p-country').selectpicker();
@@ -586,9 +564,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const mCheckbox = document.getElementById('agreement');
         const mSubmitButtons = document.getElementById('submit');
         let mIsSubmitting = false;
-
-        // Лейблы
-        [mFirstName, mLastName, mJobTitle, mEmail, mCompany, mPhone, mSelfAttr].forEach(handleLabel);
 
         // Selectpicker
         $('#country').selectpicker();
