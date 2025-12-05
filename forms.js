@@ -61,21 +61,20 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Анимация стрелки dropdown
-    const dropdownsUI = document.querySelectorAll('.dropdown.bootstrap-select.select-search.w-select');
-    const highlightColor = '#5B00B3';
-    const defaultColor = '';
-
-    dropdownsUI.forEach(dropdownContainer => {
-      const targetButton = dropdownContainer.querySelector('button[type="button"].dropdown-toggle');
-      const svgArrow = dropdownContainer.nextElementSibling; 
-        if (targetButton && svgArrow && svgArrow.classList.contains('select-arrow-new')) {
-              function handleMouseOver() { svgArrow.style.color = highlightColor; }
-              function handleMouseOut() { svgArrow.style.color = defaultColor; }
-              targetButton.addEventListener('mouseover', handleMouseOver);
-              targetButton.addEventListener('mouseout', handleMouseOut);
-          }
-      });
+    function updateCheckboxErrorClass(checkbox) {
+        const $cb = $(checkbox);
+        // Находим текстовый лейбл рядом
+        const label = $cb.closest('.checkbox-field').find('.checkbox-text');
+        const wasInteracted = $cb.data('modified') === true;
+        
+        if (wasInteracted) {
+            if ($cb.is(':checked')) {
+                label.removeClass('error');
+            } else {
+                label.addClass('error');
+            }
+        }
+    }
 
     // Переменные Honeypot
     let formInteractionStartTime = 0;
@@ -194,11 +193,26 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     observer.observe(document.body, { childList: true, subtree: true });
 
+    // Анимация стрелки dropdown
+    const dropdownsUI = document.querySelectorAll('.dropdown.bootstrap-select.select-search.w-select');
+    const highlightColor = '#5B00B3';
+    const defaultColor = '';
+
+    dropdownsUI.forEach(dropdownContainer => {
+      const targetButton = dropdownContainer.querySelector('button[type="button"].dropdown-toggle');
+      const svgArrow = dropdownContainer.nextElementSibling; 
+        if (targetButton && svgArrow && svgArrow.classList.contains('select-arrow-new')) {
+              function handleMouseOver() { svgArrow.style.color = highlightColor; }
+              function handleMouseOut() { svgArrow.style.color = defaultColor; }
+              targetButton.addEventListener('mouseover', handleMouseOver);
+              targetButton.addEventListener('mouseout', handleMouseOut);
+          }
+      });
+    
     // --- NEW: Add Empty Option & Required Attribute ---
     function initStateSelects() {
-        // Находим все селекты штатов (обе формы)
-        // ИСПРАВЛЕНИЕ: Добавлен #state вместо #state-2, если используется #state во второй форме
-        const allStateSelects = document.querySelectorAll('[id^="p-states-"], [id^="states-"], #p-state, #state, #state-2');
+        
+        const allStateSelects = document.querySelectorAll('[id^="p-states-"], [id^="states-"], #p-state, #state');
         
         allStateSelects.forEach(sel => {
             // 1. Делаем поле обязательным (jQuery Validate подхватит это, когда поле станет видимым)
@@ -224,7 +238,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // --- Live Validation for State Selects ---
     // Убирает красную рамку сразу после выбора значения
-    $('select[id^="p-states-"], select[id^="states-"], #p-state, #state, #state-2').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
+    $('select[id^="p-states-"], select[id^="states-"], #p-state, #state').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
         $(this).valid(); // Запускаем валидацию конкретного поля при изменении
     });
 
@@ -520,10 +534,10 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // ЛОГИКА ЧЕКБОКСА (Исправлено)
         $(pCheckbox).on('change', function() {
-            // Удалено ручное добавление класса .error на текст.
-            // Вместо этого вызываем валидацию самого чекбокса, чтобы отобразить сообщение об ошибке.
-            $(this).valid();
-            updatePSubmitState();
+          $(this).data('modified', true);
+          $(this).valid();
+          updateCheckboxErrorClass(this);
+          updateSubmitButtonState();
         });
 
         // Submit Handler Form 1
@@ -862,10 +876,10 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // ЛОГИКА ЧЕКБОКСА (Исправлено)
         $(mCheckbox).on('change', function() {
-            // Удалено ручное окрашивание текста.
-            // Запускаем валидацию, чтобы показать сообщение об ошибке под чекбоксом, если он не нажат.
-            $(this).valid(); 
-            updateMSubmitState();
+          $(this).data('modified', true);
+          $(this).valid();
+          updateCheckboxErrorClass(this);
+          updateSubmitButtonState();
         });
 
         // Submit Handler Form
