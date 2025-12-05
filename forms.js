@@ -197,7 +197,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // --- NEW: Add Empty Option & Required Attribute ---
     function initStateSelects() {
         // Находим все селекты штатов (обе формы)
-        const allStateSelects = document.querySelectorAll('[id^="p-states-"], [id^="states-"], #p-state, #state-2');
+        // ИСПРАВЛЕНИЕ: Добавлен #state вместо #state-2, если используется #state во второй форме
+        const allStateSelects = document.querySelectorAll('[id^="p-states-"], [id^="states-"], #p-state, #state, #state-2');
         
         allStateSelects.forEach(sel => {
             // 1. Делаем поле обязательным (jQuery Validate подхватит это, когда поле станет видимым)
@@ -223,7 +224,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // --- Live Validation for State Selects ---
     // Убирает красную рамку сразу после выбора значения
-    $('select[id^="p-states-"], select[id^="states-"], #p-state, #state-2').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
+    $('select[id^="p-states-"], select[id^="states-"], #p-state, #state, #state-2').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
         $(this).valid(); // Запускаем валидацию конкретного поля при изменении
     });
 
@@ -321,7 +322,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const selectedCountry = this.value;
 
             // 1. Сначала СКРЫВАЕМ и ОТКЛЮЧАЕМ (disable) ВСЕ списки штатов
-            // Это критически важно, чтобы валидатор не ругался на скрытые поля
             const allStateContainers = document.querySelectorAll('[class^="p-states-"], .p-dropdown-state');
             allStateContainers.forEach(container => {
                 container.style.display = 'none'; // Скрываем визуально
@@ -359,7 +359,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
 
-            // 3. Логика сообщений и чекбокса (как и было)
+            // 3. Логика сообщений и чекбокса
             if (selectedCountry === 'United States') {
                 document.querySelector('.form-message').style.display = 'none';
                 document.querySelector('.form-message_usa').style.display = 'block';
@@ -409,22 +409,22 @@ document.addEventListener('DOMContentLoaded', function() {
                             const stateSelect = document.getElementById(targetId);
                             
                             if (stateSelect) {
-                                // Ищем совпадение: сначала пробуем Регион, потом Город
+                                // Ищем совпадение
                                 const foundOption = findBestOption(
                                     stateSelect, 
-                                    data.state_name, // Приоритет 1: Штат/Регион (Lombardy)
-                                    data.state,      // Приоритет 2: Код штата
-                                    data.city        // Приоритет 3: Город (Milan) - для Италии часто нужно это
+                                    data.state_name, 
+                                    data.state,      
+                                    data.city        
                                 );
 
                                 if (foundOption) {
                                     foundOption.selected = true;
                                     $(`#${targetId}`).selectpicker('refresh');
-                                    $(stateSelect).closest('.bootstrap-select').find('.dropdown-toggle').removeClass('input-error'); // Убираем красную рамку
+                                    $(stateSelect).closest('.bootstrap-select').find('.dropdown-toggle').removeClass('input-error'); 
                                     $(stateSelect).valid(); 
                                 }
                             }
-                        }, 200); // Чуть увеличил тайдер для надежности
+                        }, 200); 
                     }
                 }
             }
@@ -444,7 +444,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 'p-state': { required: true }
             },
             messages: {
-                'p-full-neme': { required: "This field is required", maxlength: "Full name must be at most 50 characters" },
+                'p-full-name': { required: "This field is required", maxlength: "Full name must be at most 50 characters" }, // ИСПРАВЛЕНА ОПЕЧАТКА neme -> name
                 'p-email': { required: "This field is required", email: "Invalid email address" },
                 'p-company': { required: "This field is required" },
                 'p-state': { required: "This field is required" }
@@ -490,7 +490,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const isCheckboxChecked = $(pCheckbox).prop('checked');
             const isReqMet = selectedCountry === 'United States' || isCheckboxChecked;
 
-            // Находим обертку, как во второй форме
             const pWrapper = pSubmitButton.closest('.submit-button-wrapper');
 
             if (isFormValid && isReqMet) {
@@ -504,19 +503,19 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
-        // === ДОБАВИТЬ ЭТО СРАЗУ ПОСЛЕ ФУНКЦИИ (Инициализация) ===
-        // Устанавливаем начальное состояние (неактивно)
+        // Устанавливаем начальное состояние
         pSubmitButton.setAttribute('disabled', 'disabled');
         pSubmitButton.classList.add('submit-inactive');
         const pInitialWrapper = pSubmitButton.closest('.submit-button-wrapper');
         if (pInitialWrapper) pInitialWrapper.classList.add('button-is-inactive');
 
         $('#p-main-form').on('input change', updatePSubmitState);
+        
+        // ЛОГИКА ЧЕКБОКСА (Исправлено)
         $(pCheckbox).on('change', function() {
-            // Checkbox error styling
-            const label = $(this).closest('.p-checkbox-field').find('.checkbox-text');
-            if ($(this).is(':checked')) label.removeClass('error');
-            else label.addClass('error');
+            // Удалено ручное добавление класса .error на текст.
+            // Вместо этого вызываем валидацию самого чекбокса, чтобы отобразить сообщение об ошибке.
+            $(this).valid();
             updatePSubmitState();
         });
 
@@ -557,7 +556,7 @@ document.addEventListener('DOMContentLoaded', function() {
             };
             if (stateMapIds[selCountry]) stateValue = this.querySelector(stateMapIds[selCountry]).value;
 
-            // Pre-calculate hash to avoid payload error
+            // Pre-calculate hash
             const email = formData.get('p-email');
             const ehashValue = await sha256(email);
 
@@ -582,7 +581,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 let userId = getCookieValue('user_id') || generateUserId();
                 const response = await submitForm(payload, userId, 'p-main-form');
                 
-                document.cookie = `userId=${userId}; path=/; max-age=31536000`; // Note: Logic used userId cookie here
+                // ИСПРАВЛЕНИЕ: приводим к user_id для консистентности
+                document.cookie = `user_id=${userId}; path=/; max-age=31536000`; 
 
                 // GTM
                 if (window.dataLayer) {
@@ -621,7 +621,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const mSelfAttr = document.getElementById('self-attribution');
         const mCountrySelect = document.getElementById('country');
         const mCheckbox = document.getElementById('agreement');
-        const mSubmitButtons = document.getElementById('submit');
+        
+        // ИСПРАВЛЕНИЕ: Заменили getElementById на querySelectorAll, так как далее используется forEach.
+        // Если кнопка одна с id="submit", то будет NodeList из 1 элемента.
+        const mSubmitButtons = document.querySelectorAll('#submit'); 
+        
         let mIsSubmitting = false;
 
         // Selectpicker
@@ -670,12 +674,11 @@ document.addEventListener('DOMContentLoaded', function() {
                                         const stateSelect = document.getElementById(targetId);
                                         
                                         if (stateSelect) {
-                                            // ИСПОЛЬЗУЕМ НОВУЮ ФУНКЦИЮ ПОИСКА
                                             const foundOption = findBestOption(
                                                 stateSelect, 
                                                 data.state_name, 
                                                 data.state, 
-                                                data.city // Добавлен поиск по городу
+                                                data.city 
                                             );
 
                                             if (foundOption) {
@@ -695,7 +698,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
             
-            // Custom validation method for phone inside this scope to access 'iti'
             $.validator.addMethod("phoneCustom", function(value, element) {
                 return iti.isValidNumber();
             }, "Phone number is invalid. Please add your country code, area code and phone number. Your phone number can contain numbers, spaces and these special characters: ( ) - # +");
@@ -712,13 +714,13 @@ document.addEventListener('DOMContentLoaded', function() {
             // Обновить телефон
             if (iti && countryCodeMap[selectedCountry]) iti.setCountry(countryCodeMap[selectedCountry]);
 
-            // 1. Сначала СКРЫВАЕМ и ОТКЛЮЧАЕМ (disable) ВСЕ списки штатов
+            // 1. Сначала СКРЫВАЕМ и ОТКЛЮЧАЕМ
             const allStateContainers = document.querySelectorAll('.states-australia, .states-brazil, .states-canada, .states-china, .states-ireland, .states-india, .states-italy, .states-mexico, .dropdown-state');
             allStateContainers.forEach(container => {
                 container.style.display = 'none';
                 const select = container.querySelector('select');
                 if (select) {
-                    select.disabled = true; // ВАЖНО: Валидатор теперь проигнорирует это поле
+                    select.disabled = true; 
                     $(select).selectpicker('refresh');
                     $(select).closest('.bootstrap-select').find('.dropdown-toggle').removeClass('input-error');
                 }
@@ -763,7 +765,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // 4. Принудительно обновляем состояние кнопки
             setTimeout(() => {
                 $(this).valid();
-                updateMSubmitState(); // <-- Эта функция разблокирует кнопку
+                updateMSubmitState(); 
             }, 50);
         });
 
@@ -843,10 +845,12 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         $('#main-form').on('input change', updateMSubmitState);
+        
+        // ЛОГИКА ЧЕКБОКСА (Исправлено)
         $(mCheckbox).on('change', function() {
-            const label = $(this).closest('.checkbox-field').find('.checkbox-text');
-            if ($(this).is(':checked')) label.removeClass('error');
-            else label.addClass('error');
+            // Удалено ручное окрашивание текста.
+            // Запускаем валидацию, чтобы показать сообщение об ошибке под чекбоксом, если он не нажат.
+            $(this).valid(); 
             updateMSubmitState();
         });
 
