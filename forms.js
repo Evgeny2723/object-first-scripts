@@ -62,6 +62,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     function updateCheckboxErrorClass() {
+        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
        $(checkboxes).each(function() {
            const currentCheckbox = $(this);
             if (currentCheckbox.attr('id') === 'checkbox-sign') {
@@ -650,7 +651,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const mSelfAttr = document.getElementById('self-attribution');
         const mCountrySelect = document.getElementById('country');
         const mCheckbox = document.getElementById('agreement');
-        const mSubmitButtons = document.querySelector('[ms-code-submit-new="submit"]');
+        const mSubmitButtons = document.querySelectorAll('[ms-code-submit-new="submit"]');
         
         let mIsSubmitting = false;
 
