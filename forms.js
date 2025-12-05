@@ -18,6 +18,49 @@ document.addEventListener('DOMContentLoaded', function() {
         pagePath = pathSegments.slice(1).join('/');
     }
 
+    // Скрытие и отображение плейсхолдера
+    const inputs = document.querySelectorAll('.form-input');
+    inputs.forEach(input => {
+      input.addEventListener('focus', function() {
+        const placeholderText = this.getAttribute('placeholder');
+        if (placeholderText) {
+          this.setAttribute('data-placeholder', placeholderText);
+          this.removeAttribute('placeholder');
+        }
+      });
+      input.addEventListener('blur', function() {
+        const savedPlaceholder = this.getAttribute('data-placeholder');
+        if (savedPlaceholder) {
+          this.setAttribute('placeholder', savedPlaceholder);
+          this.removeAttribute('data-placeholder');
+        }
+      });
+    });
+
+    // Подсветка текста активной радиокнопки
+    const radioWraps = document.querySelectorAll('.radiobutton-wrap'); 
+    radioWraps.forEach(container => {
+        const targetElement = container.querySelector('.w-form-formradioinput'); 
+        const textElement = container.querySelector('.radiobutton-text'); 
+        if (targetElement && textElement) {
+            if (targetElement.classList.contains('w--redirected-checked')) {
+                textElement.style.color = '#161515';
+            }
+            const observer = new MutationObserver((mutationsList) => {
+                for (const mutation of mutationsList) {
+                    if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                        if (targetElement.classList.contains('w--redirected-checked')) {
+                            textElement.style.color = '#161515';
+                        } else {
+                            textElement.style.color = ''; 
+                        }
+                    }
+                }
+            });
+            observer.observe(targetElement, { attributes: true });
+        }
+    });
+
     // Переменные Honeypot
     let formInteractionStartTime = 0;
     let decoyLinkClicked = false;
