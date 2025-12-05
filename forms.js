@@ -126,7 +126,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (!response.ok) {
             if (responseData.errors && responseData.errors.email) {
-                // Пытаемся показать ошибку на соответствующей форме
                 if (formId) {
                     $(`#${formId}`).validate().showErrors({
                         'email': responseData.errors.email[0]
@@ -211,16 +210,16 @@ document.addEventListener('DOMContentLoaded', function() {
     try {
         // Обфускация confirm-email и city
         const inputsToObfuscate = [
-            { name: 'p-confirm-email', labelSelector: '.field-row label' },
-            { name: 'p-city', labelSelector: '.field-row label' },
-            { name: 'confirm-email', labelSelector: '.input-w label' },
-            { name: 'city', labelSelector: '.input-w label' }
+            { name: 'p-confirm-email', labelSelector: '.input-wrapper label' },
+            { name: 'p-city', labelSelector: '.input-wrapper label' },
+            { name: 'confirm-email', labelSelector: '.input-wrapper label' },
+            { name: 'city', labelSelector: '.input-wrapper label' }
         ];
 
         inputsToObfuscate.forEach(item => {
             const input = document.querySelector(`input[name="${item.name}"]`);
             if (input) {
-                const parent = input.closest(item.labelSelector.split(' ')[0] === '.field-row' ? '.field-row' : '.input-w');
+                const parent = input.closest(item.labelSelector.split(' ')[0] === '.input-wrapper' ? '.input-wrapper' : '.input-wrapper');
                 if (parent) {
                     const label = parent.querySelector('label');
                     if (label) {
@@ -401,17 +400,17 @@ document.addEventListener('DOMContentLoaded', function() {
             onkeyup: function(element) { $(element).data('modified', true); $(element).valid(); },
             onclick: function(element) { if ($(element).data('interacted')) $(element).valid(); },
             rules: {
-                'Full-Name': { required: true, maxlength: 50, noSpacesOnly: true },
-                email: { required: true, maxlength: 50, email: true, corporate: true, validEmailChars: true },
-                company: { required: true, maxlength: 50, noSpacesOnly: true },
-                'self-attribution': { maxlength: 50 },
-                state: { required: true }
+                'p-full-name': { required: true, maxlength: 50, noSpacesOnly: true },
+                'p-email': { required: true, maxlength: 50, email: true, corporate: true, validEmailChars: true },
+                'p-company': { required: true, maxlength: 50, noSpacesOnly: true },
+                'p-self-attribution': { maxlength: 50 },
+                'p-state': { required: true }
             },
             messages: {
-                'Full-Name': { required: "This field is required", maxlength: "Full name must be at most 50 characters" },
-                email: { required: "This field is required", email: "Invalid email address" },
-                company: { required: "This field is required" },
-                state: { required: "This field is required" }
+                'p-full-neme': { required: "This field is required", maxlength: "Full name must be at most 50 characters" },
+                'p-email': { required: "This field is required", email: "Invalid email address" },
+                'p-company': { required: "This field is required" },
+                'p-state': { required: "This field is required" }
             },
             errorPlacement: function (error, element) {
                 const container = element.closest(".input-wrapper").length ? element.closest(".input-wrapper") : element.closest(".field-row");
@@ -506,14 +505,14 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             // Split Name
-            const fullName = formData.get('Full-Name').trim();
+            const fullName = formData.get('p-full-name').trim();
             const nameParts = fullName.split(' ');
             const firstName = nameParts[0] || '';
             const lastName = nameParts[1] || firstName;
             
             // State
             let stateValue = '';
-            const selCountry = formData.get('country');
+            const selCountry = formData.get('p-country');
             const stateMapIds = {
                 'United States': '#p-state', 'Australia': '#p-states-australia', 'Brazil': '#p-states-brazil',
                 'Canada': '#p-states-canada', 'China': '#p-states-china', 'Ireland': '#p-states-ireland',
@@ -522,18 +521,18 @@ document.addEventListener('DOMContentLoaded', function() {
             if (stateMapIds[selCountry]) stateValue = this.querySelector(stateMapIds[selCountry]).value;
 
             // Pre-calculate hash to avoid payload error
-            const email = formData.get('email');
+            const email = formData.get('p-email');
             const ehashValue = await sha256(email);
 
             const payload = {
                 'firstname': firstName,
                 'lastname': lastName,
                 email: email,
-                company: formData.get('company'),
+                company: formData.get('p-company'),
                 lead_type: this.querySelector('input[name="lead_type"]:checked')?.value,
                 country: selCountry,
                 state: stateValue || null,
-                self_attribution: formData.get('self-attribution'),
+                self_attribution: formData.get('p-self-attribution'),
                 href: window.location.href,
                 page: pagePath,
                 ss_anonymous_id: window.segmentstream?.anonymousId?.() ?? '',
@@ -576,25 +575,25 @@ document.addEventListener('DOMContentLoaded', function() {
     // =========================================================================
     const mainForm = document.getElementById('main-form-2');
     if (mainForm) {
-        const mFirstName = document.getElementById('First-Name');
-        const mLastName = document.getElementById('Last-Name');
-        const mJobTitle = document.getElementById('Job-title');
-        const mEmail = document.getElementById('email-2');
-        const mCompany = document.getElementById('company-2');
+        const mFirstName = document.getElementById('first-name');
+        const mLastName = document.getElementById('last-name');
+        const mJobTitle = document.getElementById('job-title');
+        const mEmail = document.getElementById('email');
+        const mCompany = document.getElementById('company');
         const mPhone = document.getElementById('phone');
         const mSelfAttr = document.getElementById('self-attribution');
-        const mCountrySelect = document.getElementById('country-2');
+        const mCountrySelect = document.getElementById('country');
         const mCheckbox = document.getElementById('agreement');
-        const mSubmitButtons = document.querySelectorAll('#submit, #submit-2');
+        const mSubmitButtons = document.getElementById('submit');
         let mIsSubmitting = false;
 
         // Лейблы
         [mFirstName, mLastName, mJobTitle, mEmail, mCompany, mPhone, mSelfAttr].forEach(handleLabel);
 
         // Selectpicker
-        $('#country-2').selectpicker();
-        $('[id^="states-"], #state-2').selectpicker();
-        $('#country-2, [id^="states-"], #state-2').on('shown.bs.select', function() {
+        $('#country').selectpicker();
+        $('[id^="states-"], #state').selectpicker();
+        $('#country, [id^="states-"], #state').on('shown.bs.select', function() {
             $(this).data('selectpicker').$menuInner[0].scrollTop = 0;
         });
 
@@ -616,11 +615,11 @@ document.addEventListener('DOMContentLoaded', function() {
                             if (option) {
                                 option.selected = true;
                                 mCountrySelect.dispatchEvent(new Event('change'));
-                                $('#country-2').selectpicker('refresh');
+                                $('#country').selectpicker('refresh');
 
                                 // 2. Логика определения штата
                                 const stateInputIds = {
-                                    'United States': 'state-2',
+                                    'United States': 'state',
                                     'Australia': 'states-australia',
                                     'Brazil': 'states-brazil',
                                     'Canada': 'states-canada',
@@ -680,8 +679,8 @@ document.addEventListener('DOMContentLoaded', function() {
             if (iti && countryCodeMap[selectedCountry]) iti.setCountry(countryCodeMap[selectedCountry]);
 
             // 1. Сначала СКРЫВАЕМ и ОТКЛЮЧАЕМ (disable) ВСЕ списки штатов
-            const allStateContainers2 = document.querySelectorAll('.states-australia, .states-brazil, .states-canada, .states-china, .states-ireland, .states-india, .states-italy, .states-mexico, .dropdown-state-2');
-            allStateContainers2.forEach(container => {
+            const allStateContainers = document.querySelectorAll('.states-australia, .states-brazil, .states-canada, .states-china, .states-ireland, .states-india, .states-italy, .states-mexico, .dropdown-state');
+            allStateContainers.forEach(container => {
                 container.style.display = 'none';
                 const select = container.querySelector('select');
                 if (select) {
@@ -693,7 +692,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // 2. Включаем нужный
             const stateMap = {
-                'United States': '.dropdown-state-2', 'Australia': '.states-australia', 'Brazil': '.states-brazil',
+                'United States': '.dropdown-state', 'Australia': '.states-australia', 'Brazil': '.states-brazil',
                 'Canada': '.states-canada', 'China': '.states-china', 'Ireland': '.states-ireland',
                 'India': '.states-india', 'Italy': '.states-italy', 'Mexico': '.states-mexico'
             };
@@ -735,16 +734,16 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         // Валидация
-        $('#main-form-2').validate({
+        $('#main-form').validate({
             ignore: ":hidden:not(select)",
             onfocusout: function(element) { if ($(element).data('modified')) $(element).valid(); },
             onkeyup: function(element) { $(element).data('modified', true); $(element).valid(); },
             onclick: function(element) { if ($(element).data('interacted')) $(element).valid(); },
             rules: {
-                firstname: { required: true, maxlength: 50, noSpacesOnly: true },
-                lastname: { required: true, maxlength: 50, noSpacesOnly: true },
+                'first-name': { required: true, maxlength: 50, noSpacesOnly: true },
+                'last-name': { required: true, maxlength: 50, noSpacesOnly: true },
                 email: { required: true, maxlength: 50, email: true, corporate: true, validEmailChars: true },
-                job_title: { required: true, maxlength: 50, noSpacesOnly: true },
+                'job-title': { required: true, maxlength: 50, noSpacesOnly: true },
                 company: { required: true, maxlength: 50, noSpacesOnly: true },
                 phone: { phoneCustom: true },
                 'self-attribution': { maxlength: 50 },
@@ -752,10 +751,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 state: { required: true }
             },
             messages: {
-                firstname: { required: "This field is required" },
-                lastname: { required: "This field is required" },
+                'first-name': { required: "This field is required" },
+                'last-name': { required: "This field is required" },
                 email: { required: "This field is required", email: "Invalid email address" },
-                job_title: { required: "This field is required" },
+                'job-title': { required: "This field is required" },
                 company: { required: "This field is required" },
                 state: { required: "This field is required" }
             },
@@ -794,8 +793,8 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         function updateMSubmitState() {
-            const isFormValid = $('#main-form-2').valid();
-            const selectedCountry = $('#country-2').val();
+            const isFormValid = $('#main-form').valid();
+            const selectedCountry = $('#country').val();
             const isCheckboxChecked = $(mCheckbox).prop('checked');
             const isReqMet = selectedCountry === 'United States' || isCheckboxChecked;
 
@@ -809,7 +808,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
-        $('#main-form-2').on('input change', updateMSubmitState);
+        $('#main-form').on('input change', updateMSubmitState);
         $(mCheckbox).on('change', function() {
             const label = $(this).closest('.checkbox-field').find('.checkbox-text');
             if ($(this).is(':checked')) label.removeClass('error');
@@ -817,8 +816,8 @@ document.addEventListener('DOMContentLoaded', function() {
             updateMSubmitState();
         });
 
-        // Submit Handler Form 2
-        $('#main-form-2').on('submit', async function(event) {
+        // Submit Handler Form
+        $('#main-form').on('submit', async function(event) {
             event.preventDefault();
             if (!$(this).valid() || mIsSubmitting) return;
 
@@ -848,7 +847,7 @@ document.addEventListener('DOMContentLoaded', function() {
             let stateValue = '';
             const selCountry = formData.get('country');
             const stateMapIds = {
-                'United States': '#state-2', 'Australia': '#states-australia', 'Brazil': '#states-brazil',
+                'United States': '#state', 'Australia': '#states-australia', 'Brazil': '#states-brazil',
                 'Canada': '#states-canada', 'China': '#states-china', 'Ireland': '#states-ireland',
                 'India': '#states-india', 'Italy': '#states-italy', 'Mexico': '#states-mexico'
             };
@@ -859,10 +858,10 @@ document.addEventListener('DOMContentLoaded', function() {
             const ehashValue = await sha256(formData.get('email'));
 
             const data = {
-                firstname: formData.get('firstname'),
-                lastname: formData.get('lastname'),
+                firstname: formData.get('first-name'),
+                lastname: formData.get('last-name'),
                 email: formData.get('email'),
-                job_title: formData.get('job_title'),
+                job_title: formData.get('job-title'),
                 company: formData.get('company'),
                 phone: iti ? iti.getNumber() : '',
                 lead_type: this.querySelector('input[name="lead_type"]:checked')?.value,
@@ -891,12 +890,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
             try {
                 let userId = getCookieValue('user_id') || generateUserId();
-                const response = await submitForm(data, userId, 'main-form-2');
+                const response = await submitForm(data, userId, 'main-form');
 
                 document.cookie = `user_id=${userId}; path=/; max-age=31536000`;
                 
                 // UI Update
-                const formFields = document.getElementById('main-form-2');
+                const formFields = document.getElementById('main-form');
                 const successMsg = document.querySelector('.success-message');
                 if (formFields) formFields.style.display = 'none';
                 if (successMsg) successMsg.style.display = 'block';
@@ -911,11 +910,11 @@ document.addEventListener('DOMContentLoaded', function() {
                         'event': 'lead_form_submitted', 'role': role, 'email': data.email, 'ehash': ehashValue
                     });
                 }
-                console.log('Form 2 Success', response);
+                console.log('Form Success', response);
 
             } catch (err) {
-                console.error('Form 2 Error', err);
-                const formFields = document.getElementById('main-form-2');
+                console.error('Form Error', err);
+                const formFields = document.getElementById('main-form');
                 const successMsg = document.querySelector('.success-message');
                 if (successMsg) successMsg.style.display = 'none';
                 if (formFields) formFields.style.display = 'flex';
