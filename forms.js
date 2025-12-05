@@ -61,20 +61,31 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    function updateCheckboxErrorClass(checkbox) {
-        const $cb = $(checkbox);
-        // Находим текстовый лейбл рядом
-        const label = $cb.closest('.checkbox-field').find('.checkbox-text');
-        const wasInteracted = $cb.data('modified') === true;
-        
-        if (wasInteracted) {
-            if ($cb.is(':checked')) {
+    function updateCheckboxErrorClass() {
+       $(checkboxes).each(function() {
+           const currentCheckbox = $(this);
+            if (currentCheckbox.attr('id') === 'checkbox-sign') {
+                const label = currentCheckbox.closest('.checkbox-field').find('.checkbox-text');
                 label.removeClass('error');
-            } else {
-                label.addClass('error');
+                return;
             }
-        }
+           const label = currentCheckbox.closest('.checkbox-field').find('.checkbox-text');
+           const wasInteracted = currentCheckbox.data('modified') === true;
+           if (wasInteracted) {
+               if (currentCheckbox.is(':checked')) label.removeClass('error');
+               else label.addClass('error');
+           }
+       });
     }
+
+    $(document).ready(function() {
+       $(checkboxes).each(function() {
+           const label = $(this).closest('.checkbox-field').find('.checkbox-text');
+           label.removeClass('error');
+       });
+       resetCheckbox();
+       updateCheckboxErrorClass();
+    });
 
     // Переменные Honeypot
     let formInteractionStartTime = 0;
@@ -193,21 +204,18 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     observer.observe(document.body, { childList: true, subtree: true });
 
-    // Анимация стрелки dropdown
-    const dropdownsUI = document.querySelectorAll('.dropdown.bootstrap-select.select-search.w-select');
     const highlightColor = '#5B00B3';
     const defaultColor = '';
 
-    dropdownsUI.forEach(dropdownContainer => {
-      const targetButton = dropdownContainer.querySelector('button[type="button"].dropdown-toggle');
-      const svgArrow = dropdownContainer.nextElementSibling; 
-        if (targetButton && svgArrow && svgArrow.classList.contains('select-arrow-new')) {
-              function handleMouseOver() { svgArrow.style.color = highlightColor; }
-              function handleMouseOut() { svgArrow.style.color = defaultColor; }
-              targetButton.addEventListener('mouseover', handleMouseOver);
-              targetButton.addEventListener('mouseout', handleMouseOut);
-          }
-      });
+    $(document).on('mouseover', '.dropdown.bootstrap-select .dropdown-toggle', function() {
+        const $arrow = $(this).parent().next('.select-arrow-new');
+        if ($arrow.length) $arrow.css('color', highlightColor);
+    });
+
+    $(document).on('mouseout', '.dropdown.bootstrap-select .dropdown-toggle', function() {
+        const $arrow = $(this).parent().next('.select-arrow-new');
+        if ($arrow.length) $arrow.css('color', defaultColor);
+    });
     
     // --- NEW: Add Empty Option & Required Attribute ---
     function initStateSelects() {
@@ -318,7 +326,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const pCompanyInput = document.getElementById('p-company');
         const pCountrySelect = document.getElementById('p-country');
         const pSelfAttribution = document.getElementById('p-self-attribution');
-        const pSubmitButton = document.getElementById('p-submit');
+        const pSubmitButton = document.querySelector('[ms-code-submit-new="p-submit"]');
         const pCheckbox = document.getElementById('p-agreement');
         let pIsSubmitting = false;
 
@@ -642,10 +650,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const mSelfAttr = document.getElementById('self-attribution');
         const mCountrySelect = document.getElementById('country');
         const mCheckbox = document.getElementById('agreement');
-        
-        // ИСПРАВЛЕНИЕ: Заменили getElementById на querySelectorAll, так как далее используется forEach.
-        // Если кнопка одна с id="submit", то будет NodeList из 1 элемента.
-        const mSubmitButtons = document.querySelectorAll('#submit'); 
+        const mSubmitButtons = document.querySelector('[ms-code-submit-new="submit"]');
         
         let mIsSubmitting = false;
 
