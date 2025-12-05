@@ -441,13 +441,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 'p-email': { required: true, maxlength: 50, email: true, corporate: true, validEmailChars: true },
                 'p-company': { required: true, maxlength: 50, noSpacesOnly: true },
                 'p-self-attribution': { maxlength: 50 },
-                'p-state': { required: true }
+                'p-state': { required: true },
+                agreement: {
+                  required: function(element) {
+                    const selectedCountry = $('#p-country').val();
+                    return selectedCountry !== 'United States' && $(element).is(':visible');
+                  }
+                },
             },
             messages: {
                 'p-full-name': { required: "This field is required", maxlength: "Full name must be at most 50 characters" }, // ИСПРАВЛЕНА ОПЕЧАТКА neme -> name
                 'p-email': { required: "This field is required", email: "Invalid email address" },
                 'p-company': { required: "This field is required" },
-                'p-state': { required: "This field is required" }
+                'p-state': { required: "This field is required" },
+                agreement: { required: "Checking this box is necessary to continue" },
             },
             errorPlacement: function (error, element) {
                 const container = element.closest(".input-wrapper").length ? element.closest(".input-wrapper") : element.closest(".field-row");
@@ -784,7 +791,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 phone: { phoneCustom: true },
                 'self-attribution': { maxlength: 50 },
                 agreement: { required: true },
-                state: { required: true }
+                state: { required: true },
+                agreement: {
+                  required: function(element) {
+                    const selectedCountry = $('#country').val();
+                    return selectedCountry !== 'United States' && $(element).is(':visible');
+                  }
+                },
             },
             messages: {
                 'first-name': { required: "This field is required" },
@@ -792,7 +805,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 email: { required: "This field is required", email: "Invalid email address" },
                 'job-title': { required: "This field is required" },
                 company: { required: "This field is required" },
-                state: { required: "This field is required" }
+                state: { required: "This field is required" },
+                agreement: { required: "Checking this box is necessary to continue" },
             },
             errorPlacement: function (error, element) {
                 const container = element.closest(".input-wrapper").length ? element.closest(".input-wrapper") : element.closest(".field-row");
