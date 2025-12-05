@@ -185,15 +185,17 @@ document.addEventListener('DOMContentLoaded', function() {
     let isTurnstileCompleted = false;
 
     // Turnstile callback
-    function onTurnstileSuccess(token) {
+    window.onTurnstileSuccess = function(token) {
+      console.log("Turnstile success");
       isTurnstileCompleted = true;
       updateSubmitButtonState();
-    }
+    };
 
-    function onTurnstileExpired() {
+    window.onTurnstileExpired = function() {
+      console.log("Turnstile expired");
       isTurnstileCompleted = false;
       updateSubmitButtonState();
-    }
+    };
 
     // Инициализация селекторов
     if (countrySelect) {
