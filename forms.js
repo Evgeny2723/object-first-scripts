@@ -628,7 +628,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 // GTM
                 if (window.dataLayer) {
-                    const role = payload.lead_type.charAt(0).toUpperCase() + payload.lead_type.slice(1).toLowerCase();
+                    const rawRole = payload.lead_type || ''; 
+                    const role = rawRole ? rawRole.charAt(0).toUpperCase() + rawRole.slice(1).toLowerCase() : 'Customer';
                     window.dataLayer.push({
                         'event': 'whitepaper', 'role': role, 'type': '', 'email': payload.email, 'lead_id': userId
                     });
