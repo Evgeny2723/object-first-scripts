@@ -1068,8 +1068,6 @@ document.addEventListener('DOMContentLoaded', function() {
               }
 
           } else {
-              // --- Логика для обычной формы (стандартный endpoint) ---
-              // Если мы здесь, значит submitForm не выкинул ошибку, значит все ок (200 OK)
               handleSuccess(data, userId, ehashValue);
           }
 
@@ -1102,6 +1100,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         
                         if (validator) {
                             console.log('4. Validator instance found via .data(), calling showErrors...');
+                            $form.find('input[name="email"]').data('modified', true);
                             validator.showErrors({
                                 'email': errorText
                             });
@@ -1156,10 +1155,6 @@ document.addEventListener('DOMContentLoaded', function() {
       const responseData = await response.json();
       
       if (!response.ok) {
-        // Обработка ошибок валидации (общая для обоих эндпоинтов)
-        if (responseData.errors && responseData.errors.email) {
-          $('form').validate().showErrors({ 'email': responseData.errors.email[0] });
-        }
         // Для обычной формы ошибки могут приходить просто как объект, нужно смотреть структуру
         throw new Error('Server error: ' + JSON.stringify(responseData));
       }
