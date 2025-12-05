@@ -97,6 +97,53 @@ document.addEventListener('DOMContentLoaded', function() {
     // Переменные Honeypot
     let formInteractionStartTime = 0;
     let decoyLinkClicked = false;
+    let isTurnstileCompleted = false;
+    
+    window.onTurnstileSuccess = function(token) {
+        console.log("Turnstile success");
+        isTurnstileCompleted = true;
+        
+        const pFormErrors = $('#p-main-form').find('label.error:visible').length > 0;
+        const mainFormErrors = $('#main-form').find('label.error:visible').length > 0;
+        
+        if (!pFormErrors) {
+            if (typeof updatePSubmitState === 'function') {
+                updatePSubmitState();
+            }
+        }
+        
+        if (!mainFormErrors) {
+            if (typeof updateMSubmitState === 'function') {
+                updateMSubmitState();
+            }
+        }
+        
+        if (pFormErrors || mainFormErrors) {
+            console.log("Server errors present, skipping validation update");
+        }
+    };
+    
+    window.onTurnstileExpired = function() {
+        console.log("Turnstile expired");
+        isTurnstileCompleted = false;
+        
+        const pSubmitButton = document.querySelector('[ms-code-submit-new="p-submit"]');
+        if (pSubmitButton) {
+            pSubmitButton.setAttribute('disabled', 'disabled');
+            pSubmitButton.classList.add('submit-inactive');
+            const wrapper = pSubmitButton.closest('.submit-button-wrapper');
+            if (wrapper) wrapper.classList.add('button-is-inactive');
+        }
+        
+        const mSubmitButtons = document.querySelectorAll('[ms-code-submit-new="submit"]');
+        mSubmitButtons.forEach(btn => {
+            btn.setAttribute('disabled', 'disabled');
+            btn.classList.add('submit-inactive');
+        });
+        document.querySelectorAll('.submit-button-wrapper').forEach(w => {
+            w.classList.add('button-is-inactive');
+        });
+    };
 
     // Утилита Hashing
     async function sha256(message) {
@@ -527,6 +574,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Состояние кнопки Submit
         function updatePSubmitState() {
+            if (!isTurnstileCompleted) return;
             const isFormValid = $('#p-main-form').valid();
             const selectedCountry = $('#p-country').val();
             const isCheckboxChecked = $(pCheckbox).prop('checked');
@@ -882,6 +930,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         function updateMSubmitState() {
+            if (!isTurnstileCompleted) return;
             const isFormValid = $('#main-form').valid();
             const selectedCountry = $('#country').val();
             const isCheckboxChecked = $(mCheckbox).prop('checked');
