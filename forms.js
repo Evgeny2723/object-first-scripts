@@ -552,7 +552,7 @@ document.addEventListener('DOMContentLoaded', function() {
           $(this).data('modified', true);
           $(this).valid();
           updateCheckboxErrorClass(this);
-          updateSubmitButtonState();
+          updatePSubmitState();
         });
 
         // Submit Handler Form 1
@@ -891,7 +891,7 @@ document.addEventListener('DOMContentLoaded', function() {
           $(this).data('modified', true);
           $(this).valid();
           updateCheckboxErrorClass(this);
-          updateSubmitButtonState();
+          updateMSubmitState();
         });
 
         // Submit Handler Form
