@@ -532,7 +532,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 },
             },
             messages: {
-                'p-full-name': { required: "This field is required", maxlength: "Full name must be at most 50 characters" }, // ИСПРАВЛЕНА ОПЕЧАТКА neme -> name
+                'p-full-name': { required: "This field is required", maxlength: "Full name must be at most 50 characters" },
                 'p-email': { required: "This field is required", email: "Invalid email address" },
                 'p-company': { required: "This field is required" },
                 'p-state': { required: "This field is required" },
@@ -557,7 +557,8 @@ document.addEventListener('DOMContentLoaded', function() {
                      // Добавляем класс
                      $el.closest('.bootstrap-select').find('.dropdown-toggle').addClass('input-error');
                  } else if ($el.data('modified')) {
-                     $el.css('border', '1px solid #c50006'); 
+                     $el.css('border', '1px solid #E03400');
+                     $el.addClass('error-placeholder');
                  }
             },
             unhighlight: function(el) {
@@ -566,7 +567,8 @@ document.addEventListener('DOMContentLoaded', function() {
                      // Убираем класс
                      $el.closest('.bootstrap-select').find('.dropdown-toggle').removeClass('input-error');
                  } else {
-                     $el.css('border', ''); 
+                     $el.css('border', '');
+                     $el.removeClass('error-placeholder');
                  }
             },
             onfocusin: function(element) { $(element).data("interacted", true); }
@@ -912,9 +914,10 @@ document.addEventListener('DOMContentLoaded', function() {
                  const $el = $(el);
                  if ($el.is('select')) {
                      // Добавляем класс
-                     $el.closest('.bootstrap-select').find('.dropdown-toggle').addClass('input-error').css('color', '#c50006');
+                     $el.closest('.bootstrap-select').find('.dropdown-toggle').addClass('input-error').css('color', '#E03400');
                  } else if ($el.data('modified')) {
-                     $el.css('border', '1px solid #c50006'); 
+                     $el.css('border', '1px solid #E03400');
+                     $el.addClass('error-placeholder');
                  }
             },
             unhighlight: function(el) {
@@ -923,7 +926,8 @@ document.addEventListener('DOMContentLoaded', function() {
                      // Убираем класс
                      $el.closest('.bootstrap-select').find('.dropdown-toggle').removeClass('input-error').css('color', '');
                  } else {
-                     $el.css('border', ''); 
+                     $el.css('border', '');
+                     $el.removeClass('error-placeholder');
                  }
             },
             onfocusin: function(element) { $(element).data("interacted", true); }
