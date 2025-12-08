@@ -186,7 +186,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Turnstile callbacks
     window.onTurnstileSuccess = function(token) {
-      console.log("Turnstile success");
+      console.log("Turnstile success!!!");
       isTurnstileCompleted = true;
       
       const hasServerErrors = $(mainForm).find('label.error:visible').length > 0;
