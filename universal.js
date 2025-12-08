@@ -642,8 +642,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 error.appendTo(container);
             }
         },
-        highlight: function(element) { if ($(element).data('modified')) $(element).css('border', '1px solid #E03400'); $el.addClass('error-placeholder'); },
-        unhighlight: function(element) { $(element).css('border', ''); $el.removeClass('error-placeholder'); },
+        highlight: function(element) { if ($(element).data('modified')) $(element).css('border', '1px solid #E03400').addClass('error-placeholder'); },
+        unhighlight: function(element) { $(element).css('border', '').removeClass('error-placeholder'); },
         ignoreTitle: true,
         onfocusin: function(element) { isFormInitialized = true; $(element).data("interacted", true); }
     });
