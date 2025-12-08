@@ -603,10 +603,11 @@ document.addEventListener('DOMContentLoaded', function() {
       highlight: function(element) {
          const $el = $(element);
          if ($el.is('select')) {
-             $el.closest('.bootstrap-select').find('.dropdown-toggle').addClass('input-error').css('color', '#c50006');
+             $el.closest('.bootstrap-select').find('.dropdown-toggle').addClass('input-error').css('color', '#E03400');
          } 
          else if ($el.data('modified')) {
-             $el.css('border', '1px solid #c50006');
+             $el.css('border', '1px solid #E03400');
+             $el.addClass('error-placeholder');
          }
       },
       unhighlight: function(element) {
@@ -617,6 +618,7 @@ document.addEventListener('DOMContentLoaded', function() {
          } 
          else {
              $el.css('border', '');
+             $el.removeClass('error-placeholder');
          }
       },
       ignoreTitle: true,
@@ -640,8 +642,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 error.appendTo(container);
             }
         },
-        highlight: function(element) { if ($(element).data('modified')) $(element).css('border', '1px solid #c50006'); },
-        unhighlight: function(element) { $(element).css('border', ''); },
+        highlight: function(element) { if ($(element).data('modified')) $(element).css('border', '1px solid #E03400'); $el.addClass('error-placeholder'); },
+        unhighlight: function(element) { $(element).css('border', ''); $el.removeClass('error-placeholder'); },
         ignoreTitle: true,
         onfocusin: function(element) { isFormInitialized = true; $(element).data("interacted", true); }
     });
