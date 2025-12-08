@@ -136,6 +136,32 @@ document.addEventListener('DOMContentLoaded', function() {
       handleLabel(input);
     });
 
+    // 1. Показ/Скрытие кнопки при вводе
+    $(document).on('input focus', '.form-input', function() {
+        const $wrapper = $(this).closest('.input-wrapper');
+        const $btn = $wrapper.find('.input-clear-btn');
+        
+        if ($(this).val().length > 0) {
+            $btn.show();
+        } else {
+            $btn.hide();
+        }
+    });
+
+    // 2. Клик по кнопке очистки
+    $(document).on('click', '.input-clear-btn', function(e) {
+        e.preventDefault();
+        
+        const $input = $(this).siblings('input');
+        
+        $input.val('');
+        $(this).hide();
+        $input.css('border', '').removeClass('error-placeholder');
+        $input.closest('.input-wrapper').find('label.error').remove();
+        $input.removeClass('error');        
+        $input.trigger('input').trigger('change').focus();
+    });
+
     // Скрытие и отображение плейсхолдера
     const inputs = document.querySelectorAll('.form-input');
     inputs.forEach(input => {
