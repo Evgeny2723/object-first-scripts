@@ -2,8 +2,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // =========================================================================
     // 1. ГЛОБАЛЬНЫЕ КОНСТАНТЫ И УТИЛИТЫ
     // =========================================================================
-    let updatePSubmitState = null;
-    let updateMSubmitState = null;
+    
     // Карта стран
     const countryCodeMap = {
         "Australia": "AU", "Austria": "AT", "Azerbaijan": "AZ", "Albania": "AL", "Algeria": "DZ", "Angola": "AO", "Andorra": "AD", "Antigua and Barbuda": "AG", "Argentina": "AR", "Armenia": "AM", "Afghanistan": "AF", "Bahamas": "BS", "Bangladesh": "BD", "Barbados": "BB", "Bahrain": "BH", "Belarus": "BY", "Belize": "BZ", "Belgium": "BE", "Benin": "BJ", "Bulgaria": "BG", "Bolivia": "BO", "Bosnia and Herzegovina": "BA", "Botswana": "BW", "Brazil": "BR", "Brunei Darussalam": "BN", "Burkina Faso": "BF", "Burundi": "BI", "Bhutan": "BT", "Vanuatu": "VU", "Hungary": "HU", "Venezuela": "VE", "Vietnam": "VN", "Gabon": "GA", "Haiti": "HT", "Guyana": "GY", "Gambia": "GM", "Ghana": "GH", "Guatemala": "GT", "Guinea": "GN", "Guinea-Bissau": "GW", "Germany": "DE", "Honduras": "HN", "Grenada": "GD", "Greece": "GR", "Georgia": "GE", "Denmark": "DK", "Congo, Democratic Republic of the": "CD", "Djibouti": "DJ", "Dominica": "DM", "Dominican Republic": "DO", "Egypt": "EG", "Zambia": "ZM", "Zimbabwe": "ZW", "Israel": "IL", "India": "IN", "Indonesia": "ID", "Jordan": "JO", "Iraq": "IQ", "Iran": "IR", "Ireland": "IE", "Iceland": "IS", "Spain": "ES", "Italy": "IT", "Yemen": "YE", "Cabo Verde": "CV", "Kazakhstan": "KZ", "Cambodia": "KH", "Cameroon": "CM", "Canada": "CA", "Qatar": "QA", "Kenya": "KE", "Cyprus": "CY", "Kiribati": "KI", "China": "CN", "Colombia": "CO", "Comoros": "KM", "Congo": "CG", "North Korea": "KP", "Costa Rica": "CR", "Côte d'Ivoire": "CI", "Cuba": "CU", "Kuwait": "KW", "Kyrgyzstan": "KG", "Lao People's Democratic Republic": "LA", "Latvia": "LV", "Lesotho": "LS", "Liberia": "LR", "Lebanon": "LB", "Libya": "LY", "Lithuania": "LT", "Liechtenstein": "LI", "Luxembourg": "LU", "Mauritius": "MU", "Mauritania": "MR", "Madagascar": "MG", "Malawi": "MW", "Malaysia": "MY", "Mali": "ML", "Maldives": "MV", "Malta": "MT", "Morocco": "MA", "Marshall Islands": "MH", "Mexico": "MX", "Mozambique": "MZ", "Monaco": "MC", "Mongolia": "MN", "Myanmar": "MM", "Namibia": "NA", "Nauru": "NR", "Nepal": "NP", "Niger": "NE", "Nigeria": "NG", "Netherlands": "NL", "Nicaragua": "NI", "Niue": "NU", "New Zealand": "NZ", "Norway": "NO", "Tanzania, United Republic of": "TZ", "United Arab Emirates": "AE", "Oman": "OM", "Cook Islands": "CK", "Pakistan": "PK", "Panama": "PA", "Papua New Guinea": "PG", "Paraguay": "PY", "Peru": "PE", "Poland": "PL", "Portugal": "PT", "Korea, Republic of": "KR", "Moldova, Republic of": "MD", "Russian Federation": "RU", "Rwanda": "RW", "Romania": "RO", "El Salvador": "SV", "Samoa": "WS", "San Marino": "SM", "Sao Tome and Principe": "ST", "Saudi Arabia": "SA", "Holy See (Vatican City State)": "VA", "North Macedonia": "MK", "Seychelles": "SC", "Senegal": "SN", "Saint Vincent and the Grenadines": "VC", "Saint Kitts and Nevis": "KN", "Saint Lucia": "LC", "Serbia": "RS", "Singapore": "SG", "Syrian Arab Republic": "SY", "Slovakia": "SK", "Slovenia": "SI", "United Kingdom": "GB", "United States": "US", "Solomon Islands": "SB", "Somalia": "SO", "Sudan": "SD", "Suriname": "SR", "Sierra Leone": "SL", "Tajikistan": "TJ", "Thailand": "TH", "Timor-Leste": "TL", "Togo": "TG", "Tonga": "TO", "Trinidad and Tobago": "TT", "Tuvalu": "TV", "Tunisia": "TN", "Turkmenistan": "TM", "Turkey": "TR", "Uganda": "UG", "Uzbekistan": "UZ", "Ukraine": "UA", "Uruguay": "UY", "Fiji": "FJ", "Philippines": "PH", "Finland": "FI", "France": "FR", "Croatia": "HR", "Central African Republic": "CF", "Chad": "TD", "Montenegro": "ME", "Czech Republic": "CZ", "Chile": "CL", "Switzerland": "CH", "Sweden": "SE", "Sri Lanka": "LK", "Ecuador": "EC", "Equatorial Guinea": "GQ", "Eritrea": "ER", "Eswatini": "SZ", "Estonia": "EE", "Ethiopia": "ET"
@@ -107,21 +106,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const pFormErrors = $('#p-main-form').find('label.error:visible').length > 0;
         const mainFormErrors = $('#main-form').find('label.error:visible').length > 0;
         
-        if (!pFormErrors) {
-            if (typeof updatePSubmitState === 'function') {
-                updatePSubmitState();
-            }
-        }
-        
-        if (!mainFormErrors) {
-            if (typeof updateMSubmitState === 'function') {
-                updateMSubmitState();
-            }
-        }
-        
-        if (pFormErrors || mainFormErrors) {
-            console.log("Server errors present, skipping validation update");
-        }
+        updatePSubmitState();
+        updateMSubmitState();
     };
     
     window.onTurnstileExpired = function() {
@@ -575,16 +561,23 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         // Состояние кнопки Submit
-        updatePSubmitState = function() {
-            if (!isTurnstileCompleted) return;
+        function updatePSubmitState() {
+            // 1. Проверяем существование кнопки, чтобы избежать ошибок
+            if (!pSubmitButton) return;
+        
+            // 2. Логика условий
+            // Мы НЕ делаем return, если капча не готова. Мы просто учитываем это в финальном условии.
             const isFormValid = $('#p-main-form').valid();
             const selectedCountry = $('#p-country').val();
             const isCheckboxChecked = $(pCheckbox).prop('checked');
+            
+            // Условие: (США ИЛИ Чекбокс нажат)
             const isReqMet = selectedCountry === 'United States' || isCheckboxChecked;
-
+        
             const pWrapper = pSubmitButton.closest('.submit-button-wrapper');
-
-            if (isFormValid && isReqMet) {
+        
+            // 3. Финальная проверка: Форма Валидна + Условия выполнены + Капча пройдена
+            if (isFormValid && isReqMet && isTurnstileCompleted) {
                 pSubmitButton.removeAttribute('disabled');
                 pSubmitButton.classList.remove('submit-inactive');
                 if (pWrapper) pWrapper.classList.remove('button-is-inactive');
@@ -594,7 +587,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (pWrapper) pWrapper.classList.add('button-is-inactive');
             }
         }
-        updatePSubmitState();
 
         // Устанавливаем начальное состояние
         pSubmitButton.setAttribute('disabled', 'disabled');
@@ -933,23 +925,32 @@ document.addEventListener('DOMContentLoaded', function() {
             onfocusin: function(element) { $(element).data("interacted", true); }
         });
 
-        updateMSubmitState = function() {
-            if (!isTurnstileCompleted) return;
+        function updateMSubmitState() {
+            // Проверка существования кнопок
+            if (!mSubmitButtons || mSubmitButtons.length === 0) return;
+        
             const isFormValid = $('#main-form').valid();
             const selectedCountry = $('#country').val();
             const isCheckboxChecked = $(mCheckbox).prop('checked');
             const isReqMet = selectedCountry === 'United States' || isCheckboxChecked;
-
+        
             const wrappers = document.querySelectorAll('.submit-button-wrapper');
-            if (isFormValid && isReqMet) {
-                mSubmitButtons.forEach(btn => { btn.removeAttribute('disabled'); btn.classList.remove('submit-inactive'); });
+        
+            // Добавляем isTurnstileCompleted в условие
+            if (isFormValid && isReqMet && isTurnstileCompleted) {
+                mSubmitButtons.forEach(btn => { 
+                    btn.removeAttribute('disabled'); 
+                    btn.classList.remove('submit-inactive'); 
+                });
                 wrappers.forEach(w => w.classList.remove('button-is-inactive'));
             } else {
-                mSubmitButtons.forEach(btn => { btn.setAttribute('disabled', 'disabled'); btn.classList.add('submit-inactive'); });
+                mSubmitButtons.forEach(btn => { 
+                    btn.setAttribute('disabled', 'disabled'); 
+                    btn.classList.add('submit-inactive'); 
+                });
                 wrappers.forEach(w => w.classList.add('button-is-inactive'));
             }
         }
-        updateMSubmitState();
         mSubmitButtons.forEach(btn => {
             btn.setAttribute('disabled', 'disabled');
             btn.classList.add('submit-inactive');
