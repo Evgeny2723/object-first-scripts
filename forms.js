@@ -103,9 +103,7 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log("Turnstile success");
         isTurnstileCompleted = true;
         
-        const pFormErrors = $('#p-main-form').find('label.error:visible').length > 0;
-        const mainFormErrors = $('#main-form').find('label.error:visible').length > 0;
-        
+        // Обновляем обе формы
         updatePSubmitState();
         updateMSubmitState();
     };
@@ -114,22 +112,9 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log("Turnstile expired");
         isTurnstileCompleted = false;
         
-        const pSubmitButton = document.querySelector('[ms-code-submit-new="p-submit"]');
-        if (pSubmitButton) {
-            pSubmitButton.setAttribute('disabled', 'disabled');
-            pSubmitButton.classList.add('submit-inactive');
-            const wrapper = pSubmitButton.closest('.submit-button-wrapper');
-            if (wrapper) wrapper.classList.add('button-is-inactive');
-        }
-        
-        const mSubmitButtons = document.querySelectorAll('[ms-code-submit-new="submit"]');
-        mSubmitButtons.forEach(btn => {
-            btn.setAttribute('disabled', 'disabled');
-            btn.classList.add('submit-inactive');
-        });
-        document.querySelectorAll('.submit-button-wrapper').forEach(w => {
-            w.classList.add('button-is-inactive');
-        });
+        // Отключаем обе формы
+        disablePSubmit();
+        disableMSubmit();
     };
 
     // Утилита Hashing
@@ -406,16 +391,14 @@ document.addEventListener('DOMContentLoaded', function() {
             if (stateMap[selectedCountry]) {
                 const container = document.querySelector(stateMap[selectedCountry]);
                 if (container) {
-                    container.style.display = 'block'; // Показываем
+                    container.style.display = 'block';
                     const select = container.querySelector('select');
                     if (select) {
-                        select.disabled = false; // Включаем для валидации
+                        select.disabled = false;
+                        select.setAttribute('required', 'true'); // ДОБАВИТЬ ЭТУ СТРОКУ!
                         
-                        // Сброс значения на "пусто", чтобы появился State*
                         $(select).val(""); 
                         $(select).selectpicker('refresh');
-
-                        // Подсвечиваем как ошибку (так как поле обязательное, но пустое)
                         $(select).closest('.bootstrap-select').find('.dropdown-toggle').addClass('input-error');
                     }
                 }
@@ -489,7 +472,8 @@ document.addEventListener('DOMContentLoaded', function() {
                                     foundOption.selected = true;
                                     $(`#${targetId}`).selectpicker('refresh');
                                     $(stateSelect).closest('.bootstrap-select').find('.dropdown-toggle').removeClass('input-error'); 
-                                    $(stateSelect).valid(); 
+                                    $(stateSelect).valid();
+                                    updatePSubmitState();
                                 }
                             }
                         }, 200); 
@@ -498,9 +482,24 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
+        // === ФУНКЦИИ УПРАВЛЕНИЯ КНОПКОЙ P-FORM ===
+        function enablePSubmit() {
+            pSubmitButton.removeAttribute('disabled');
+            pSubmitButton.classList.remove('submit-inactive');
+            const pWrapper = pSubmitButton.closest('.submit-button-wrapper');
+            if (pWrapper) pWrapper.classList.remove('button-is-inactive');
+        }
+        
+        function disablePSubmit() {
+            pSubmitButton.setAttribute('disabled', 'disabled');
+            pSubmitButton.classList.add('submit-inactive');
+            const pWrapper = pSubmitButton.closest('.submit-button-wrapper');
+            if (pWrapper) pWrapper.classList.add('button-is-inactive');
+        }
+
         // Валидация
         $('#p-main-form').validate({
-            ignore: ":hidden:not(select)",
+            ignore: ":disabled, :hidden:not(select:not(:disabled))",
             onfocusout: function(element) { if ($(element).data('modified')) $(element).valid(); },
             onkeyup: function(element) { $(element).data('modified', true); $(element).valid(); },
             onclick: function(element) { if ($(element).data('interacted')) $(element).valid(); },
@@ -562,37 +561,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Состояние кнопки Submit
         function updatePSubmitState() {
-            // 1. Проверяем существование кнопки, чтобы избежать ошибок
             if (!pSubmitButton) return;
         
-            // 2. Логика условий
-            // Мы НЕ делаем return, если капча не готова. Мы просто учитываем это в финальном условии.
             const isFormValid = $('#p-main-form').valid();
             const selectedCountry = $('#p-country').val();
             const isCheckboxChecked = $(pCheckbox).prop('checked');
-            
-            // Условие: (США ИЛИ Чекбокс нажат)
             const isReqMet = selectedCountry === 'United States' || isCheckboxChecked;
         
-            const pWrapper = pSubmitButton.closest('.submit-button-wrapper');
-        
-            // 3. Финальная проверка: Форма Валидна + Условия выполнены + Капча пройдена
             if (isFormValid && isReqMet && isTurnstileCompleted) {
-                pSubmitButton.removeAttribute('disabled');
-                pSubmitButton.classList.remove('submit-inactive');
-                if (pWrapper) pWrapper.classList.remove('button-is-inactive');
+                enablePSubmit();
             } else {
-                pSubmitButton.setAttribute('disabled', 'disabled');
-                pSubmitButton.classList.add('submit-inactive');
-                if (pWrapper) pWrapper.classList.add('button-is-inactive');
+                disablePSubmit();
             }
         }
 
         // Устанавливаем начальное состояние
-        pSubmitButton.setAttribute('disabled', 'disabled');
-        pSubmitButton.classList.add('submit-inactive');
-        const pInitialWrapper = pSubmitButton.closest('.submit-button-wrapper');
-        if (pInitialWrapper) pInitialWrapper.classList.add('button-is-inactive');
+        disablePSubmit();
 
         $('#p-main-form').on('input change', updatePSubmitState);
         
@@ -639,7 +623,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 'Canada': '#p-states-canada', 'China': '#p-states-china', 'Ireland': '#p-states-ireland',
                 'India': '#p-states-india', 'Italy': '#p-states-italy', 'Mexico': '#p-states-mexico'
             };
-            if (stateMapIds[selCountry]) stateValue = this.querySelector(stateMapIds[selCountry]).value;
+            if (stateMapIds[selCountry]) {
+                const stateEl = this.querySelector(stateMapIds[selCountry]);
+                if (stateEl && !stateEl.disabled) { // ДОБАВИТЬ ПРОВЕРКУ!
+                    stateValue = stateEl.value;
+                }
+            }
 
             // Pre-calculate hash
             const email = formData.get('p-email');
@@ -769,6 +758,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                                 $(`#${targetId}`).selectpicker('refresh');
                                                 $(stateSelect).closest('.bootstrap-select').find('.dropdown-toggle').removeClass('input-error');
                                                 $(stateSelect).valid();
+                                                updateMSubmitState();
                                             }
                                         }
                                     }, 200);
@@ -798,12 +788,13 @@ document.addEventListener('DOMContentLoaded', function() {
             if (iti && countryCodeMap[selectedCountry]) iti.setCountry(countryCodeMap[selectedCountry]);
 
             // 1. Сначала СКРЫВАЕМ и ОТКЛЮЧАЕМ
-            const allStateContainers = document.querySelectorAll('.states-australia, .states-brazil, .states-canada, .states-china, .states-ireland, .states-india, .states-italy, .states-mexico, .dropdown-state');
+            const allStateContainers = document.querySelectorAll('.dropdown-state, .states-australia, .states-brazil, .states-canada, .states-china, .states-ireland, .states-india, .states-italy, .states-mexico');
             allStateContainers.forEach(container => {
                 container.style.display = 'none';
                 const select = container.querySelector('select');
                 if (select) {
-                    select.disabled = true; 
+                    select.disabled = true;
+                    select.removeAttribute('required'); // ДОБАВИТЬ ЭТУ СТРОКУ!
                     $(select).selectpicker('refresh');
                     $(select).closest('.bootstrap-select').find('.dropdown-toggle').removeClass('input-error');
                 }
@@ -823,7 +814,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     const select = container.querySelector('select');
                     if (select) {
                         select.disabled = false; // Включаем обратно
-                        
+                        select.setAttribute('required', 'true');
                         // Сброс на "пусто"
                         $(select).val(""); 
                         $(select).selectpicker('refresh');
@@ -858,9 +849,30 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 50);
         });
 
+        // === ФУНКЦИИ УПРАВЛЕНИЯ КНОПКОЙ M-FORM ===
+        function enableMSubmit() {
+            mSubmitButtons.forEach(btn => {
+                btn.removeAttribute('disabled');
+                btn.classList.remove('submit-inactive');
+            });
+            document.querySelectorAll('.submit-button-wrapper').forEach(w => {
+                w.classList.remove('button-is-inactive');
+            });
+        }
+        
+        function disableMSubmit() {
+            mSubmitButtons.forEach(btn => {
+                btn.setAttribute('disabled', 'disabled');
+                btn.classList.add('submit-inactive');
+            });
+            document.querySelectorAll('.submit-button-wrapper').forEach(w => {
+                w.classList.add('button-is-inactive');
+            });
+        }
+
         // Валидация
         $('#main-form').validate({
-            ignore: ":hidden:not(select)",
+            ignore: ":disabled, :hidden:not(select:not(:disabled))",
             onfocusout: function(element) { if ($(element).data('modified')) $(element).valid(); },
             onkeyup: function(element) { $(element).data('modified', true); $(element).valid(); },
             onclick: function(element) { if ($(element).data('interacted')) $(element).valid(); },
@@ -926,37 +938,22 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         function updateMSubmitState() {
-            // Проверка существования кнопок
-            if (!mSubmitButtons || mSubmitButtons.length === 0) return;
+            if (!mSubmitButtons.length) return;
         
             const isFormValid = $('#main-form').valid();
             const selectedCountry = $('#country').val();
-            const isCheckboxChecked = $(mCheckbox).prop('checked');
-            const isReqMet = selectedCountry === 'United States' || isCheckboxChecked;
+            const $requiredCheckboxes = $(checkboxes).filter(':visible').not('#checkbox-sign');
+            const checkedCount = $requiredCheckboxes.filter(':checked').length;
+            const areAllCheckboxesChecked = $requiredCheckboxes.length === checkedCount;
+            const isCheckboxRequirementMet = selectedCountry === 'United States' || areAllCheckboxesChecked;
         
-            const wrappers = document.querySelectorAll('.submit-button-wrapper');
-        
-            // Добавляем isTurnstileCompleted в условие
-            if (isFormValid && isReqMet && isTurnstileCompleted) {
-                mSubmitButtons.forEach(btn => { 
-                    btn.removeAttribute('disabled'); 
-                    btn.classList.remove('submit-inactive'); 
-                });
-                wrappers.forEach(w => w.classList.remove('button-is-inactive'));
+            if (isFormValid && isCheckboxRequirementMet && isTurnstileCompleted) {
+                enableMSubmit();
             } else {
-                mSubmitButtons.forEach(btn => { 
-                    btn.setAttribute('disabled', 'disabled'); 
-                    btn.classList.add('submit-inactive'); 
-                });
-                wrappers.forEach(w => w.classList.add('button-is-inactive'));
+                disableMSubmit();
             }
         }
-        mSubmitButtons.forEach(btn => {
-            btn.setAttribute('disabled', 'disabled');
-            btn.classList.add('submit-inactive');
-            const wrapper = btn.closest('.submit-button-wrapper');
-            if (wrapper) wrapper.classList.add('button-is-inactive');
-        });
+        disableMSubmit();
 
         $('#main-form').on('input change', updateMSubmitState);
         
@@ -966,6 +963,12 @@ document.addEventListener('DOMContentLoaded', function() {
           $(this).valid();
           updateCheckboxErrorClass();
           updateMSubmitState();
+        });
+
+        // Live validation для селектов штатов M-FORM
+        $('select[id^="states-"], #state').on('changed.bs.select', function () {
+            $(this).valid();
+            updateMSubmitState();
         });
 
         // Submit Handler Form
