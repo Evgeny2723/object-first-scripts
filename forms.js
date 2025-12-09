@@ -97,6 +97,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Переменные Honeypot
     let formInteractionStartTime = 0;
     let decoyLinkClicked = false;
+    let updatePSubmitState = null;
+    let updateMSubmitState = null;
     let isTurnstileCompleted = false;
     
     window.onTurnstileSuccess = function(token) {
@@ -356,7 +358,6 @@ document.addEventListener('DOMContentLoaded', function() {
         frm.addEventListener('input', () => {
             if (formInteractionStartTime === 0) {
                 formInteractionStartTime = Date.now();
-                console.log('Honeypot: Form interaction started.');
             }
         }, { once: true });
     });
@@ -1030,7 +1031,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     c_of_utm_term: urlParams.get('utm_term') || ''
                 }
             };
-            if (selCountry !== 'United States' && !stateValue) delete data.state;
+            if (selCountry !== 'United States' && !stateValue) data.state = '';
 
             try {
                 let userId = getCookieValue('user_id') || generateUserId();
