@@ -98,31 +98,41 @@ document.addEventListener('DOMContentLoaded', function() {
     let formInteractionStartTime = 0;
     let decoyLinkClicked = false;
     let isTurnstileCompleted = false;
-    
+
+    // Turnstile Callbacks
     window.onTurnstileSuccess = function(token) {
-    console.log("Turnstile success");
-    isTurnstileCompleted = true;
-    
-    // Вызываем функции только если они определены
-    if (typeof updatePSubmitState === 'function') {
-        updatePSubmitState();
-    }
-    if (typeof updateMSubmitState === 'function') {
-        updateMSubmitState();
-    }
+        console.log("Turnstile success");
+        isTurnstileCompleted = true;
+        
+        // Проверяем, существуют ли функции, прежде чем вызывать
+        if (typeof updatePSubmitState === 'function') {
+            updatePSubmitState();
+        }
+        if (typeof updateMSubmitState === 'function') {
+            updateMSubmitState();
+        }
     };
     
     window.onTurnstileExpired = function() {
         console.log("Turnstile expired");
         isTurnstileCompleted = false;
         
-        // Вызываем функции только если они определены
-        if (typeof disablePSubmit === 'function') {
-            disablePSubmit();
+        // Отключаем кнопки обеих форм
+        const pBtn = document.querySelector('[ms-code-submit-new="p-submit"]');
+        if (pBtn) {
+            pBtn.setAttribute('disabled', 'disabled');
+            pBtn.classList.add('submit-inactive');
+            const pWrapper = pBtn.closest('.submit-button-wrapper');
+            if (pWrapper) pWrapper.classList.add('button-is-inactive');
         }
-        if (typeof disableMSubmit === 'function') {
-            disableMSubmit();
-        }
+        
+        const mBtns = document.querySelectorAll('[ms-code-submit-new="submit"]');
+        const mWrappers = document.querySelectorAll('.submit-button-wrapper');
+        mBtns.forEach(btn => {
+            btn.setAttribute('disabled', 'disabled');
+            btn.classList.add('submit-inactive');
+        });
+        mWrappers.forEach(w => w.classList.add('button-is-inactive'));
     };
 
     // Утилита Hashing
@@ -336,6 +346,7 @@ document.addEventListener('DOMContentLoaded', function() {
         frm.addEventListener('input', () => {
             if (formInteractionStartTime === 0) {
                 formInteractionStartTime = Date.now();
+                console.log('Honeypot: Form interaction started.');
             }
         }, { once: true });
     });
@@ -399,14 +410,16 @@ document.addEventListener('DOMContentLoaded', function() {
             if (stateMap[selectedCountry]) {
                 const container = document.querySelector(stateMap[selectedCountry]);
                 if (container) {
-                    container.style.display = 'block';
+                    container.style.display = 'block'; // Показываем
                     const select = container.querySelector('select');
                     if (select) {
-                        select.disabled = false;
-                        select.setAttribute('required', 'true'); // ДОБАВИТЬ ЭТУ СТРОКУ!
+                        select.disabled = false; // Включаем для валидации
                         
+                        // Сброс значения на "пусто", чтобы появился State*
                         $(select).val(""); 
                         $(select).selectpicker('refresh');
+
+                        // Подсвечиваем как ошибку (так как поле обязательное, но пустое)
                         $(select).closest('.bootstrap-select').find('.dropdown-toggle').addClass('input-error');
                     }
                 }
@@ -480,8 +493,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                     foundOption.selected = true;
                                     $(`#${targetId}`).selectpicker('refresh');
                                     $(stateSelect).closest('.bootstrap-select').find('.dropdown-toggle').removeClass('input-error'); 
-                                    $(stateSelect).valid();
-                                    updatePSubmitState();
+                                    $(stateSelect).valid(); 
                                 }
                             }
                         }, 200); 
@@ -490,24 +502,9 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        // === ФУНКЦИИ УПРАВЛЕНИЯ КНОПКОЙ P-FORM ===
-        function enablePSubmit() {
-            pSubmitButton.removeAttribute('disabled');
-            pSubmitButton.classList.remove('submit-inactive');
-            const pWrapper = pSubmitButton.closest('.submit-button-wrapper');
-            if (pWrapper) pWrapper.classList.remove('button-is-inactive');
-        }
-        
-        function disablePSubmit() {
-            pSubmitButton.setAttribute('disabled', 'disabled');
-            pSubmitButton.classList.add('submit-inactive');
-            const pWrapper = pSubmitButton.closest('.submit-button-wrapper');
-            if (pWrapper) pWrapper.classList.add('button-is-inactive');
-        }
-
         // Валидация
         $('#p-main-form').validate({
-            ignore: ":disabled, :hidden:not(select:not(:disabled))",
+            ignore: ":hidden:not(select)",
             onfocusout: function(element) { if ($(element).data('modified')) $(element).valid(); },
             onkeyup: function(element) { $(element).data('modified', true); $(element).valid(); },
             onclick: function(element) { if ($(element).data('interacted')) $(element).valid(); },
@@ -525,7 +522,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 },
             },
             messages: {
-                'p-full-name': { required: "This field is required", maxlength: "Full name must be at most 50 characters" },
+                'p-full-name': { required: "This field is required", maxlength: "Full name must be at most 50 characters" }, // ИСПРАВЛЕНА ОПЕЧАТКА neme -> name
                 'p-email': { required: "This field is required", email: "Invalid email address" },
                 'p-company': { required: "This field is required" },
                 'p-state': { required: "This field is required" },
@@ -550,8 +547,7 @@ document.addEventListener('DOMContentLoaded', function() {
                      // Добавляем класс
                      $el.closest('.bootstrap-select').find('.dropdown-toggle').addClass('input-error');
                  } else if ($el.data('modified')) {
-                     $el.css('border', '1px solid #E03400');
-                     $el.addClass('error-placeholder');
+                     $el.css('border', '1px solid #c50006'); 
                  }
             },
             unhighlight: function(el) {
@@ -560,8 +556,7 @@ document.addEventListener('DOMContentLoaded', function() {
                      // Убираем класс
                      $el.closest('.bootstrap-select').find('.dropdown-toggle').removeClass('input-error');
                  } else {
-                     $el.css('border', '');
-                     $el.removeClass('error-placeholder');
+                     $el.css('border', ''); 
                  }
             },
             onfocusin: function(element) { $(element).data("interacted", true); }
@@ -569,22 +564,29 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Состояние кнопки Submit
         function updatePSubmitState() {
-            if (!pSubmitButton) return;
-        
             const isFormValid = $('#p-main-form').valid();
             const selectedCountry = $('#p-country').val();
             const isCheckboxChecked = $(pCheckbox).prop('checked');
             const isReqMet = selectedCountry === 'United States' || isCheckboxChecked;
-        
+
+            const pWrapper = pSubmitButton.closest('.submit-button-wrapper');
+
             if (isFormValid && isReqMet && isTurnstileCompleted) {
-                enablePSubmit();
+                pSubmitButton.removeAttribute('disabled');
+                pSubmitButton.classList.remove('submit-inactive');
+                if (pWrapper) pWrapper.classList.remove('button-is-inactive');
             } else {
-                disablePSubmit();
+                pSubmitButton.setAttribute('disabled', 'disabled');
+                pSubmitButton.classList.add('submit-inactive');
+                if (pWrapper) pWrapper.classList.add('button-is-inactive');
             }
         }
 
         // Устанавливаем начальное состояние
-        disablePSubmit();
+        pSubmitButton.setAttribute('disabled', 'disabled');
+        pSubmitButton.classList.add('submit-inactive');
+        const pInitialWrapper = pSubmitButton.closest('.submit-button-wrapper');
+        if (pInitialWrapper) pInitialWrapper.classList.add('button-is-inactive');
 
         $('#p-main-form').on('input change', updatePSubmitState);
         
@@ -631,12 +633,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 'Canada': '#p-states-canada', 'China': '#p-states-china', 'Ireland': '#p-states-ireland',
                 'India': '#p-states-india', 'Italy': '#p-states-italy', 'Mexico': '#p-states-mexico'
             };
-            if (stateMapIds[selCountry]) {
-                const stateEl = this.querySelector(stateMapIds[selCountry]);
-                if (stateEl && !stateEl.disabled) { // ДОБАВИТЬ ПРОВЕРКУ!
-                    stateValue = stateEl.value;
-                }
-            }
+            if (stateMapIds[selCountry]) stateValue = this.querySelector(stateMapIds[selCountry]).value;
 
             // Pre-calculate hash
             const email = formData.get('p-email');
@@ -766,7 +763,6 @@ document.addEventListener('DOMContentLoaded', function() {
                                                 $(`#${targetId}`).selectpicker('refresh');
                                                 $(stateSelect).closest('.bootstrap-select').find('.dropdown-toggle').removeClass('input-error');
                                                 $(stateSelect).valid();
-                                                updateMSubmitState();
                                             }
                                         }
                                     }, 200);
@@ -796,13 +792,12 @@ document.addEventListener('DOMContentLoaded', function() {
             if (iti && countryCodeMap[selectedCountry]) iti.setCountry(countryCodeMap[selectedCountry]);
 
             // 1. Сначала СКРЫВАЕМ и ОТКЛЮЧАЕМ
-            const allStateContainers = document.querySelectorAll('.dropdown-state, .states-australia, .states-brazil, .states-canada, .states-china, .states-ireland, .states-india, .states-italy, .states-mexico');
+            const allStateContainers = document.querySelectorAll('.states-australia, .states-brazil, .states-canada, .states-china, .states-ireland, .states-india, .states-italy, .states-mexico, .dropdown-state');
             allStateContainers.forEach(container => {
                 container.style.display = 'none';
                 const select = container.querySelector('select');
                 if (select) {
-                    select.disabled = true;
-                    select.removeAttribute('required'); // ДОБАВИТЬ ЭТУ СТРОКУ!
+                    select.disabled = true; 
                     $(select).selectpicker('refresh');
                     $(select).closest('.bootstrap-select').find('.dropdown-toggle').removeClass('input-error');
                 }
@@ -822,7 +817,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     const select = container.querySelector('select');
                     if (select) {
                         select.disabled = false; // Включаем обратно
-                        select.setAttribute('required', 'true');
+                        
                         // Сброс на "пусто"
                         $(select).val(""); 
                         $(select).selectpicker('refresh');
@@ -857,30 +852,9 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 50);
         });
 
-        // === ФУНКЦИИ УПРАВЛЕНИЯ КНОПКОЙ M-FORM ===
-        function enableMSubmit() {
-            mSubmitButtons.forEach(btn => {
-                btn.removeAttribute('disabled');
-                btn.classList.remove('submit-inactive');
-            });
-            document.querySelectorAll('.submit-button-wrapper').forEach(w => {
-                w.classList.remove('button-is-inactive');
-            });
-        }
-        
-        function disableMSubmit() {
-            mSubmitButtons.forEach(btn => {
-                btn.setAttribute('disabled', 'disabled');
-                btn.classList.add('submit-inactive');
-            });
-            document.querySelectorAll('.submit-button-wrapper').forEach(w => {
-                w.classList.add('button-is-inactive');
-            });
-        }
-
         // Валидация
         $('#main-form').validate({
-            ignore: ":disabled, :hidden:not(select:not(:disabled))",
+            ignore: ":hidden:not(select)",
             onfocusout: function(element) { if ($(element).data('modified')) $(element).valid(); },
             onkeyup: function(element) { $(element).data('modified', true); $(element).valid(); },
             onclick: function(element) { if ($(element).data('interacted')) $(element).valid(); },
@@ -892,6 +866,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 company: { required: true, maxlength: 50, noSpacesOnly: true },
                 phone: { phoneCustom: true },
                 'self-attribution': { maxlength: 50 },
+                agreement: { required: true },
                 state: { required: true },
                 agreement: {
                   required: function(element) {
@@ -926,10 +901,9 @@ document.addEventListener('DOMContentLoaded', function() {
                  const $el = $(el);
                  if ($el.is('select')) {
                      // Добавляем класс
-                     $el.closest('.bootstrap-select').find('.dropdown-toggle').addClass('input-error').css('color', '#E03400');
+                     $el.closest('.bootstrap-select').find('.dropdown-toggle').addClass('input-error').css('color', '#c50006');
                  } else if ($el.data('modified')) {
-                     $el.css('border', '1px solid #E03400');
-                     $el.addClass('error-placeholder');
+                     $el.css('border', '1px solid #c50006'); 
                  }
             },
             unhighlight: function(el) {
@@ -938,30 +912,27 @@ document.addEventListener('DOMContentLoaded', function() {
                      // Убираем класс
                      $el.closest('.bootstrap-select').find('.dropdown-toggle').removeClass('input-error').css('color', '');
                  } else {
-                     $el.css('border', '');
-                     $el.removeClass('error-placeholder');
+                     $el.css('border', ''); 
                  }
             },
             onfocusin: function(element) { $(element).data("interacted", true); }
         });
 
         function updateMSubmitState() {
-            if (!mSubmitButtons.length) return;
-        
             const isFormValid = $('#main-form').valid();
             const selectedCountry = $('#country').val();
-            const $requiredCheckboxes = $(checkboxes).filter(':visible').not('#checkbox-sign');
-            const checkedCount = $requiredCheckboxes.filter(':checked').length;
-            const areAllCheckboxesChecked = $requiredCheckboxes.length === checkedCount;
-            const isCheckboxRequirementMet = selectedCountry === 'United States' || areAllCheckboxesChecked;
-        
-            if (isFormValid && isCheckboxRequirementMet && isTurnstileCompleted) {
-                enableMSubmit();
+            const isCheckboxChecked = $(mCheckbox).prop('checked');
+            const isReqMet = selectedCountry === 'United States' || isCheckboxChecked;
+
+            const wrappers = document.querySelectorAll('.submit-button-wrapper');
+            if (isFormValid && isReqMet && isTurnstileCompleted) {
+                mSubmitButtons.forEach(btn => { btn.removeAttribute('disabled'); btn.classList.remove('submit-inactive'); });
+                wrappers.forEach(w => w.classList.remove('button-is-inactive'));
             } else {
-                disableMSubmit();
+                mSubmitButtons.forEach(btn => { btn.setAttribute('disabled', 'disabled'); btn.classList.add('submit-inactive'); });
+                wrappers.forEach(w => w.classList.add('button-is-inactive'));
             }
         }
-        disableMSubmit();
 
         $('#main-form').on('input change', updateMSubmitState);
         
@@ -971,12 +942,6 @@ document.addEventListener('DOMContentLoaded', function() {
           $(this).valid();
           updateCheckboxErrorClass();
           updateMSubmitState();
-        });
-
-        // Live validation для селектов штатов M-FORM
-        $('select[id^="states-"], #state').on('changed.bs.select', function () {
-            $(this).valid();
-            updateMSubmitState();
         });
 
         // Submit Handler Form
@@ -1049,7 +1014,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     c_of_utm_term: urlParams.get('utm_term') || ''
                 }
             };
-            if (selCountry !== 'United States' && !stateValue) data.state = '';
+            if (selCountry !== 'United States' && !stateValue) delete data.state;
 
             try {
                 let userId = getCookieValue('user_id') || generateUserId();
