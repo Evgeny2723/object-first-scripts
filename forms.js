@@ -575,7 +575,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         // Состояние кнопки Submit
-        function updatePSubmitState() {
+        updatePSubmitState = function() {
             if (!isTurnstileCompleted) return;
             const isFormValid = $('#p-main-form').valid();
             const selectedCountry = $('#p-country').val();
@@ -933,7 +933,7 @@ document.addEventListener('DOMContentLoaded', function() {
             onfocusin: function(element) { $(element).data("interacted", true); }
         });
 
-        function updateMSubmitState() {
+        updateMSubmitState = function() {
             if (!isTurnstileCompleted) return;
             const isFormValid = $('#main-form').valid();
             const selectedCountry = $('#country').val();
