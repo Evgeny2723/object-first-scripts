@@ -100,21 +100,29 @@ document.addEventListener('DOMContentLoaded', function() {
     let isTurnstileCompleted = false;
     
     window.onTurnstileSuccess = function(token) {
-        console.log("Turnstile success");
-        isTurnstileCompleted = true;
-        
-        // Обновляем обе формы
+    console.log("Turnstile success");
+    isTurnstileCompleted = true;
+    
+    // Вызываем функции только если они определены
+    if (typeof updatePSubmitState === 'function') {
         updatePSubmitState();
+    }
+    if (typeof updateMSubmitState === 'function') {
         updateMSubmitState();
+    }
     };
     
     window.onTurnstileExpired = function() {
         console.log("Turnstile expired");
         isTurnstileCompleted = false;
         
-        // Отключаем обе формы
-        disablePSubmit();
-        disableMSubmit();
+        // Вызываем функции только если они определены
+        if (typeof disablePSubmit === 'function') {
+            disablePSubmit();
+        }
+        if (typeof disableMSubmit === 'function') {
+            disableMSubmit();
+        }
     };
 
     // Утилита Hashing
