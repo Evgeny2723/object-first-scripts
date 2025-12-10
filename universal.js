@@ -1202,35 +1202,73 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // === КНОПКА ПОВТОРНОЙ ОТПРАВКИ КОДА ===
     if (resendCodeButton) {
-        resendCodeButton.addEventListener('click', async function(event) {
-            event.preventDefault();
-            const emailVal = emailInput.value.trim();
-            if(!emailVal) return;
-
-            resendCodeButton.disabled = true;
-            const originalText = resendCodeButton.textContent;
-            resendCodeButton.textContent = 'Please wait...';
-
-            setTimeout(() => {
+    resendCodeButton.addEventListener('click', async function(event) {
+        event.preventDefault();
+        
+        const emailVal = emailInput.value.trim();
+        if (!emailVal) {
+            alert('Email address is missing.');
+            return;
+        }
+        
+        // Блокируем кнопку
+        resendCodeButton.disabled = true;
+        const originalText = resendCodeButton.textContent;
+        resendCodeButton.textContent = 'Sending...';
+        
+        try {
+            const response = await fetch('https://of-web-api.objectfirst.com/api/application/verified-webflow', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'locale': localeHeader
+                },
+                body: JSON.stringify({ email: emailVal }),
+                credentials: 'include',
+            });
+            
+            // Парсим ответ
+            const result = await response.json();
+            
+            if (response.ok) {
+                // ✅ Успех
+                alert('A new confirmation code has been sent to your email.');
+                
+                // Таймер на 30 секунд
+                let countdown = 30;
+                const intervalId = setInterval(() => {
+                    countdown--;
+                    resendCodeButton.textContent = `Resend code (${countdown}s)`;
+                    
+                    if (countdown <= 0) {
+                        clearInterval(intervalId);
+                        resendCodeButton.disabled = false;
+                        resendCodeButton.textContent = originalText;
+                    }
+                }, 1000);
+            } else {
+                // ❌ Ошибка сервера
+                console.error('Server error:', result);
+                
+                // Показываем конкретное сообщение об ошибке
+                const errorMessage = result.message || result.error || 'Failed to resend code. Please try again.';
+                alert(errorMessage);
+                
+                // Разблокируем кнопку сразу
                 resendCodeButton.disabled = false;
                 resendCodeButton.textContent = originalText;
-            }, 30000);
-
-            try {
-                const response = await fetch('https://of-web-api.objectfirst.com/api/application/verified-webflow', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'locale': localeHeader },
-                    body: JSON.stringify({ email: emailVal }),
-                    credentials: 'include',
-                });
-                if(response.ok) {
-                    alert('A new confirmation code has been sent.');
-                } else {
-                    alert('Failed to resend code.');
-                }
-            } catch (e) { console.error(e); }
-        });
-    }
+            }
+        } catch (error) {
+            // ❌ Сетевая ошибка
+            console.error('Network error:', error);
+            alert('Network error. Please check your connection and try again.');
+            
+            // Разблокируем кнопку сразу
+            resendCodeButton.disabled = false;
+            resendCodeButton.textContent = originalText;
+        }
+    });
+}
 
     // --- ОБЩИЕ ФУНКЦИИ ---
 
