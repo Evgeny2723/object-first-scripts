@@ -559,14 +559,14 @@ document.addEventListener('DOMContentLoaded', function() {
       onkeyup: function(element) { $(element).data('modified', true); $(element).valid(); },
       onclick: function(element) { if (isFormInitialized) $(element).valid(); },
       rules: {
-        'full-name': { required: true, maxlength: 50, noSpacesOnly: true },
-        'first-name': { required: true, maxlength: 50, noSpacesOnly: true },
-        'last-name': { required: true, maxlength: 50, noSpacesOnly: true },
-        email: { required: true, maxlength: 50, email: true, corporate: true, validEmailChars: true },
-        'job-title': { required: true, maxlength: 50, noSpacesOnly: true },
-        company: { required: true, maxlength: 50, noSpacesOnly: true },
+        'full-name': { required: true, maxlength: 128, noSpacesOnly: true, minlength: 2 },
+        'first-name': { required: true, maxlength: 128, noSpacesOnly: true, minlength: 2 },
+        'last-name': { required: true, maxlength: 128, noSpacesOnly: true, minlength: 2 },
+        email: { required: true, maxlength: 128, email: true, corporate: true, validEmailChars: true },
+        'job-title': { required: true, maxlength: 128, noSpacesOnly: true },
+        company: { required: true, maxlength: 128, noSpacesOnly: true },
         phone: { phoneCustom: true },
-        'self-attribution': { maxlength: 50 },
+        'self-attribution': { maxlength: 128 },
         agreement: {
           required: function(element) {
             const selectedCountry = $('#country').val();
@@ -577,15 +577,15 @@ document.addEventListener('DOMContentLoaded', function() {
         'checkbox-sign': { required: false }
       },
       messages: {
-        'full-name': { required: "This field is required", maxlength: "Full name must be at most 50 characters" },
-        'first-name': { required: "This field is required", maxlength: "Firstname must be at most 50 characters" },
-        'last-name': { required: "This field is required", maxlength: "Lastname must be at most 50 characters" },
-        email: { required: "This field is required", maxlength: "Email must be at most 50 characters", email: "Invalid email address", corporate: "Please enter a valid corporate email address (e.g., yourname@company.com). Personal email addresses (e.g., Gmail, Yahoo) are not accepted." },
-        'job-title': { required: "This field is required", maxlength: "Job title must be at most 50 characters" },
-        company: { required: "This field is required", maxlength: "Company must be at most 50 characters" },
+        'full-name': { required: "This field is required", maxlength: "The value must not exceed 128 characters.", minlength: "The value must contain at least 2 characters." },
+        'first-name': { required: "This field is required", maxlength: "The value must not exceed 128 characters.", minlength: "The value must contain at least 2 characters." },
+        'last-name': { required: "This field is required", maxlength: "The value must not exceed 128 characters.", minlength: "The value must contain at least 2 characters." },
+        email: { required: "This field is required", maxlength: "The value must not exceed 128 characters.", email: "Invalid email address", corporate: "Please enter a valid corporate email address (e.g., yourname@company.com). Personal email addresses (e.g., Gmail, Yahoo) are not accepted." },
+        'job-title': { required: "This field is required", maxlength: "The value must not exceed 128 characters." },
+        company: { required: "This field is required", maxlength: "The value must not exceed 128 characters." },
         phone: { phoneCustom: "Phone number is invalid. Please add your country code, area code and phone number. Your phone number can contain numbers, spaces and these special characters: ( ) - # +" },
         agreement: { required: "Checking this box is necessary to continue" },
-        'self-attribution': { maxlength: "This field should contain no more than 50 characters" }
+        'self-attribution': { maxlength: "The value must not exceed 128 characters." }
       },
       errorPlacement: function (error, element) {
         const container = element.closest(".input-wrapper").length ? element.closest(".input-wrapper") : element.closest(".field-row");
@@ -634,7 +634,7 @@ document.addEventListener('DOMContentLoaded', function() {
             code: { required: true, noSpacesOnly: true, minlength: 6 }
         },
         messages: {
-            code: { required: "This field is required" }
+            code: { required: "This field is required", minlength: "The value must contain at least 6 characters." }
         },
         errorPlacement: function (error, element) {
             if ($(element).data('modified')) {
