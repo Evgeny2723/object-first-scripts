@@ -1202,73 +1202,133 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // === КНОПКА ПОВТОРНОЙ ОТПРАВКИ КОДА ===
     if (resendCodeButton) {
-    resendCodeButton.addEventListener('click', async function(event) {
-        event.preventDefault();
-        
-        const emailVal = emailInput.value.trim();
-        if (!emailVal) {
-            alert('Email address is missing.');
-            return;
-        }
-        
-        // Блокируем кнопку
-        resendCodeButton.disabled = true;
-        const originalText = resendCodeButton.textContent;
-        resendCodeButton.textContent = 'Sending...';
-        
-        try {
-            const response = await fetch('https://of-web-api.objectfirst.com/api/application/verified-webflow', {
-                method: 'POST',
-                headers: {
+        resendCodeButton.addEventListener('click', async function(event) {
+            event.preventDefault();
+            
+            const emailVal = emailInput.value.trim();
+            if (!emailVal) {
+                alert('Email address is missing.');
+                return;
+            }
+            
+            // Блокируем кнопку
+            resendCodeButton.disabled = true;
+            const originalText = resendCodeButton.textContent;
+            resendCodeButton.textContent = 'Sending...';
+            
+            try {
+                // Собираем те же данные, что и при первой отправке
+                const formData = new FormData(mainForm);
+                
+                let firstNameValue = formData.get('first-name');
+                let lastNameValue = formData.get('last-name');
+                
+                if (!firstNameValue || !lastNameValue) {
+                    const fullName = formData.get('full-name');
+                    const { firstName, lastName } = splitFullName(fullName);
+                    firstNameValue = firstName;
+                    lastNameValue = lastName;
+                }
+                
+                // Собираем данные точно так же, как в основном submit handler
+                const leadTypeValue = mainForm.querySelector('input[name="lead_type"]:checked')?.value;
+                
+                let selectedCountry = null;
+                let stateValue = '';
+                if (countrySelect) {
+                    selectedCountry = mainForm.querySelector('select[name="country"]').value;
+                    
+                    if (selectedCountry === 'United States') {
+                        stateValue = mainForm.querySelector('#state')?.value;
+                    } else if (selectedCountry === 'Australia') {
+                        stateValue = mainForm.querySelector('#states-australia')?.value;
+                    } else if (selectedCountry === 'Brazil') {
+                        stateValue = mainForm.querySelector('#states-brazil')?.value;
+                    } else if (selectedCountry === 'Canada') {
+                        stateValue = mainForm.querySelector('#states-canada')?.value;
+                    } else if (selectedCountry === 'China') {
+                        stateValue = mainForm.querySelector('#states-china')?.value;
+                    } else if (selectedCountry === 'Ireland') {
+                        stateValue = mainForm.querySelector('#states-ireland')?.value;
+                    } else if (selectedCountry === 'India') {
+                        stateValue = mainForm.querySelector('#states-india')?.value;
+                    } else if (selectedCountry === 'Italy') {
+                        stateValue = mainForm.querySelector('#states-italy')?.value;
+                    } else if (selectedCountry === 'Mexico') {
+                        stateValue = mainForm.querySelector('#states-mexico')?.value;
+                    }
+                }
+                
+                const data = {
+                    firstname: firstNameValue,
+                    lastname: lastNameValue,
+                    email: emailVal,
+                    jobtitle: formData.get('job-title'),
+                    company: formData.get('company'),
+                    phone: iti ? iti.getNumber() : formData.get('phone'),
+                    leadtype: leadTypeValue,
+                    country: formData.get('country'),
+                    state: stateValue || null,
+                    selfattribution: formData.get('self-attribution'),
+                    href: window.location.href,
+                    page: pagePath,
+                    ssanonymousid: window.segmentstream?.anonymousId?.() ?? '',
+                };
+                
+                // Удаляем state если не требуется
+                if (countrySelect && selectedCountry !== 'United States' && !stateValue) {
+                    delete data.state;
+                }
+                
+                let userId = getCookieValue('user_id') || generateUserId();
+                
+                const headers = {
                     'Content-Type': 'application/json',
                     'locale': localeHeader
-                },
-                body: JSON.stringify({ email: emailVal }),
-                credentials: 'include',
-            });
-            
-            // Парсим ответ
-            const result = await response.json();
-            
-            if (response.ok) {
-                // ✅ Успех
-                alert('A new confirmation code has been sent to your email.');
+                };
+                if (userId) headers['user_id'] = userId;
                 
-                // Таймер на 30 секунд
-                let countdown = 30;
-                const intervalId = setInterval(() => {
-                    countdown--;
-                    resendCodeButton.textContent = `Resend code (${countdown}s)`;
+                const response = await fetch('https://of-web-api.objectfirst.com/api/application/verified-webflow', {
+                    method: 'POST',
+                    headers: headers,
+                    body: JSON.stringify(data),
+                    credentials: 'include',
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    alert('A new confirmation code has been sent to your email.');
                     
-                    if (countdown <= 0) {
-                        clearInterval(intervalId);
-                        resendCodeButton.disabled = false;
-                        resendCodeButton.textContent = originalText;
-                    }
-                }, 1000);
-            } else {
-                // ❌ Ошибка сервера
-                console.error('Server error:', result);
+                    // Таймер на 30 секунд
+                    let countdown = 30;
+                    const intervalId = setInterval(() => {
+                        countdown--;
+                        resendCodeButton.textContent = `Resend code (${countdown}s)`;
+                        
+                        if (countdown <= 0) {
+                            clearInterval(intervalId);
+                            resendCodeButton.disabled = false;
+                            resendCodeButton.textContent = originalText;
+                        }
+                    }, 1000);
+                } else {
+                    console.error('Server error:', result);
+                    const errorMessage = result.message || 'Failed to resend code. Please try again.';
+                    alert(errorMessage);
+                    
+                    resendCodeButton.disabled = false;
+                    resendCodeButton.textContent = originalText;
+                }
+            } catch (error) {
+                console.error('Network error:', error);
+                alert('Network error. Please check your connection and try again.');
                 
-                // Показываем конкретное сообщение об ошибке
-                const errorMessage = result.message || result.error || 'Failed to resend code. Please try again.';
-                alert(errorMessage);
-                
-                // Разблокируем кнопку сразу
                 resendCodeButton.disabled = false;
                 resendCodeButton.textContent = originalText;
             }
-        } catch (error) {
-            // ❌ Сетевая ошибка
-            console.error('Network error:', error);
-            alert('Network error. Please check your connection and try again.');
-            
-            // Разблокируем кнопку сразу
-            resendCodeButton.disabled = false;
-            resendCodeButton.textContent = originalText;
-        }
-    });
-}
+        });
+    }
 
     // --- ОБЩИЕ ФУНКЦИИ ---
 
