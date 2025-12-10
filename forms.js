@@ -509,10 +509,10 @@ document.addEventListener('DOMContentLoaded', function() {
             onkeyup: function(element) { $(element).data('modified', true); $(element).valid(); },
             onclick: function(element) { if ($(element).data('interacted')) $(element).valid(); },
             rules: {
-                'p-full-name': { required: true, maxlength: 50, noSpacesOnly: true },
-                'p-email': { required: true, maxlength: 50, email: true, corporate: true, validEmailChars: true },
-                'p-company': { required: true, maxlength: 50, noSpacesOnly: true },
-                'p-self-attribution': { maxlength: 50 },
+                'p-full-name': { required: true, maxlength: 128, noSpacesOnly: true, minlength: 2 },
+                'p-email': { required: true, maxlength: 128, email: true, corporate: true, validEmailChars: true },
+                'p-company': { required: true, maxlength: 128, noSpacesOnly: true },
+                'p-self-attribution': { maxlength: 128 },
                 'p-state': { required: true },
                 agreement: {
                   required: function(element) {
@@ -522,7 +522,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 },
             },
             messages: {
-                'p-full-name': { required: "This field is required", maxlength: "Full name must be at most 50 characters" }, // ИСПРАВЛЕНА ОПЕЧАТКА neme -> name
+                'p-full-name': { required: "This field is required", maxlength: "The value must not exceed 128 characters." },
                 'p-email': { required: "This field is required", email: "Invalid email address" },
                 'p-company': { required: "This field is required" },
                 'p-state': { required: "This field is required" },
@@ -859,13 +859,13 @@ document.addEventListener('DOMContentLoaded', function() {
             onkeyup: function(element) { $(element).data('modified', true); $(element).valid(); },
             onclick: function(element) { if ($(element).data('interacted')) $(element).valid(); },
             rules: {
-                'first-name': { required: true, maxlength: 50, noSpacesOnly: true },
-                'last-name': { required: true, maxlength: 50, noSpacesOnly: true },
-                email: { required: true, maxlength: 50, email: true, corporate: true, validEmailChars: true },
-                'job-title': { required: true, maxlength: 50, noSpacesOnly: true },
-                company: { required: true, maxlength: 50, noSpacesOnly: true },
+                'first-name': { required: true, maxlength: 128, noSpacesOnly: true, minlength: 2 },
+                'last-name': { required: true, maxlength: 128, noSpacesOnly: true, minlength: 2 },
+                email: { required: true, maxlength: 128, email: true, corporate: true, validEmailChars: true },
+                'job-title': { required: true, maxlength: 128, noSpacesOnly: true },
+                company: { required: true, maxlength: 128, noSpacesOnly: true },
                 phone: { phoneCustom: true },
-                'self-attribution': { maxlength: 50 },
+                'self-attribution': { maxlength: 128 },
                 agreement: { required: true },
                 state: { required: true },
                 agreement: {
