@@ -1,3 +1,4 @@
+console.log('Код изменён в 21:03');
 document.addEventListener('DOMContentLoaded', function() {
     // =========================================================================
     // 1. ГЛОБАЛЬНЫЕ КОНСТАНТЫ И УТИЛИТЫ
@@ -7,7 +8,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const countryCodeMap = {
         "Australia": "AU", "Austria": "AT", "Azerbaijan": "AZ", "Albania": "AL", "Algeria": "DZ", "Angola": "AO", "Andorra": "AD", "Antigua and Barbuda": "AG", "Argentina": "AR", "Armenia": "AM", "Afghanistan": "AF", "Bahamas": "BS", "Bangladesh": "BD", "Barbados": "BB", "Bahrain": "BH", "Belarus": "BY", "Belize": "BZ", "Belgium": "BE", "Benin": "BJ", "Bulgaria": "BG", "Bolivia": "BO", "Bosnia and Herzegovina": "BA", "Botswana": "BW", "Brazil": "BR", "Brunei Darussalam": "BN", "Burkina Faso": "BF", "Burundi": "BI", "Bhutan": "BT", "Vanuatu": "VU", "Hungary": "HU", "Venezuela": "VE", "Vietnam": "VN", "Gabon": "GA", "Haiti": "HT", "Guyana": "GY", "Gambia": "GM", "Ghana": "GH", "Guatemala": "GT", "Guinea": "GN", "Guinea-Bissau": "GW", "Germany": "DE", "Honduras": "HN", "Grenada": "GD", "Greece": "GR", "Georgia": "GE", "Denmark": "DK", "Congo, Democratic Republic of the": "CD", "Djibouti": "DJ", "Dominica": "DM", "Dominican Republic": "DO", "Egypt": "EG", "Zambia": "ZM", "Zimbabwe": "ZW", "Israel": "IL", "India": "IN", "Indonesia": "ID", "Jordan": "JO", "Iraq": "IQ", "Iran": "IR", "Ireland": "IE", "Iceland": "IS", "Spain": "ES", "Italy": "IT", "Yemen": "YE", "Cabo Verde": "CV", "Kazakhstan": "KZ", "Cambodia": "KH", "Cameroon": "CM", "Canada": "CA", "Qatar": "QA", "Kenya": "KE", "Cyprus": "CY", "Kiribati": "KI", "China": "CN", "Colombia": "CO", "Comoros": "KM", "Congo": "CG", "North Korea": "KP", "Costa Rica": "CR", "Côte d'Ivoire": "CI", "Cuba": "CU", "Kuwait": "KW", "Kyrgyzstan": "KG", "Lao People's Democratic Republic": "LA", "Latvia": "LV", "Lesotho": "LS", "Liberia": "LR", "Lebanon": "LB", "Libya": "LY", "Lithuania": "LT", "Liechtenstein": "LI", "Luxembourg": "LU", "Mauritius": "MU", "Mauritania": "MR", "Madagascar": "MG", "Malawi": "MW", "Malaysia": "MY", "Mali": "ML", "Maldives": "MV", "Malta": "MT", "Morocco": "MA", "Marshall Islands": "MH", "Mexico": "MX", "Mozambique": "MZ", "Monaco": "MC", "Mongolia": "MN", "Myanmar": "MM", "Namibia": "NA", "Nauru": "NR", "Nepal": "NP", "Niger": "NE", "Nigeria": "NG", "Netherlands": "NL", "Nicaragua": "NI", "Niue": "NU", "New Zealand": "NZ", "Norway": "NO", "Tanzania, United Republic of": "TZ", "United Arab Emirates": "AE", "Oman": "OM", "Cook Islands": "CK", "Pakistan": "PK", "Panama": "PA", "Papua New Guinea": "PG", "Paraguay": "PY", "Peru": "PE", "Poland": "PL", "Portugal": "PT", "Korea, Republic of": "KR", "Moldova, Republic of": "MD", "Russian Federation": "RU", "Rwanda": "RW", "Romania": "RO", "El Salvador": "SV", "Samoa": "WS", "San Marino": "SM", "Sao Tome and Principe": "ST", "Saudi Arabia": "SA", "Holy See (Vatican City State)": "VA", "North Macedonia": "MK", "Seychelles": "SC", "Senegal": "SN", "Saint Vincent and the Grenadines": "VC", "Saint Kitts and Nevis": "KN", "Saint Lucia": "LC", "Serbia": "RS", "Singapore": "SG", "Syrian Arab Republic": "SY", "Slovakia": "SK", "Slovenia": "SI", "United Kingdom": "GB", "United States": "US", "Solomon Islands": "SB", "Somalia": "SO", "Sudan": "SD", "Suriname": "SR", "Sierra Leone": "SL", "Tajikistan": "TJ", "Thailand": "TH", "Timor-Leste": "TL", "Togo": "TG", "Tonga": "TO", "Trinidad and Tobago": "TT", "Tuvalu": "TV", "Tunisia": "TN", "Turkmenistan": "TM", "Turkey": "TR", "Uganda": "UG", "Uzbekistan": "UZ", "Ukraine": "UA", "Uruguay": "UY", "Fiji": "FJ", "Philippines": "PH", "Finland": "FI", "France": "FR", "Croatia": "HR", "Central African Republic": "CF", "Chad": "TD", "Montenegro": "ME", "Czech Republic": "CZ", "Chile": "CL", "Switzerland": "CH", "Sweden": "SE", "Sri Lanka": "LK", "Ecuador": "EC", "Equatorial Guinea": "GQ", "Eritrea": "ER", "Eswatini": "SZ", "Estonia": "EE", "Ethiopia": "ET"
     };
-    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
 
     // Определение локали
     const pathSegments = window.location.pathname.split('/').filter(Boolean);
@@ -17,6 +17,28 @@ document.addEventListener('DOMContentLoaded', function() {
     let pagePath = window.location.pathname.substring(1);
     if (allowedLocales.includes(pathLocale)) {
         pagePath = pathSegments.slice(1).join('/');
+    }
+
+    // =========================================================================
+    // FIX #3: handleLabel — Floating Labels (перенесено из File 1)
+    // =========================================================================
+    function handleLabel(input) {
+        if (!input) return;
+        const label = input.nextElementSibling;
+        if (!label) return;
+        const updateLabelState = () => {
+            if (input.value !== '') {
+                label.classList.add('active');
+                input.classList.add('not-empty');
+            } else {
+                label.classList.remove('active');
+                input.classList.remove('not-empty');
+            }
+        };
+        updateLabelState();
+        input.addEventListener('focus', () => { label.classList.add('active'); });
+        input.addEventListener('blur', () => { updateLabelState(); });
+        input.addEventListener('input', () => { updateLabelState(); });
     }
 
     // Скрытие и отображение плейсхолдера
@@ -62,14 +84,16 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    function resetCheckbox() {
-        const $allCheckboxes = $(checkboxes);
-        $allCheckboxes.prop('checked', false).removeAttr('checked');
-        $allCheckboxes.parent().find('.w-checkbox-input').removeClass('w--redirected-checked');
+    // =========================================================================
+    // FIX #2: Параметризированные функции чекбоксов (вместо глобального селектора)
+    // =========================================================================
+    function resetCheckboxes($checkboxSet) {
+        $checkboxSet.prop('checked', false).removeAttr('checked');
+        $checkboxSet.parent().find('.w-checkbox-input').removeClass('w--redirected-checked');
     }
 
-    function updateCheckboxErrorClass() {
-       $(checkboxes).each(function() {
+    function updateCheckboxErrorClass($checkboxSet) {
+       $checkboxSet.each(function() {
            const currentCheckbox = $(this);
             if (currentCheckbox.attr('id') === 'checkbox-sign') {
                 const label = currentCheckbox.closest('.checkbox-field').find('.checkbox-text');
@@ -85,13 +109,15 @@ document.addEventListener('DOMContentLoaded', function() {
        });
     }
 
+    // Инициализация: сброс всех чекбоксов на странице (при первой загрузке — безопасно)
+    const $allCheckboxes = $('input[type="checkbox"]');
     $(document).ready(function() {
-       $(checkboxes).each(function() {
+       $allCheckboxes.each(function() {
            const label = $(this).closest('.checkbox-field').find('.checkbox-text');
            label.removeClass('error');
        });
-       resetCheckbox();
-       updateCheckboxErrorClass();
+       resetCheckboxes($allCheckboxes);
+       updateCheckboxErrorClass($allCheckboxes);
     });
 
     // Переменные Honeypot
@@ -99,12 +125,13 @@ document.addEventListener('DOMContentLoaded', function() {
     let decoyLinkClicked = false;
     let isTurnstileCompleted = false;
 
-    // Turnstile Callbacks
+    // =========================================================================
+    // FIX #5: Turnstile Callbacks — скоупинг к конкретным формам
+    // =========================================================================
     window.onTurnstileSuccess = function(token) {
         console.log("Turnstile success");
         isTurnstileCompleted = true;
         
-        // Проверяем, существуют ли функции, прежде чем вызывать
         if (typeof updatePSubmitState === 'function') {
             updatePSubmitState();
         }
@@ -117,7 +144,7 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log("Turnstile expired");
         isTurnstileCompleted = false;
         
-        // Отключаем кнопки обеих форм
+        // Form 1: скоупим к конкретной кнопке
         const pBtn = document.querySelector('[ms-code-submit-new="p-submit"]');
         if (pBtn) {
             pBtn.setAttribute('disabled', 'disabled');
@@ -126,13 +153,17 @@ document.addEventListener('DOMContentLoaded', function() {
             if (pWrapper) pWrapper.classList.add('button-is-inactive');
         }
         
-        const mBtns = document.querySelectorAll('[ms-code-submit-new="submit"]');
-        const mWrappers = document.querySelectorAll('.submit-button-wrapper');
-        mBtns.forEach(btn => {
-            btn.setAttribute('disabled', 'disabled');
-            btn.classList.add('submit-inactive');
-        });
-        mWrappers.forEach(w => w.classList.add('button-is-inactive'));
+        // Form 2: скоупим к #main-form, а не document
+        const mainFormEl = document.getElementById('main-form');
+        if (mainFormEl) {
+            const mBtns = mainFormEl.querySelectorAll('[ms-code-submit-new="submit"]');
+            const mWrappers = mainFormEl.querySelectorAll('.submit-button-wrapper');
+            mBtns.forEach(btn => {
+                btn.setAttribute('disabled', 'disabled');
+                btn.classList.add('submit-inactive');
+            });
+            mWrappers.forEach(w => w.classList.add('button-is-inactive'));
+        }
     };
 
     // Утилита Hashing
@@ -152,15 +183,12 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!val) continue;
             const search = val.toLowerCase().trim();
 
-            // 1. Точное совпадение (value или text)
             let match = options.find(o => 
                 o.value.toLowerCase().trim() === search || 
                 o.text.toLowerCase().trim() === search
             );
             if (match) return match;
 
-            // 2. Частичное совпадение (API значение внутри Опции или наоборот)
-            // Игнорируем заглушку "State*" и слишком короткие совпадения (менее 3 букв)
             match = options.find(o => {
                 const oVal = o.value.toLowerCase().trim();
                 const oTxt = o.text.toLowerCase().trim();
@@ -202,27 +230,30 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Утилита отправки формы (общая)
-    async function submitForm(data, userId, formId) {
+    async function submitForm(data, userId, formId, fieldPrefix) {
         const headers = {
             'Content-Type': 'application/json',
             'locale': localeHeader
         };
         if (userId) headers['user_id'] = userId;
-
+    
         const response = await fetch('https://of-web-api.objectfirst.com/api/application/webflow', {
             method: 'POST',
             headers: headers,
             body: JSON.stringify(data),
             credentials: 'include',
         });
-
+    
         const responseData = await response.json();
-
+    
         if (!response.ok) {
             if (responseData.errors && responseData.errors.email) {
                 if (formId) {
+                    const emailFieldName = fieldPrefix ? `${fieldPrefix}email` : 'email';
+                    const $emailField = $(`#${formId} [name="${emailFieldName}"]`);
+                    $emailField.data('modified', true);
                     $(`#${formId}`).validate().showErrors({
-                        'email': responseData.errors.email[0]
+                        [emailFieldName]: responseData.errors.email[0]
                     });
                 }
             }
@@ -261,37 +292,31 @@ document.addEventListener('DOMContentLoaded', function() {
         if ($arrow.length) $arrow.css('color', defaultColor);
     });
     
-    // --- NEW: Add Empty Option & Required Attribute ---
+    // --- Add Empty Option & Required Attribute ---
     function initStateSelects() {
-        
         const allStateSelects = document.querySelectorAll('[id^="p-states-"], [id^="states-"], #p-state, #state');
         
         allStateSelects.forEach(sel => {
-            // 1. Делаем поле обязательным (jQuery Validate подхватит это, когда поле станет видимым)
             sel.setAttribute('required', 'true');
             sel.setAttribute('title', 'State*'); 
             sel.setAttribute('data-none-selected-text', 'State*');
 
-            // 2. Добавляем пустой пункт в начало, если его нет
             if (!sel.querySelector('option[value=""]')) {
                 const opt = document.createElement('option');
                 opt.value = "";
-                opt.text = "State*"; // Текст заглушки
+                opt.text = "State*";
                 opt.setAttribute('data-hidden', 'true');
                 sel.prepend(opt);
             }
             
-            // 3. Обновляем selectpicker, чтобы он увидел изменения
             $(sel).selectpicker('refresh');
         });
     }
-    // Вызываем сразу после объявления
     initStateSelects();
     
     // --- Live Validation for State Selects ---
-    // Убирает красную рамку сразу после выбора значения
     $('select[id^="p-states-"], select[id^="states-"], #p-state, #state').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
-        $(this).valid(); // Запускаем валидацию конкретного поля при изменении
+        $(this).valid();
     });
 
     // =========================================================================
@@ -315,7 +340,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // 3. HONEYPOT ОБЩАЯ ЛОГИКА
     // =========================================================================
     try {
-        // Обфускация confirm-email и city
         const inputsToObfuscate = [
             { name: 'p-confirm-email', labelSelector: '.input-wrapper label' },
             { name: 'p-city', labelSelector: '.input-wrapper label' },
@@ -326,7 +350,7 @@ document.addEventListener('DOMContentLoaded', function() {
         inputsToObfuscate.forEach(item => {
             const input = document.querySelector(`input[name="${item.name}"]`);
             if (input) {
-                const parent = input.closest(item.labelSelector.split(' ')[0] === '.input-wrapper' ? '.input-wrapper' : '.input-wrapper');
+                const parent = input.closest('.input-wrapper');
                 if (parent) {
                     const label = parent.querySelector('label');
                     if (label) {
@@ -374,6 +398,12 @@ document.addEventListener('DOMContentLoaded', function() {
         const pCheckbox = document.getElementById('p-agreement');
         let pIsSubmitting = false;
 
+        // FIX #2: Чекбоксы скоупленные к Form 1
+        const $pCheckboxes = $('#p-main-form input[type="checkbox"]');
+
+        // FIX #3: Применяем handleLabel к полям Form 1
+        [pFullNameInput, pEmailInput, pCompanyInput, pSelfAttribution].forEach(input => handleLabel(input));
+
         // Инициализация Selectpicker
         $('#p-country').selectpicker();
         $('[id^="p-states-"], #p-state').selectpicker();
@@ -387,20 +417,19 @@ document.addEventListener('DOMContentLoaded', function() {
         pCountrySelect.addEventListener('change', function() {
             const selectedCountry = this.value;
 
-            // 1. Сначала СКРЫВАЕМ и ОТКЛЮЧАЕМ (disable) ВСЕ списки штатов
+            // 1. СКРЫВАЕМ и ОТКЛЮЧАЕМ ВСЕ списки штатов Form 1
             const allStateContainers = document.querySelectorAll('[class^="p-states-"], .p-dropdown-state');
             allStateContainers.forEach(container => {
-                container.style.display = 'none'; // Скрываем визуально
+                container.style.display = 'none';
                 const select = container.querySelector('select');
                 if (select) {
-                    select.disabled = true; // Отключаем логически (валидатор пропустит)
+                    select.disabled = true;
                     $(select).selectpicker('refresh');
-                    // Убираем ошибку визуально, если она была
                     $(select).closest('.bootstrap-select').find('.dropdown-toggle').removeClass('input-error');
                 }
             });
 
-            // 2. Включаем только нужный, если он есть для этой страны
+            // 2. Включаем нужный
             const stateMap = {
                 'United States': '.p-dropdown-state', 'Australia': '.p-states-australia', 'Brazil': '.p-states-brazil',
                 'Canada': '.p-states-canada', 'China': '.p-states-china', 'Ireland': '.p-states-ireland',
@@ -410,58 +439,50 @@ document.addEventListener('DOMContentLoaded', function() {
             if (stateMap[selectedCountry]) {
                 const container = document.querySelector(stateMap[selectedCountry]);
                 if (container) {
-                    container.style.display = 'block'; // Показываем
+                    container.style.display = 'block';
                     const select = container.querySelector('select');
                     if (select) {
-                        select.disabled = false; // Включаем для валидации
-                        
-                        // Сброс значения на "пусто", чтобы появился State*
+                        select.disabled = false;
                         $(select).val(""); 
                         $(select).selectpicker('refresh');
-
-                        // Подсвечиваем как ошибку (так как поле обязательное, но пустое)
                         $(select).closest('.bootstrap-select').find('.dropdown-toggle').addClass('input-error');
                     }
                 }
             }
 
             // 3. Логика сообщений и чекбокса
-            const $pCheckboxWrapper = $(pCheckbox).closest('.input-wrapper'); // Находим обертку
+            const $pCheckboxWrapper = $(pCheckbox).closest('.input-wrapper');
             
             if (selectedCountry === 'United States') {
-                // Ищем элементы только внутри этой формы
                 pForm.querySelector('.form-message').style.display = 'none';
                 pForm.querySelector('.form-message_usa').style.display = 'block';
                 
                 $(pCheckbox).prop('checked', true);
-                $pCheckboxWrapper.hide(); // Скрываем всю обертку, чтобы убрать gap
+                $pCheckboxWrapper.hide();
             } else {
                 pForm.querySelector('.form-message').style.display = 'block';
                 pForm.querySelector('.form-message_usa').style.display = 'none';
                 
-                $pCheckboxWrapper.show(); // Показываем обертку
+                $pCheckboxWrapper.show();
                 $(pCheckbox).prop('checked', false).removeAttr('checked');
                 $(pCheckbox).parent().find('.w-checkbox-input').removeClass('w--redirected-checked');
             }
 
-            // 4. Принудительно запускаем проверку валидности всей формы и обновление кнопки
             setTimeout(() => {
-                $(this).valid(); // Проверяем страну
-                updatePSubmitState(); // Обновляем кнопку
+                $(this).valid();
+                updatePSubmitState();
             }, 50);
         });
 
         // Автоопределение страны и штата (Form 1)
         detectUserCountry().then(data => {
             if (data && data.country) {
-                // 1. Устанавливаем страну
                 const option = [...pCountrySelect.options].find(opt => opt.value === data.country);
                 if (option) {
                     option.selected = true;
                     pCountrySelect.dispatchEvent(new Event('change'));
                     $('#p-country').selectpicker('refresh');
 
-                    // 2. Логика определения штата/региона/города
                     const stateInputIds = {
                         'United States': 'p-state',
                         'Australia': 'p-states-australia',
@@ -474,14 +495,12 @@ document.addEventListener('DOMContentLoaded', function() {
                         'Mexico': 'p-states-mexico'
                     };
 
-                    // Проверяем, есть ли ID для этой страны
                     if (stateInputIds[data.country]) {
                         setTimeout(() => {
                             const targetId = stateInputIds[data.country];
                             const stateSelect = document.getElementById(targetId);
                             
                             if (stateSelect) {
-                                // Ищем совпадение
                                 const foundOption = findBestOption(
                                     stateSelect, 
                                     data.state_name, 
@@ -502,7 +521,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        // Валидация
+        // Валидация Form 1
         $('#p-main-form').validate({
             ignore: ":hidden:not(select)",
             onfocusout: function(element) { if ($(element).data('modified')) $(element).valid(); },
@@ -544,7 +563,6 @@ document.addEventListener('DOMContentLoaded', function() {
             highlight: function(el) {
                  const $el = $(el);
                  if ($el.is('select')) {
-                     // Добавляем класс
                      $el.closest('.bootstrap-select').find('.dropdown-toggle').addClass('input-error');
                  } else if ($el.data('modified')) {
                      $el.css('border', '1px solid #c50006'); 
@@ -553,7 +571,6 @@ document.addEventListener('DOMContentLoaded', function() {
             unhighlight: function(el) {
                  const $el = $(el);
                  if ($el.is('select')) {
-                     // Убираем класс
                      $el.closest('.bootstrap-select').find('.dropdown-toggle').removeClass('input-error');
                  } else {
                      $el.css('border', ''); 
@@ -562,7 +579,7 @@ document.addEventListener('DOMContentLoaded', function() {
             onfocusin: function(element) { $(element).data("interacted", true); }
         });
 
-        // Состояние кнопки Submit
+        // Состояние кнопки Submit Form 1
         function updatePSubmitState() {
             const isFormValid = $('#p-main-form').valid();
             const selectedCountry = $('#p-country').val();
@@ -582,7 +599,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
-        // Устанавливаем начальное состояние
+        // Начальное состояние кнопки Form 1
         pSubmitButton.setAttribute('disabled', 'disabled');
         pSubmitButton.classList.add('submit-inactive');
         const pInitialWrapper = pSubmitButton.closest('.submit-button-wrapper');
@@ -590,11 +607,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
         $('#p-main-form').on('input change', updatePSubmitState);
         
-        // ЛОГИКА ЧЕКБОКСА (Исправлено)
+        // FIX #2: Чекбокс Form 1 — обновляем ошибки только для своих чекбоксов
         $(pCheckbox).on('change', function() {
           $(this).data('modified', true);
           $(this).valid();
-          updateCheckboxErrorClass();
+          updateCheckboxErrorClass($pCheckboxes);
           updatePSubmitState();
         });
 
@@ -635,7 +652,6 @@ document.addEventListener('DOMContentLoaded', function() {
             };
             if (stateMapIds[selCountry]) stateValue = this.querySelector(stateMapIds[selCountry]).value;
 
-            // Pre-calculate hash
             const email = formData.get('p-email');
             const ehashValue = await sha256(email);
 
@@ -658,9 +674,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
             try {
                 let userId = getCookieValue('user_id') || generateUserId();
-                const response = await submitForm(payload, userId, 'p-main-form');
+                const response = await submitForm(payload, userId, 'p-main-form', 'p-');
                 
-                // ИСПРАВЛЕНИЕ: приводим к user_id для консистентности
                 document.cookie = `user_id=${userId}; path=/; max-age=31536000`; 
 
                 // GTM
@@ -701,9 +716,16 @@ document.addEventListener('DOMContentLoaded', function() {
         const mSelfAttr = document.getElementById('self-attribution');
         const mCountrySelect = document.getElementById('country');
         const mCheckbox = document.getElementById('agreement');
-        const mSubmitButtons = document.querySelectorAll('[ms-code-submit-new="submit"]');
+        // FIX #4: Скоупим кнопки к mainForm, а не document
+        const mSubmitButtons = mainForm.querySelectorAll('[ms-code-submit-new="submit"]');
         
         let mIsSubmitting = false;
+
+        // FIX #2: Чекбоксы скоупленные к Form 2
+        const $mCheckboxes = $('#main-form input[type="checkbox"]');
+
+        // FIX #3: Применяем handleLabel к полям Form 2
+        [mFirstName, mLastName, mJobTitle, mEmail, mCompany, mSelfAttr].forEach(input => handleLabel(input));
 
         // Selectpicker
         $('#country').selectpicker();
@@ -725,14 +747,12 @@ document.addEventListener('DOMContentLoaded', function() {
                         if (data && data.iso_code && data.country) {
                             success(data.iso_code);
                             
-                            // 1. Устанавливаем страну
                             const option = [...mCountrySelect.options].find(opt => opt.value === data.country);
                             if (option) {
                                 option.selected = true;
                                 mCountrySelect.dispatchEvent(new Event('change'));
                                 $('#country').selectpicker('refresh');
 
-                                // 2. Логика определения штата
                                 const stateInputIds = {
                                     'United States': 'state',
                                     'Australia': 'states-australia',
@@ -788,10 +808,9 @@ document.addEventListener('DOMContentLoaded', function() {
         mCountrySelect.addEventListener('change', function() {
             const selectedCountry = this.value;
             
-            // Обновить телефон
             if (iti && countryCodeMap[selectedCountry]) iti.setCountry(countryCodeMap[selectedCountry]);
 
-            // 1. Сначала СКРЫВАЕМ и ОТКЛЮЧАЕМ
+            // 1. СКРЫВАЕМ и ОТКЛЮЧАЕМ все списки штатов Main Form
             const allStateContainers = document.querySelectorAll('.states-australia, .states-brazil, .states-canada, .states-china, .states-ireland, .states-india, .states-italy, .states-mexico, .dropdown-state');
             allStateContainers.forEach(container => {
                 container.style.display = 'none';
@@ -816,9 +835,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     container.style.display = 'block';
                     const select = container.querySelector('select');
                     if (select) {
-                        select.disabled = false; // Включаем обратно
-                        
-                        // Сброс на "пусто"
+                        select.disabled = false;
                         $(select).val(""); 
                         $(select).selectpicker('refresh');
                         $(select).closest('.bootstrap-select').find('.dropdown-toggle').addClass('input-error');
@@ -827,32 +844,30 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             // 3. Логика чекбокса
-            const $mCheckboxWrapper = $(mCheckbox).closest('.input-wrapper'); // Находим обертку
+            const $mCheckboxWrapper = $(mCheckbox).closest('.input-wrapper');
 
             if (selectedCountry === 'United States') {
-                // ВАЖНО: Ищем внутри mainForm, а не document
                 mainForm.querySelector('.form-message').style.display = 'none';
                 mainForm.querySelector('.form-message_usa').style.display = 'block';
                 
                 $(mCheckbox).prop('checked', true);
-                $mCheckboxWrapper.hide(); // Скрываем обертку целиком
+                $mCheckboxWrapper.hide();
             } else {
                 mainForm.querySelector('.form-message').style.display = 'block';
                 mainForm.querySelector('.form-message_usa').style.display = 'none';
                 
-                $mCheckboxWrapper.show(); // Показываем обертку
+                $mCheckboxWrapper.show();
                 $(mCheckbox).prop('checked', false).removeAttr('checked');
                 $(mCheckbox).parent().find('.w-checkbox-input').removeClass('w--redirected-checked');
             }
 
-            // 4. Принудительно обновляем состояние кнопки
             setTimeout(() => {
                 $(this).valid();
                 updateMSubmitState(); 
             }, 50);
         });
 
-        // Валидация
+        // FIX #1: Убран дублирующий agreement: { required: true }
         $('#main-form').validate({
             ignore: ":hidden:not(select)",
             onfocusout: function(element) { if ($(element).data('modified')) $(element).valid(); },
@@ -866,13 +881,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 company: { required: true, maxlength: 128, noSpacesOnly: true },
                 phone: { phoneCustom: true },
                 'self-attribution': { maxlength: 128 },
-                agreement: { required: true },
                 state: { required: true },
                 agreement: {
-                  required: function(element) {
-                    const selectedCountry = $('#country').val();
-                    return selectedCountry !== 'United States' && $(element).is(':visible');
-                  }
+                    required: function(element) {
+                        const selectedCountry = $('#country').val();
+                        return selectedCountry !== 'United States' && $(element).is(':visible');
+                    }
                 },
             },
             messages: {
@@ -900,7 +914,6 @@ document.addEventListener('DOMContentLoaded', function() {
             highlight: function(el) {
                  const $el = $(el);
                  if ($el.is('select')) {
-                     // Добавляем класс
                      $el.closest('.bootstrap-select').find('.dropdown-toggle').addClass('input-error').css('color', '#c50006');
                  } else if ($el.data('modified')) {
                      $el.css('border', '1px solid #c50006'); 
@@ -909,7 +922,6 @@ document.addEventListener('DOMContentLoaded', function() {
             unhighlight: function(el) {
                  const $el = $(el);
                  if ($el.is('select')) {
-                     // Убираем класс
                      $el.closest('.bootstrap-select').find('.dropdown-toggle').removeClass('input-error').css('color', '');
                  } else {
                      $el.css('border', ''); 
@@ -918,13 +930,14 @@ document.addEventListener('DOMContentLoaded', function() {
             onfocusin: function(element) { $(element).data("interacted", true); }
         });
 
+        // FIX #4: Wrappers скоупленные к mainForm
         function updateMSubmitState() {
             const isFormValid = $('#main-form').valid();
             const selectedCountry = $('#country').val();
             const isCheckboxChecked = $(mCheckbox).prop('checked');
             const isReqMet = selectedCountry === 'United States' || isCheckboxChecked;
 
-            const wrappers = document.querySelectorAll('.submit-button-wrapper');
+            const wrappers = mainForm.querySelectorAll('.submit-button-wrapper');
             if (isFormValid && isReqMet && isTurnstileCompleted) {
                 mSubmitButtons.forEach(btn => { btn.removeAttribute('disabled'); btn.classList.remove('submit-inactive'); });
                 wrappers.forEach(w => w.classList.remove('button-is-inactive'));
@@ -936,15 +949,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
         $('#main-form').on('input change', updateMSubmitState);
         
-        // ЛОГИКА ЧЕКБОКСА (Исправлено)
+        // FIX #2: Чекбокс Form 2 — обновляем ошибки только для своих чекбоксов
         $(mCheckbox).on('change', function() {
           $(this).data('modified', true);
           $(this).valid();
-          updateCheckboxErrorClass();
+          updateCheckboxErrorClass($mCheckboxes);
           updateMSubmitState();
         });
 
-        // Submit Handler Form
+        // Submit Handler Form 2
         $('#main-form').on('submit', async function(event) {
             event.preventDefault();
             if (!$(this).valid() || mIsSubmitting) return;
@@ -1028,7 +1041,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (formFields) formFields.style.display = 'none';
                 if (successMsg) successMsg.style.display = 'block';
 
-                // GTM
+                // GTM — FIX из предыдущего анализа: fallback для role
                 if (window.dataLayer) {
                     const role = data.lead_type 
                       ? (data.lead_type.charAt(0).toUpperCase() + data.lead_type.slice(1).toLowerCase()) 
