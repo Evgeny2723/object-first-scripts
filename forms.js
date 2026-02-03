@@ -1030,7 +1030,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 // GTM
                 if (window.dataLayer) {
-                    const role = data.lead_type?.charAt(0).toUpperCase() + data.lead_type?.slice(1).toLowerCase();
+                    const role = data.lead_type 
+                      ? (data.lead_type.charAt(0).toUpperCase() + data.lead_type.slice(1).toLowerCase()) 
+                      : 'Customer';
                     window.dataLayer.push({
                         'event': 'demo', 'role': role, 'type': '', 'email': data.email, 'phone': data.phone, 'lead_id': userId
                     });
