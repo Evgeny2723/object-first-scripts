@@ -654,7 +654,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const email = formData.get('p-email');
             const ehashValue = await sha256(email);
 
-            const  = {
+            const payload = {
                 'firstname': firstName,
                 'lastname': lastName,
                 email: email,
