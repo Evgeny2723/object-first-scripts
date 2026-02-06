@@ -654,7 +654,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const email = formData.get('p-email');
             const ehashValue = await sha256(email);
 
-            const payload = {
+            const  = {
                 'firstname': firstName,
                 'lastname': lastName,
                 email: email,
@@ -664,7 +664,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 state: stateValue || null,
                 self_attribution: formData.get('p-self-attribution'),
                 href: window.location.href,
-                page: pagePath,
+                page: 'white_paper',
                 ss_anonymous_id: window.segmentstream?.anonymousId?.() ?? '',
                 junk_lead: junk_lead,
                 of_form_duration: formTime,
